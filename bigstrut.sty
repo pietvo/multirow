@@ -23,7 +23,8 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bigstrut}
-           [1994/05/31 v1.0 Provide larger struts in tabulars]
+           [2016/09/13 v1.7
+                  Provide larger struts in tabulars]
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot}{}\bigstrutjot=2pt
 \def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}
 \def\@bigstrut[#1]{\unskip\@tempdima\ht\@arstrutbox \@tempdimb\dp\@arstrutbox

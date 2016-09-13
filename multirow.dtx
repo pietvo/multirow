@@ -29,18 +29,13 @@
 %
 %    \begin{macrocode}
 %<multirow|bigstrut|bigdelim>\NeedsTeXFormat{LaTeX2e}
-%<*multirow>
-\ProvidesPackage{multirow}%
-           [2004/05/05 v1.6 Span multiple rows of a table]%
-%</multirow>
-%<*bigstrut>
-\ProvidesPackage{bigstrut}
-           [1994/05/31 v1.0 Provide larger struts in tabulars]
-%</bigstrut>
-%<*bigdelim>
-\ProvidesPackage{bigdelim}
-           [1999/11/05 v1.0 Create big delimiters in tabular or array]
-%</bigdelim>
+%<multirow>\ProvidesPackage{multirow}%
+%<bigstrut>\ProvidesPackage{bigstrut}
+%<bigdelim>\ProvidesPackage{bigdelim}
+%<multirow|bigstrut|bigdelim>           [2016/09/13 v1.7 
+%<multirow>                  Span multiple rows of a table]%
+%<bigstrut>                  Provide larger struts in tabulars]
+%<bigdelim>                  Create big delimiters in tabular or array]
 %    \end{macrocode}
 %
 %<*driver>
@@ -80,6 +75,8 @@
 %   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %   Right brace   \}     Tilde         \~}
 %
+% \changes{v1.7}{2016/09/13}{Give all the files the same version number}
+%
 % \GetFileInfo{multirow.sty}
 %
 % \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\ }
@@ -95,6 +92,8 @@
 %   Jerry Leichter\thanks{Documentation originally put together by Robin
 %     Fairbairns}}
 %
+% \date{Released \filedate, version \fileversion}
+% 
 % \maketitle
 %
 % \section{Introduction}
@@ -103,11 +102,11 @@
 % \begin{description}
 % \item[\Package{multirow}] which provides a construction for table cells
 %   that span more than one row of the table;
+% \item[\Package{bigstrut}] which creates struts which (slightly) stretch
+%   the table row in which they sit.
 % \item[\Package{bigdelim}] which creates an appropriately-sized
 %   delimiter (for example, brace, parenthesis or bracket) to fit in a
 %   single multirow, to indicate a relationship between other rows; and
-% \item[\Package{bigstrut}] which creates struts which (slightly) stretch
-%   the table row in which they sit.
 % \end{description}
 %
 % \section{Using \Package{multirow}}\label{sec:multirow}
