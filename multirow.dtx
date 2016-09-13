@@ -1,0 +1,616 @@
+% \iffalse meta-comment
+%
+% Parts of this file, Copyright (C) 1994 by Jerry Leichter <jerrold.leichter@smarts.com>
+% Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
+% -------------------------------------------------------
+% 
+% This file may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in:
+%
+%    http://www.latex-project.org/lppl.txt
+%
+% and version 1.3 or later is part of all distributions of LaTeX 
+% version 2005/12/01 or later.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{\jobname.dtx}
+%</driver>
+% This is the variable part of the preamble
+% 
+%<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter <jerrold.leichter@smarts.com>
+%<bigdelim>%% Copyright (C) 1994 by \Oystein Bache <bache@kjemi.unit.no>
+%% Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
+%%
+%
+%    \begin{macrocode}
+%<multirow|bigstrut|bigdelim>\NeedsTeXFormat{LaTeX2e}
+%<*multirow>
+\ProvidesPackage{multirow}%
+           [2004/05/05 v1.6 Span multiple rows of a table]%
+%</multirow>
+%<*bigstrut>
+\ProvidesPackage{bigstrut}
+           [1994/05/31 v1.0 Provide larger struts in tabulars]
+%</bigstrut>
+%<*bigdelim>
+\ProvidesPackage{bigdelim}
+           [1999/11/05 v1.0 Create big delimiters in tabular or array]
+%</bigdelim>
+%    \end{macrocode}
+%
+%<*driver>
+\documentclass[a4paper]{ltxdoc}
+\usepackage[a4paper]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{multirow,bigstrut,bigdelim,colortbl}
+\newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
+\DisableCrossrefs         
+\CodelineIndex
+\RecordChanges
+\let\environment\texttt
+\let\Package\textsf
+\def\bsbs{\cs{\char`\\}}
+\begin{document}
+  \DeleteShortVerb{\|}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{169}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+% \GetFileInfo{multirow.sty}
+%
+% \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\ }
+% \DoNotIndex{\@ne}
+% \DoNotIndex{\advance,\begingroup,\catcode,\closein}
+% \DoNotIndex{\closeout,\day,\def,\edef,\else,\empty,\endgroup}
+%
+% \title{The \Package{multirow},
+%   \Package{bigstrut} and
+%   \Package{bigdelim} packages}
+% \author{Piet van Oostrum\thanks{catalogued ``active author''}\\
+%   \O{}ystein Bache\\
+%   Jerry Leichter\thanks{Documentation originally put together by Robin
+%     Fairbairns}}
+%
+% \maketitle
+%
+% \section{Introduction}
+% These packages offer a series of extensions to the standard \LaTeX{}
+% \texttt{tabular} environment.  Their respective functions are:
+% \begin{description}
+% \item[\Package{multirow}] which provides a construction for table cells
+%   that span more than one row of the table;
+% \item[\Package{bigdelim}] which creates an appropriately-sized
+%   delimiter (for example, brace, parenthesis or bracket) to fit in a
+%   single multirow, to indicate a relationship between other rows; and
+% \item[\Package{bigstrut}] which creates struts which (slightly) stretch
+%   the table row in which they sit.
+% \end{description}
+%
+% \section{Using \Package{multirow}}\label{sec:multirow}
+%
+% \DescribeMacro{\multirow}
+% The basic syntax is:
+% \begin{quote}
+%   \cmd{\multirow}\marg{nrows}\oarg{bigstruts}\marg{width}\oarg{fixup}\marg{text}
+% \end{quote}
+% where
+% \begin{description}
+% \item[\meta{nrows}] is the number of rows to span.  You should
+%   leave the other rows empty at this column, otherwise the stuff created by \cs{multirow}
+%   will over-write it. With a positive value of \meta{nrows} the
+%   spanned columns are this row and (\meta{nrows}-1) rows below
+%   it. With a negative value of \meta{nrows} they are this row and
+%   (1-\meta{nrows}) above it. 
+% \item[\meta{bigstruts}] is mainly used if you've used the
+%   \Package{bigstrut} package.  In that case it is the total number of uses of
+%   \cs{bigstrut} within the rows being spanned.  Count 2 uses for each
+%   \cs{bigstrut}, 1 for each \cs{bigstrut}\oarg{x} where \meta{x} is
+%   either \texttt{t} or \texttt{b}.  The default is 0.
+% \item[\meta{width}] is the width to which the text is to be set, or
+%   \texttt{*} to indicate that the text argument's natural width is to
+%   be used.
+% \item[\meta{text}] is the actual text of the construct.  If the width
+%   was set explicitly, the text will be set in a \cs{parbox} of that
+%   width; you can use \bsbs{} to force linebreaks where you like.
+%
+%   If the width was given as \texttt{*} the text will be set in LR
+%   mode.  If you want a multiline entry in this case you should use a
+%   \texttt{tabular} or \texttt{array} environment in the text
+%   parameter.
+% \item[\meta{fixup}] is a length used for fine tuning: the text will be
+%   raised (or lowered, if \meta{fixup} is negative) by that length
+%   above (below) wherever it would otherwise have gone.
+% \end{description}
+% For example (using both \Package{multirow} and \Package{bigstrut}):
+% \begin{quote}
+% \begin{verbatim}
+% \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
+% \begin{tabular}{|c|c|}
+% \hline
+% \multirow{4}{1in}{Common g text} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+% \hline
+% \multirow{3}[6]*{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\
+% \hline
+% \multirow{4}[8]{1in}{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\\cline{2-2}
+%       & Column g2d \bigstrut\\
+% \hline
+% \multirow{4}*{\minitab[c]{Common \\ g text}} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+% \hline
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+% which will appear as:
+% \begin{quote}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     \multirow{4}{1in}{Common g text} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+%     \hline
+%     \multirow{3}[6]*{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\
+%     \hline
+%     \multirow{4}[8]{1in}{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\\cline{2-2}
+%       & Column g2d \bigstrut\\
+%     \hline
+%     \multirow{4}*{\minitab[c]{Common \\ g text}} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+%     \hline
+%   \end{tabular}
+%   \hspace{1cm}
+%   \begin{tabular}{ll}
+%     \multirow{4}{*}{Normal case} & \\
+%       & \\
+%       & \\
+%       & \\
+%     \multirow{3}[6]*{With \cs{bigstrut}s and * as \meta{width}} & \bigstrut\\
+%       & \bigstrut\\
+%       & \bigstrut\\
+%     \multirow{4}[8]{*}{With \cs{bigstrut}s and normal \meta{width}} & \bigstrut\\
+%       & \bigstrut\\
+%       & \bigstrut\\
+%       & \bigstrut\\
+%     \multirow{4}*{Multiline text in \cs{multirow}} & \\
+%       & \\
+%       & \\
+%       & \\
+%   \end{tabular}
+%   
+% \end{quote}
+%
+% If you want to use both \cs{multirow} and \cs{multicolumn}
+% \index{multicolumn=\verb!*+\multicolumn+|usage}
+% on the same entry, you must put the \cs{multirow} inside the \cs{multicolumn}. The other way around will not work.
+% For example:
+% \begin{verbatim}
+%    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
+% \end{verbatim}
+%
+% \DescribeMacro{\multirowsetup}
+% Just before \meta{text} is expanded, the \cs{multirowsetup} macro is
+% expanded to set up any special environment.  Initially,
+% \cs{multirowsetup} contains just \cs{raggedright}.  It may be
+% redefined with \cs{renewcommand}.
+%
+% 
+% \subsection{Fine Tuning}
+% \label{sec:fine-tuning}
+%
+% If any of the spanned rows are unusually large, or if you're using the
+% \Package{bigstrut} package and \cs{bigstrut}s are used asymetrically about the
+% centerline of the spanned rows, the vertical centering may not come
+% out right.  Use the \meta{fixup} argument in this case.
+%
+% It's just about impossible to deal correctly with descenders.  The
+% text will be set up centred, but it may then have a baseline that
+% doesn't match the baseline of the stuff beside it, in particular if
+% the stuff beside it has descenders and \meta{text} does not.  This may
+% result in a small misalignment.  About all that can be done is to do a
+% final touchup on \meta{text}, using the fixup optional argument.
+% (Hint:  If you use a measure like \texttt{.1ex}, there's a reasonable
+% chance that the fixup will still be correct if you change the point
+% size.)
+%
+% \cs{multirow} is mainly designed for use with \environment{tabular}, as
+% opposed to \environment{array}, environments.  It will not work well in an
+% array environment since the lines have an extra \texttt{jot} of space
+% between them which it won't account for.  Fixing this is difficult in
+% general, and doesn't seem worth it.  The \meta{bigstruts} argument may
+% be used to provide a semi-automatic fix: First set \cs{bigstrutjot} to
+% \texttt{.5}\cs{jot}.  Then simply repeat \meta{nrows} as the bigstruts
+% argument.  This will be close, but probably not exact; you can use the
+% \meta{fixup} argument to refine the result.  (If you do this repeatedly,
+% you'll probably want to wrap these steps up in a simple macro.  Note
+% that the modified \cs{bigstrutjot} value will not give reasonable
+% results if you have bigstruts and use this argument for its intended
+% purpose elsewhere.  In that case, you might want to set it locally.)
+%
+% If you use \cs{multirow} with the \Package{colortbl} package you have
+% \index{colortbl=\Package{colortbl}|usage}
+% to take precautions if you want to colour the column that has the
+% \cs{multirow} in it.  The \Package{colortbl} package works by colouring each cell
+% separately.  So if you use \cs{multirow} with a positive \meta{nrows}
+% value, \Package{colortbl} will first color the top cell, then
+% \cs{multirow} will typeset \meta{nrows} cells starting with this cell,
+% and later \Package{colortbl} will color the other cells, effectively
+% hiding the text in that area.  This can be solved by putting the
+% \cs{multirow} in the last row with a negative \meta{nrows} value.
+% See, for example:
+% \begin{quote}
+% \begin{verbatim}
+% \begin{tabular}{l>{\columncolor{yellow}}l}
+%   aaaa & \\
+%   cccc & \\
+%   dddd & \multirow{-3}*{bbbb}\\
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+% which will produce:
+% \begin{quote}
+%   \begin{tabular}{l>{\columncolor{yellow}}l}
+%     aaaa & \\
+%     cccc & \\
+%     dddd & \multirow{-3}*{bbbb}\\
+%   \end{tabular}
+% \end{quote}
+%
+% \section{Using \Package{bigstrut}}
+%
+% \DescribeMacro{\bigstrut}
+% \DescribeMacro{\bigstrutjot}
+% \cs{bigstrut}\oarg{x} produces a strut (a rule with width 0) which is \cs{bigstrutjot}
+% (\texttt{2pt} by default) higher, lower, or both than the standard
+% array/tabular strut.  Use it in table entries that are adjacent to
+% \cs{hline}s to leave an extra bit of space\,---\,according to the
+% TeXbook (page 246), ``This is a little touch that improves the
+% appearance of boxed tables; look for it as a mark of quality.''
+%
+% Although you could use \cs{bigstrut} in an array, there isn't normally
+% much point since arrays are `opened up' by \cs{jot} anyway.
+%
+% \cs{bigstrut[t]} adds height; \cs{bigstrut[b]}  adds
+% depth.  Just \cs{bigstrut} adds both.  So:  Use
+% \cs{bigstrut[t]} in the row just \emph{after} an \cs{hline};
+% \cs{bigstrut[b]} in the row just \emph{before}; and
+% \cs{bigstrut} if there are \cs{hline}s both before and after.
+%
+% Spaces after the \cs{bigstrut} are ignored, even if it has an optional
+% argument.  Spaces before the \cs{bigstrut} are generally ignored (by a
+% single \cs{unskip}).
+%
+% \DescribeMacro{\bigstrutjot}
+% Note: The \Package{multirow} package makes use of \cs{bigstrutjot}.  If
+% both packages are used, they can be used in either order, as each checks
+% to see if the other has already defined \cs{bigstrutjot}.  However,
+% the default values they set are different: if only \Package{multirow}
+% is used, \cs{bigstrutjot} will be set to \texttt{3pt}. 
+% If \Package{bigstrut} is used, with or without \Package{multirow},
+% \cs{bigstrutjot} will be \texttt{2pt}.
+%
+%
+% \section{Using \Package{bigdelim}}
+%
+% The package is for working in a \environment{tabular} or \environment{array}
+% environment, in which the \Package{multirow} package is also used.
+%
+% \DescribeMacro{\ldelim}
+% \DescribeMacro{\rdelim}
+% Syntax of use is
+% \begin{quote}
+%   \cs{ldelim} ( \marg{n}\marg{width}\oarg{text}\\
+%   \cs{rdelim} ) \marg{n}\marg{width}\oarg{text}
+% \end{quote}
+% The commands are used in a column of a \environment{tabular} or
+% \environment{array}; they create a big parenthesis, brace or whatever
+% delimiter that extends over the \meta{n} rows starting at the one
+% containing the command.  Corresponding cells in the following rows
+% must be explicitly given as empty cells.
+%
+% The first parameter is a delimiter to be used, e.g., \cs{\char`\{}
+% \cs{\char`\}} \texttt{[} \texttt{]} \texttt{(} \texttt{)}\,---\,in fact,
+% anything that can be used with \cs{left} or \cs{right}, as appropriate.
+%
+% Here is an example:
+% \begin{quote}
+% \begin{verbatim}
+% \begin{equation}
+%   \begin{array}{ccccccc}
+%     \ldelim({4}{4mm} & x & x & x & x & \rdelim){4}{4mm}  \\
+%     & x & x & x & x &  & i \\
+%     & x & x & x & x &  & j \\
+%     & x & x & x & x &  \\
+%     &   & u & v &   & 
+%   \end{array}
+% \end{equation}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \begin{equation}
+%   \begin{array}{ccccccc}
+%     \ldelim({4}{4mm} & x & x & x & x & \rdelim){4}{4mm}  \\
+%     & x & x & x & x &  & i \\
+%     & x & x & x & x &  & j \\
+%     & x & x & x & x &  \\
+%     &   & u & v &   & 
+%   \end{array}
+% \end{equation}
+% \end{quote}
+%
+% When \cs{ldelim} is used, the optional \meta{text} is set centred to the left of \cs{ldelim}. 
+% If \cs{rdelim} is used it is set to the right of \cs{rdelim}.  The \meta{width} is that reserved for
+% the delimiter and its text; as with the
+% \Package{multirow} package, the \meta{width} may be given as
+% \texttt{*}, but that may cause the delimiters to be too small. Compare for example these:
+% \begin{quote}
+% \begin{minipage}{0.5\linewidth}
+% \begin{verbatim}
+% \begin{tabular}{p{2em}l} 
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                        & ps \\
+%                        & pdf \\
+% \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \begin{minipage}{0.35\linewidth}
+% \begin{tabular}{p{2em}l}
+%       \ldelim\{{3}{*}[type] & dvi \\
+%                           & ps \\
+%                           & pdf \\
+%    \end{tabular}
+%    \\[2ex]
+% \end{minipage}
+%
+% \begin{minipage}{0.5\linewidth}
+% \begin{verbatim}
+% \begin{tabular}{ll}                     
+%    \ldelim\{{3}{*}[type] & dvi \\        
+%                        & ps \\          
+%                        & pdf \\         
+% \end{tabular}                           
+% \end{verbatim}
+% \end{minipage}
+% \begin{minipage}{0.35\linewidth}
+%   \begin{tabular}{ll}
+%     \ldelim\{{3}{*}[type] & dvi \\
+%                        & ps \\
+%                        & pdf \\
+%   \end{tabular}
+%   \\[2ex]
+% \end{minipage}
+% \end{quote}
+% (In the first example we cheated: by using a column width that is too small, we swallowed up some of the intercolumn space, at the cost of an ``Overfull \cs{hbox}'' message.)
+%
+% Also the commands may be
+% used in the last row of the extension with a negative \meta{n}
+% \index{colortbl=\Package{colortbl}|usage}
+% parameter.  This is useful in combination with \Package{colortbl} (see
+% the discussion in section \ref{sec:multirow} on \Package{multirow}).
+% If there are unusually tall rows you may have to enlarge \meta{n} (you
+% can use non-integral values).
+% If you have horizontal lines that interact with the braces you are
+% \index{hhline=\Package{hhline}|usage}
+% advised to use the \Package{hhline} package to make the lines.
+%
+% In case you want to have a paragraph type text as optional parameter you could put it in a \cs{parbox}.
+% Alternatively you could add an extra column with the text in a \cs{multirow}, like in
+% \begin{quote}
+% \begin{verbatim}
+% \begin{tabular}{l@{}l@{}l}
+%    dvi   & \rdelim\}{3}{1em} & \multirow{3}{4cm}{These are the output types,
+%         that are commonly used for \TeX.} \\
+%    ps    & & \\
+%    pdf   & & \\
+% \end{tabular}                                 
+% \end{verbatim}
+% \end{quote}
+% \begin{quote}
+% \begin{tabular}{l@{}l@{}l}
+%    dvi   & \rdelim\}{3}{1em} & \multirow{3}{4cm}{These are the output types,
+%         that are commonly used for \TeX.} \\
+%    ps   & & \\
+%    pdf   & & \\
+% \end{tabular}                                 
+% \end{quote}
+% Note that we used \texttt{@\{\}} to eliminate the intercolumn space to get the text tight to the brace.
+% \StopEventually{%
+% \PrintChanges
+% \PrintIndex}
+%
+% \section{Implementation}
+%
+%
+%\subsection{The \Package{multirow} package}
+%\label{sec:pack-multirow}
+% \iffalse
+%<*multirow>
+% \fi
+%
+% \changes{multirow v1.0}{}{distributed anonymously, based on a Usenet posting}
+% \changes{multirow v1.1}{}{allow it to work without bigstrut.sty (Piet van Oostrum)}
+% \changes{multirow v1.2}{}{modified by Jerry Leichter for the same goal, but using a 
+%   different approach which will work properly with bigstrut.sty}
+% \changes{multirow v1.2a}{}{modified by Piet van Oostrum to use \cs{vskip}
+%   instead of \cs{raise} in positioning, avoiding making rows too high
+%   when the adjustment is large}
+% \changes{multirow v1.3}{}{modified by Piet van Oostrum to work properly in a p{} column
+%    (\cs{leavevmode} added)}
+% \changes{multirow v1.4}{}{modified by Piet van Oostrum to check for the special case that
+%       the width is given as an *. In this case the natural
+%       width of the text argument will be used and the argument
+%       is processed in LR-mode.}
+% \changes{multirow v1.5}{}{modified by Piet van Oostrum: Added a \texttt{\%} after \texttt{\cs{hbox}\{\#5\}\cs{vfill}}.\\
+%       Added \cs{strut}s around \#5 for better vertical positioning.
+%       Additional coding for negative value of \meta{nrows}.}
+% \changes{multirow v1.6}{2004/05/05}{modified by Piet van Oostrum: Replace a space by \cs{relax} after
+%       \texttt{\cs{advance}\cs{@tempdima}\#4}}
+%
+% \begin{macro}{\multirowsetup}
+% \cs{multirowsetup} is executed at the beginning of each \cs{multirow}.
+%    \begin{macrocode}
+\def\multirowsetup{\raggedright} 
+%    \end{macrocode}
+%\end{macro}
+%
+% \begin{macro}{\multirow}
+% Make an entry that will span multiple rows of a table.\\
+% First collect all the parameters.
+%    \begin{macrocode}
+\def\multirow#1{\relax\@ifnextchar
+  [{\@multirow{#1}}{\@multirow{#1}[0]}}
+\def\@multirow#1[#2]#3{\@ifnextchar [{\@xmultirow{#1}[#2]{#3}}%
+  {\@xmultirow{#1}[#2]{#3}[0pt]}}
+%    \end{macrocode}
+% This is the real workhorse. It starts with calculating the height of the multirow entry.
+%    \begin{macrocode}
+\def\@xmultirow#1[#2]#3[#4]#5{\@tempcnta=#1%
+  \@tempdima\@tempcnta\ht\@arstrutbox
+  \advance\@tempdima\@tempcnta\dp\@arstrutbox
+  \ifnum\@tempcnta<0\@tempdima=-\@tempdima\fi
+  \advance\@tempdima#2\bigstrutjot
+%    \end{macrocode}
+% If the \meta{width} parameter is \texttt{*} set the text, vertically centered in a \cs{vbox}.
+%    \begin{macrocode}
+  \if*#3\setbox0\vtop to \@tempdima{\vfill\multirowsetup
+    \hbox{\strut#5\strut}\vfill}%
+  \else
+%    \end{macrocode}
+% Otherwise set it in a \cs{parbox}, also vertically centered in a \cs{vbox}.
+%    \begin{macrocode}
+      \setbox0\vtop to \@tempdima{\hsize#3\@parboxrestore
+                \vfill \multirowsetup \strut#5\strut\par\vfill}%
+  \fi
+%    \end{macrocode}
+% Now position the \cs{vbox} properly
+%    \begin{macrocode}
+  \ht0\z@\dp0\z@
+  \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
+  \else\@tempdima=\ht\@arstrutbox
+     \ifnum#2>0 \advance\@tempdima\bigstrutjot \fi
+  \fi
+  \advance\@tempdima#4\relax\leavevmode\vtop{\vskip-\@tempdima\box0\vss}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bigstrutjot}
+% Define \cs{bigstrutjot} if not already defined.
+%    \begin{macrocode}
+\@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
+%    \end{macrocode}
+% \end{macro}
+% \iffalse
+%</multirow>
+% \fi
+% 
+% \subsection{The \Package{bigstrut} package}
+% \label{sec:pack-bigstrut}
+% 
+% \iffalse
+%<*bigstrut>
+% \fi
+% \changes{bigstrut v1.0}{1994/05/31}{Initial version}
+% \begin{macro}{\bigstrutjot}
+% This is a length. By default it is set to 2pt. You can change it
+% with the \cs{setlength} command.
+%    \begin{macrocode}
+\@ifundefined{bigstrutjot}{\newdimen\bigstrutjot}{}\bigstrutjot=2pt
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bigstrut}
+% This macro inserts a strut. Depending on the % optional argument it extends
+% above and/or below the standard array/tabular strut.
+%    \begin{macrocode}
+\def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}
+\def\@bigstrut[#1]{\unskip\@tempdima\ht\@arstrutbox \@tempdimb\dp\@arstrutbox
+  \ifx #1b\else \advance\@tempdima by \bigstrutjot\fi
+  \ifx #1t\else \advance\@tempdimb by \bigstrutjot\fi
+  \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \iffalse
+%</bigstrut>
+% \fi
+%
+% \subsection{The \Package{bigdelim} package}
+% \label{sec:pack-bigdelim}
+% \iffalse
+%<*bigdelim>
+% \fi
+% \changes{bigdelim v0.0}{1994/10/02}{bigbrace.sty by \O ystein Bache}
+% \changes{bigdelim v1.0}{1999/11/05}{Initial version bigdelim.sty}
+% \begin{macro}{\ldelim}
+% This macro typesets a left delimiter. It calls \cs{multirow} with the proper parameters.
+% The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
+% zero width next to it.
+%    \begin{macrocode}
+\def\ldelim#1#2#3{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
+\def\@ldelim#1#2#3[#4]%
+ {\multirow{#2}{#3}{%
+   \ensuremath
+     {\left.\vcenter{\hsize=0pt\vrule height 
+           \ifnum #2<0 -\fi#2\baselineskip width 0pt}%
+     \textrm{#4}\right#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\rdelim}
+% This macro typesets a right delimiter. It calls \cs{multirow} with the proper parameters.
+% The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
+% zero width next to it.
+%    \begin{macrocode}
+\def\rdelim#1#2#3{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
+\def\@rdelim#1#2#3[#4]%
+ {\multirow{#2}{#3}{%
+   \ensuremath
+     {\left#1\vcenter{\hsize=0pt\vrule height 
+           \ifnum #2<0 -\fi#2\baselineskip width 0pt}%
+       \textrm{#4}\right.}}}
+%    \end{macrocode}
+% \end{macro}
+% \iffalse
+%</bigdelim>
+% \fi
+%
+% \Finale
+\endinput
