@@ -37,4 +37,4 @@ parenthesis or bracket) to fit in a single multirow,
 to indicate a relationship between other rows
 
 \ldelim ( {n} {width} [text] 
-\rdelim } {n} {width} [text] 
+\rdelim ) {n} {width} [text] 
