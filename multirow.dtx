@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/13 v1.7 
+%<multirow|bigstrut|bigdelim>           [2016/09/14 v1.8
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -57,7 +57,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{169}
+% \CheckSum{0}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -109,15 +109,28 @@
 %   single multirow, to indicate a relationship between other rows; and
 % \end{description}
 %
+%\section{Changes in version 2.0}
+%\label{sec:changes-2}
+%
+%\begin{itemize}
+%\item \cs{multirow} now has an first optional argument \oarg{vpos}.
+%\item The distribution is now based on a \texttt{.dtx} file.
+%\end{itemize}
+%
 % \section{Using \Package{multirow}}\label{sec:multirow}
 %
 % \DescribeMacro{\multirow}
+% \cs{multirow} sets a piece of text in a \environment{tabular} or similar environment, spanning multiple rows. We will call the block of rows and columns that the text spans the multirow block. Usually this covers one column, but by combining it with \cs{multicolumn} more columns can be covered.
+% 
 % The basic syntax is:
 % \begin{quote}
-%   \cmd{\multirow}\marg{nrows}\oarg{bigstruts}\marg{width}\oarg{fixup}\marg{text}
+%   \cmd{\multirow}\oarg{vpos}\marg{nrows}\oarg{bigstruts}\marg{width}\oarg{fixup}\marg{text}
 % \end{quote}
 % where
 % \begin{description}
+% \item[\meta{vpos}] defines the vertical positioning of the text in the multirow block.
+% The default is \texttt{[c]} which means the text will be vertically centered.
+% Other options are \texttt{[t]} for top alignment and \texttt{[b]} for bottom alignment.
 % \item[\meta{nrows}] is the number of rows to span.  You should
 %   leave the other rows empty at this column, otherwise the stuff created by \cs{multirow}
 %   will over-write it. With a positive value of \meta{nrows} the
@@ -493,31 +506,38 @@
 %
 % \begin{macro}{\multirow}
 % Make an entry that will span multiple rows of a table.\\
-% First collect all the parameters.
+% First collect all the parameters and replace missing optional parameters by their default values.
+% \changes{v1.8}{2016/09/14}{Add the optional first argument \meta{vpos}.}
 %    \begin{macrocode}
-\def\multirow#1{\relax\@ifnextchar
-  [{\@multirow{#1}}{\@multirow{#1}[0]}}
-\def\@multirow#1[#2]#3{\@ifnextchar [{\@xmultirow{#1}[#2]{#3}}%
-  {\@xmultirow{#1}[#2]{#3}[0pt]}}
+\def\multirowsetup{\raggedright}
+\def\multirow{\relax\@ifnextchar[{\@multirow}{\@multirow[c]}}
+\def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
+\def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%
+                                {\@xmultirow[#1]{#2}[#3]{#4}[0pt]}}
 %    \end{macrocode}
-% This is the real workhorse. It starts with calculating the height of the multirow entry.
+% This is the real workhorse. It starts with calculating the height of the multirow box.
 %    \begin{macrocode}
-\def\@xmultirow#1[#2]#3[#4]#5{\@tempcnta=#1%
+\def\@xmultirow[#1]#2[#3]#4[#5]#6{\@tempcnta=#2%
   \@tempdima\@tempcnta\ht\@arstrutbox
   \advance\@tempdima\@tempcnta\dp\@arstrutbox
   \ifnum\@tempcnta<0\@tempdima=-\@tempdima\fi
-  \advance\@tempdima#2\bigstrutjot
+  \advance\@tempdima#3\bigstrutjot
 %    \end{macrocode}
-% If the \meta{width} parameter is \texttt{*} set the text, vertically centered in a \cs{vbox}.
+%  The text is set in a \cs{vbox}. Depending on the \meta{vpos}
+% paramter, it will be top-aligned, vertically centered, or bottom-aligned. This is done by inserting \cs{vfill}
+% in the proper places.
+% 
+% If the \meta{width} parameter is \texttt{*} set just the text in the \cs{vbox}.
 %    \begin{macrocode}
-  \if*#3\setbox0\vtop to \@tempdima{\vfill\multirowsetup
-    \hbox{\strut#5\strut}\vfill}%
+  \if*#4\setbox0\vtop to \@tempdima{\if #1t\relax\else\vfill\fi \multirowsetup
+    \hbox{\strut#6\strut}\if #1b\relax\vskip0pt\else\vfill\fi}%
   \else
 %    \end{macrocode}
-% Otherwise set it in a \cs{parbox}, also vertically centered in a \cs{vbox}.
+% Otherwise set it in a \cs{parbox} inside a \cs{vbox}.
 %    \begin{macrocode}
-      \setbox0\vtop to \@tempdima{\hsize#3\@parboxrestore
-                \vfill \multirowsetup \strut#5\strut\par\vfill}%
+    \setbox0\vtop to \@tempdima{\hsize#4\@parboxrestore
+        \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par
+        \if #1b\relax\vskip0pt\else\vfill\fi}%
   \fi
 %    \end{macrocode}
 % Now position the \cs{vbox} properly
@@ -525,9 +545,9 @@
   \ht0\z@\dp0\z@
   \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
   \else\@tempdima=\ht\@arstrutbox
-     \ifnum#2>0 \advance\@tempdima\bigstrutjot \fi
+     \ifnum#3>0 \advance\@tempdima\bigstrutjot \fi
   \fi
-  \advance\@tempdima#4\relax\leavevmode\vtop{\vskip-\@tempdima\box0\vss}}
+  \advance\@tempdima#5\relax\leavevmode\vtop{\vskip-\@tempdima\box0\vss}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\bigstrutjot}
