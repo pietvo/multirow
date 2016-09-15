@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/14 v1.8
+%<multirow|bigstrut|bigdelim>           [2016/09/15 v1.9
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -40,9 +40,9 @@
 %
 %<*driver>
 \documentclass[a4paper]{ltxdoc}
-\usepackage[a4paper]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage{multirow,bigstrut,bigdelim,colortbl}
+\usepackage{tabulary}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
 \DisableCrossrefs         
 \CodelineIndex
@@ -109,18 +109,25 @@
 %   single multirow, to indicate a relationship between other rows; and
 % \end{description}
 %
-%\section{Changes in version 2.0}
-%\label{sec:changes-2}
-%
-%\begin{itemize}
-%\item \cs{multirow} now has an first optional argument \oarg{vpos}.
-%\item The distribution is now based on a \texttt{.dtx} file.
-%\end{itemize}
+% \section{Changes in version 2.0}
+% \label{sec:changes-2}
+% 
+% \begin{itemize}
+% \item \cs{multirow} now has an first optional parameter \oarg{vpos}.
+% \item The \meta{width} parameter can be specified as \texttt{=} to use
+% the defined width of the column in which the \cs{multirow} appears.
+% \item More examples.
+% \item The distribution is now based on a \texttt{.dtx} file.
+% \end{itemize}
 %
 % \section{Using \Package{multirow}}\label{sec:multirow}
 %
 % \DescribeMacro{\multirow}
-% \cs{multirow} sets a piece of text in a \environment{tabular} or similar environment, spanning multiple rows. We will call the block of rows and columns that the text spans the multirow block. Usually this covers one column, but by combining it with \cs{multicolumn} more columns can be covered.
+% \cs{multirow} sets a piece of text in a \environment{tabular} or
+% similar environment, spanning multiple rows. We will call the block of
+% rows and columns that the text spans the multirow block. Usually this
+% covers one column, but by combining it with \cs{multicolumn} more
+% columns can be covered.
 % 
 % The basic syntax is:
 % \begin{quote}
@@ -136,15 +143,23 @@
 %   will over-write it. With a positive value of \meta{nrows} the
 %   spanned columns are this row and (\meta{nrows}-1) rows below
 %   it. With a negative value of \meta{nrows} they are this row and
-%   (1-\meta{nrows}) above it. 
+%   (1-\meta{nrows}) above it.
+%   
 % \item[\meta{bigstruts}] is mainly used if you've used the
 %   \Package{bigstrut} package.  In that case it is the total number of uses of
 %   \cs{bigstrut} within the rows being spanned.  Count 2 uses for each
 %   \cs{bigstrut}, 1 for each \cs{bigstrut}\oarg{x} where \meta{x} is
 %   either \texttt{t} or \texttt{b}.  The default is 0.
-% \item[\meta{width}] is the width to which the text is to be set, or
-%   \texttt{*} to indicate that the text argument's natural width is to
-%   be used.
+%   
+% \item[\meta{width}] is the width to which the text is to be set.
+% Special values are \texttt{*} to indicate that the text parameter's natural width is to
+%   be used, and \texttt{=} to indicate that the specified width of the column in
+%   which the \cs{multirow} entry is set should be used.
+%
+% \item[\meta{fixup}] is a length used for fine tuning: the text will be
+%   raised (or lowered, if \meta{fixup} is negative) by that length
+%   above (below) wherever it would otherwise have gone.
+%
 % \item[\meta{text}] is the actual text of the construct.  If the width
 %   was set explicitly, the text will be set in a \cs{parbox} of that
 %   width; you can use \bsbs{} to force linebreaks where you like.
@@ -152,12 +167,43 @@
 %   If the width was given as \texttt{*} the text will be set in LR
 %   mode.  If you want a multiline entry in this case you should use a
 %   \texttt{tabular} or \texttt{array} environment in the text
-%   parameter.
-% \item[\meta{fixup}] is a length used for fine tuning: the text will be
-%   raised (or lowered, if \meta{fixup} is negative) by that length
-%   above (below) wherever it would otherwise have gone.
+%   parameter. See for example the \environment{minitab} below.
+%
+% The width can also be given as \texttt{=} when the \cs{multirow} entry is given in a
+% column that has a defined width, for example in a \texttt{p\{\}} column, an
+% \texttt{X} column in \environment{tabularx} or a \texttt{L}, \texttt{C},
+% \texttt{R} or \texttt{J} column in a \environment{tabulary} environment.
+% The text will be set in a \cs{parbox} of that width.
+% If you give ``\texttt{=}'' in other situations, you will get strange
+% results (usually a too wide column).
 % \end{description}
-% For example (using both \Package{multirow} and \Package{bigstrut}):
+%
+% N.B. \cs{multirow} can be used in the \environment{tabular} environment and
+% most derivatives of it, for example \environment{tabularx},
+% \environment{tabulary}, \environment{supertabular},
+% \environment{xtab}, \environment{longtable}, \environment{tabu},
+% \environment{booktabs} and \environment{ctable}. For some of these you
+% have to pay special attention to certain cases, see below.
+%
+% \DescribeMacro{\multirowsetup}
+% Just before \meta{text} is expanded, the \cs{multirowsetup} macro is
+% expanded to set up any special environment.  Initially,
+% \cs{multirowsetup} contains just \cs{raggedright}.  It may be
+% redefined with \cs{renewcommand}.
+%
+% If you want to use both \cs{multirow} and \cs{multicolumn}
+% \index{multicolumn=\verb!*+\multicolumn+|usage}
+% on the same entry, you must put the \cs{multirow} inside the \cs{multicolumn}. The other way around will not work.
+% For example:
+% \begin{verbatim}
+%    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
+% \end{verbatim}
+%
+%\subsection{Examples}
+%\label{sec:examples}
+%
+% An example with both \Package{multirow} and \Package{bigstrut}):
+% 
 % \begin{quote}
 % \begin{verbatim}
 % \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
@@ -172,7 +218,8 @@
 %       & Column g2b \bigstrut\\\cline{2-2}
 %       & Column g2c \bigstrut\\
 % \hline
-% \multirow{4}[8]{1in}{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+% \multirow{4}[8]{1in}{Common g text, but a bit longer.} &
+%                                    Column g2a\bigstrut\\\cline{2-2}
 %       & Column g2b \bigstrut\\\cline{2-2}
 %       & Column g2c \bigstrut\\\cline{2-2}
 %       & Column g2d \bigstrut\\
@@ -198,7 +245,7 @@
 %       & Column g2b \bigstrut\\\cline{2-2}
 %       & Column g2c \bigstrut\\
 %     \hline
-%     \multirow{4}[8]{1in}{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%     \multirow{4}[8]{1in}{Common g text, but a bit longer.} & Column g2a\bigstrut\\\cline{2-2}
 %       & Column g2b \bigstrut\\\cline{2-2}
 %       & Column g2c \bigstrut\\\cline{2-2}
 %       & Column g2d \bigstrut\\
@@ -209,13 +256,13 @@
 %       & Column g2d \\
 %     \hline
 %   \end{tabular}
-%   \hspace{1cm}
+%   \quad
 %   \begin{tabular}{ll}
 %     \multirow{4}{*}{Normal case} & \\
 %       & \\
 %       & \\
 %       & \\
-%     \multirow{3}[6]*{With \cs{bigstrut}s and * as \meta{width}} & \bigstrut\\
+%     \multirow{3}[6]*{With \cs{bigstrut}s and \texttt{*} as \meta{width}} & \bigstrut\\
 %       & \bigstrut\\
 %       & \bigstrut\\
 %     \multirow{4}[8]{*}{With \cs{bigstrut}s and normal \meta{width}} & \bigstrut\\
@@ -229,36 +276,138 @@
 %   \end{tabular}
 %   
 % \end{quote}
+% \vspace{1ex}
+% An example with the ``\texttt{=}'' \meta{width} specifier in a
+% \environment{tabulary}:
 %
-% If you want to use both \cs{multirow} and \cs{multicolumn}
-% \index{multicolumn=\verb!*+\multicolumn+|usage}
-% on the same entry, you must put the \cs{multirow} inside the \cs{multicolumn}. The other way around will not work.
-% For example:
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
 % \begin{verbatim}
-%    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
+% \setlength{\extrarowheight}{2pt} 
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%      \multirow{2}{=}{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of 
+%      any kind, such as race, colour, sex, language, religion, 
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline  
+% \end{tabulary} 
 % \end{verbatim}
+% \end{quote}
 %
-% \DescribeMacro{\multirowsetup}
-% Just before \meta{text} is expanded, the \cs{multirowsetup} macro is
-% expanded to set up any special environment.  Initially,
-% \cs{multirowsetup} contains just \cs{raggedright}.  It may be
-% redefined with \cs{renewcommand}.
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \setlength{\extrarowheight}{2pt} 
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%      \multirow{2}{=}{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of 
+%      any kind, such as race, colour, sex, language, religion, 
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline  
+% \end{tabulary} 
+% \end{quote}
 %
+% A few observations about this example:
+% \begin{enumerate}
+% \item  The middle column is the \cs{multirow}. You would expect it to
+% be vertically centered, but it isn't. This is because \cs{multirow}
+% doesn't know the height of the box. The only estimate \cs{multirow}
+% can make about the height is the number of rows${}\times{}$the normal
+% height of a row. It tries to center the text in that space, but that
+% is too low in this example. Therefore the text is at the top of the
+% box. If you want it to be centered, you have to supply a \meta{fixup}
+% parameter to shift it down.
+% \item We have used an \cs{extrarowheight}\footnote{This is only
+% available with the \Package{array} package, which \Package{tabulary}
+% includes automatically.} of 2pt, to make a bit room between the
+% \cs{hline} and the following text. However, this is not applied to the
+% \cs{multirow}, because this is thought to be centered. In this case
+% you can give the \meta{vpos} parameter as \texttt{[t]}, in which case
+% \cs{multirow} will insert the \cs{extrarowheight} to align it with the
+% other rows.
+% \end{enumerate}
 % 
+% Now with a negative \meta{nrows}.
+%
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \begin{verbatim}
+% \setlength{\extrarowheight}{2pt} 
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%      \multirow{-2}{=}[12mm]{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of 
+%      any kind, such as race, colour, sex, language, religion, 
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline  
+% \end{tabulary} 
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \setlength{\extrarowheight}{2pt} 
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%      \multirow{-2}{=}[12mm]{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of 
+%      any kind, such as race, colour, sex, language, religion, 
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline  
+% \end{tabulary} 
+% \end{quote}
+%
+% In this case the text would be centered somewhere in the
+% bottom row, which would make it stick out of the bottom. Therefore we
+% applied a \meta{fixup} of 12mm. The \meta{fixup} usually requires some experimentation.
+%
 % \subsection{Fine Tuning}
 % \label{sec:fine-tuning}
 %
 % If any of the spanned rows are unusually large, or if you're using the
 % \Package{bigstrut} package and \cs{bigstrut}s are used asymetrically about the
 % centerline of the spanned rows, the vertical centering may not come
-% out right.  Use the \meta{fixup} argument in this case.
+% out right.  Use the \meta{fixup} parameter in this case.
 %
 % It's just about impossible to deal correctly with descenders.  The
 % text will be set up centred, but it may then have a baseline that
 % doesn't match the baseline of the stuff beside it, in particular if
 % the stuff beside it has descenders and \meta{text} does not.  This may
 % result in a small misalignment.  About all that can be done is to do a
-% final touchup on \meta{text}, using the fixup optional argument.
+% final touchup on \meta{text}, using the fixup optional parameter.
 % (Hint:  If you use a measure like \texttt{.1ex}, there's a reasonable
 % chance that the fixup will still be correct if you change the point
 % size.)
@@ -267,14 +416,14 @@
 % opposed to \environment{array}, environments.  It will not work well in an
 % array environment since the lines have an extra \texttt{jot} of space
 % between them which it won't account for.  Fixing this is difficult in
-% general, and doesn't seem worth it.  The \meta{bigstruts} argument may
+% general, and doesn't seem worth it.  The \meta{bigstruts} parameter may
 % be used to provide a semi-automatic fix: First set \cs{bigstrutjot} to
 % \texttt{.5}\cs{jot}.  Then simply repeat \meta{nrows} as the bigstruts
-% argument.  This will be close, but probably not exact; you can use the
-% \meta{fixup} argument to refine the result.  (If you do this repeatedly,
+% parameter.  This will be close, but probably not exact; you can use the
+% \meta{fixup} parameter to refine the result.  (If you do this repeatedly,
 % you'll probably want to wrap these steps up in a simple macro.  Note
 % that the modified \cs{bigstrutjot} value will not give reasonable
-% results if you have bigstruts and use this argument for its intended
+% results if you have bigstruts and use this parameter for its intended
 % purpose elsewhere.  In that case, you might want to set it locally.)
 %
 % If you use \cs{multirow} with the \Package{colortbl} package you have
@@ -327,7 +476,7 @@
 % \cs{bigstrut} if there are \cs{hline}s both before and after.
 %
 % Spaces after the \cs{bigstrut} are ignored, even if it has an optional
-% argument.  Spaces before the \cs{bigstrut} are generally ignored (by a
+% parameter.  Spaces before the \cs{bigstrut} are generally ignored (by a
 % single \cs{unskip}).
 %
 % \DescribeMacro{\bigstrutjot}
@@ -395,7 +544,7 @@
 % \Package{multirow} package, the \meta{width} may be given as
 % \texttt{*}, but that may cause the delimiters to be too small. Compare for example these:
 % \begin{quote}
-% \begin{minipage}{0.5\linewidth}
+% \begin{minipage}{0.6\linewidth}
 % \begin{verbatim}
 % \begin{tabular}{p{2em}l} 
 %   \ldelim\{{3}{*}[type] & dvi \\
@@ -413,7 +562,7 @@
 %    \\[2ex]
 % \end{minipage}
 %
-% \begin{minipage}{0.5\linewidth}
+% \begin{minipage}{0.6\linewidth}
 % \begin{verbatim}
 % \begin{tabular}{ll}                     
 %    \ldelim\{{3}{*}[type] & dvi \\        
@@ -431,7 +580,9 @@
 %   \\[2ex]
 % \end{minipage}
 % \end{quote}
-% (In the first example we cheated: by using a column width that is too small, we swallowed up some of the intercolumn space, at the cost of an ``Overfull \cs{hbox}'' message.)
+% (In the first example we cheated: by using a column width that is too
+% small, we swallowed up some of the intercolumn space, at the cost of
+% an ``Overfull \cs{hbox}'' message.) 
 %
 % Also the commands may be
 % used in the last row of the extension with a negative \meta{n}
@@ -489,13 +640,40 @@
 %    (\cs{leavevmode} added)}
 % \changes{multirow v1.4}{}{modified by Piet van Oostrum to check for the special case that
 %       the width is given as an *. In this case the natural
-%       width of the text argument will be used and the argument
+%       width of the text parameter will be used and the parameter
 %       is processed in LR-mode.}
 % \changes{multirow v1.5}{}{modified by Piet van Oostrum: Added a \texttt{\%} after \texttt{\cs{hbox}\{\#5\}\cs{vfill}}.\\
 %       Added \cs{strut}s around \#5 for better vertical positioning.
 %       Additional coding for negative value of \meta{nrows}.}
 % \changes{multirow v1.6}{2004/05/05}{modified by Piet van Oostrum: Replace a space by \cs{relax} after
 %       \texttt{\cs{advance}\cs{@tempdima}\#4}}
+%
+% \changes{v1.9}{2016/09/14}{Implement the ``\texttt{!=}'' option for \cs{multirow}'s \meta{width} parameter.}
+% \begin{macro}{\multirow@colwidth}
+% \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
+%    \begin{macrocode}
+\newlength{\multirow@colwidth}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\multirow@setcolwidth}
+% This macro calculates \cs{multirow@colwidth} for an entry that has the
+% \meta{width} given as ``\texttt{=}''. We check if we are inside a
+% \environment{tabulary} environment, by checking if \cs{TY@final} is defined.
+% If not, then \cs{multirow@colwidth} = \cs{hsize}. The \environment{tabulary}
+% environment will make two passes. On the first pass, we set \cs{multirow@colwidth}
+% to the size that the text would have in LR mode (with newlines replaced
+% by spaces), so that \environment{tabulary} will gives us enough space.
+% On the second pass (characterized by \cs{TY@box} = \cs{TY@box@v}) we use
+% the value that \environment{tabulary} has given us in \cs{hsize}.
+%
+% The algorithm is not perfect, but in most cases good enough.
+%    \begin{macrocode}
+\def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
+    \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
+    \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\multirowsetup}
 % \cs{multirowsetup} is executed at the beginning of each \cs{multirow}.
@@ -507,7 +685,7 @@
 % \begin{macro}{\multirow}
 % Make an entry that will span multiple rows of a table.\\
 % First collect all the parameters and replace missing optional parameters by their default values.
-% \changes{v1.8}{2016/09/14}{Add the optional first argument \meta{vpos}.}
+% \changes{v1.8}{2016/09/14}{Add the optional first parameter \meta{vpos}.}
 %    \begin{macrocode}
 \def\multirowsetup{\raggedright}
 \def\multirow{\relax\@ifnextchar[{\@multirow}{\@multirow[c]}}
@@ -525,20 +703,26 @@
 %    \end{macrocode}
 %  The text is set in a \cs{vbox}. Depending on the \meta{vpos}
 % paramter, it will be top-aligned, vertically centered, or bottom-aligned. This is done by inserting \cs{vfill}
-% in the proper places.
-% 
+% in the proper places.\\
 % If the \meta{width} parameter is \texttt{*} set just the text in the \cs{vbox}.
 %    \begin{macrocode}
   \if*#4\setbox0\vtop to \@tempdima{\if #1t\relax\else\vfill\fi \multirowsetup
     \hbox{\strut#6\strut}\if #1b\relax\vskip0pt\else\vfill\fi}%
-  \else
 %    \end{macrocode}
 % Otherwise set it in a \cs{parbox} inside a \cs{vbox}.
+% If the \meta{width} parameter is given as ``\texttt{=}'', we calculate \cs{multirow@colwidth} and use that as width of the \cs{parbox}.
+%    \begin{macrocode}
+  \else \if=#4\multirow@setcolwidth{#6}%
+    \setbox0\vtop to \@tempdima{\hsize\multirow@colwidth\@parboxrestore
+    \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par \if #1b\relax\vskip0pt\else\vfill\fi}%
+  \else 
+%    \end{macrocode}
+% Otherwise the given parameter is used as the width of the \cs{parbox}.
 %    \begin{macrocode}
     \setbox0\vtop to \@tempdima{\hsize#4\@parboxrestore
         \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par
         \if #1b\relax\vskip0pt\else\vfill\fi}%
-  \fi
+  \fi \fi
 %    \end{macrocode}
 % Now position the \cs{vbox} properly
 %    \begin{macrocode}
@@ -576,7 +760,7 @@
 % \end{macro}
 %
 % \begin{macro}{\bigstrut}
-% This macro inserts a strut. Depending on the % optional argument it extends
+% This macro inserts a strut. Depending on the optional parameter it extends
 % above and/or below the standard array/tabular strut.
 %    \begin{macrocode}
 \def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}

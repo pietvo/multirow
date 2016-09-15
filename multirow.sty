@@ -23,8 +23,12 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/09/14 v1.8
+           [2016/09/15 v1.9
                   Span multiple rows of a table]%
+\newlength{\multirow@colwidth}
+\def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
+    \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
+    \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
 \def\multirowsetup{\raggedright}
 \def\multirowsetup{\raggedright}
 \def\multirow{\relax\@ifnextchar[{\@multirow}{\@multirow[c]}}
@@ -38,11 +42,14 @@
   \advance\@tempdima#3\bigstrutjot
   \if*#4\setbox0\vtop to \@tempdima{\if #1t\relax\else\vfill\fi \multirowsetup
     \hbox{\strut#6\strut}\if #1b\relax\vskip0pt\else\vfill\fi}%
+  \else \if=#4\multirow@setcolwidth{#6}%
+    \setbox0\vtop to \@tempdima{\hsize\multirow@colwidth\@parboxrestore
+    \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par \if #1b\relax\vskip0pt\else\vfill\fi}%
   \else
     \setbox0\vtop to \@tempdima{\hsize#4\@parboxrestore
         \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par
         \if #1b\relax\vskip0pt\else\vfill\fi}%
-  \fi
+  \fi \fi
   \ht0\z@\dp0\z@
   \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
   \else\@tempdima=\ht\@arstrutbox
