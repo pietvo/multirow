@@ -27,7 +27,7 @@
                   Provide larger struts in tabulars]
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot}{}\bigstrutjot=2pt
 \def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}
-\def\@bigstrut[#1]{\unskip\@tempdima\ht\@arstrutbox \@tempdimb\dp\@arstrutbox
+\def\@bigstrut[#1]{\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
   \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
   \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
   \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}

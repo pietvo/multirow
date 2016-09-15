@@ -26,11 +26,14 @@
            [2016/09/15 v1.9
                   Span multiple rows of a table]%
 \newlength{\multirow@colwidth}
+\newcount\multirow@cnta
+\newcount\multirow@cntb
+\newlength\multirow@dima
 \def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
     \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
     \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
 \def\multirowsetup{\raggedright}
-\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \@tempdima{#2%
+\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
     \if #1t\relax\ifx\extrarowheight\@undefined\else\vskip\extrarowheight\fi\else\vfill\fi
     \multirowsetup #3\if #1b\relax\vskip0pt\else\vfill\fi}}
 \def\multirowsetup{\raggedright}
@@ -38,22 +41,22 @@
 \def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
 \def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%
                                 {\@xmultirow[#1]{#2}[#3]{#4}[0pt]}}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{\@tempcnta=#2%
-  \@tempdima\@tempcnta\ht\@arstrutbox
-  \advance\@tempdima\@tempcnta\dp\@arstrutbox
-  \ifnum\@tempcnta<0\@tempdima=-\@tempdima\fi
-  \advance\@tempdima#3\bigstrutjot
+\def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
+  \multirow@dima\multirow@cnta\ht\@arstrutbox
+  \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
+  \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
+  \advance\multirow@dima#3\bigstrutjot
   \if*#4\multirow@vbox{#1}{}{\hbox{\strut#6\strut}}%
   \else \if=#4\multirow@setcolwidth{#6}%
     \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
   \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
   \ht0\z@\dp0\z@
-  \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
-  \else\@tempdima=\ht\@arstrutbox
-     \ifnum#3>0 \advance\@tempdima\bigstrutjot \fi
+  \ifnum\multirow@cnta<0\advance\multirow@dima-\dp\@arstrutbox
+  \else\multirow@dima=\ht\@arstrutbox
+     \ifnum#3>0 \advance\multirow@dima\bigstrutjot \fi
   \fi
-  \advance\@tempdima#5\relax\leavevmode\vtop{\vskip-\@tempdima\box0\vss}}
+  \advance\multirow@dima#5\relax\leavevmode\vtop{\vskip-\multirow@dima\box0\vss}}
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
 \endinput
 %%

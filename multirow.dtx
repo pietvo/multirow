@@ -116,6 +116,7 @@
 % \item \cs{multirow} now has an first optional parameter \oarg{vpos}.
 % \item The \meta{width} parameter can be specified as \texttt{=} to use
 % the defined width of the column in which the \cs{multirow} appears.
+% \item Better positioning in some cases.
 % \item More examples.
 % \item The distribution is now based on a \texttt{.dtx} file.
 % \end{itemize}
@@ -245,7 +246,8 @@
 %       & Column g2b \bigstrut\\\cline{2-2}
 %       & Column g2c \bigstrut\\
 %     \hline
-%     \multirow{4}[8]{1in}{Common g text, but a bit longer.} & Column g2a\bigstrut\\\cline{2-2}
+%     \multirow{4}[8]{1in}{Common g text, but a bit longer.} &
+%                                        Column g2a\bigstrut\\\cline{2-2}
 %       & Column g2b \bigstrut\\\cline{2-2}
 %       & Column g2c \bigstrut\\\cline{2-2}
 %       & Column g2d \bigstrut\\
@@ -539,50 +541,53 @@
 % \end{quote}
 %
 % When \cs{ldelim} is used, the optional \meta{text} is set centred to the left of \cs{ldelim}. 
-% If \cs{rdelim} is used it is set to the right of \cs{rdelim}.  The \meta{width} is that reserved for
+% If \cs{rdelim} is used it is set to the right of \cs{rdelim}.  The
+% \meta{width} parameter is the space that is reserved for
 % the delimiter and its text; as with the
 % \Package{multirow} package, the \meta{width} may be given as
-% \texttt{*}, but that may cause the delimiters to be too small. Compare for example these:
+% \texttt{*}. Compare for example these:
 % \begin{quote}
 % \begin{minipage}{0.6\linewidth}
 % \begin{verbatim}
-% \begin{tabular}{p{2em}l} 
+% \begin{tabular}{p{2em}l}
 %   \ldelim\{{3}{*}[type] & dvi \\
-%                        & ps \\
-%                        & pdf \\
+%                         & ps \\
+%                         & pdf \\
 % \end{tabular}
 % \end{verbatim}
 % \end{minipage}
 % \begin{minipage}{0.35\linewidth}
 % \begin{tabular}{p{2em}l}
-%       \ldelim\{{3}{*}[type] & dvi \\
-%                           & ps \\
-%                           & pdf \\
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                             & ps \\
+%                             & pdf \\
 %    \end{tabular}
 %    \\[2ex]
 % \end{minipage}
 %
 % \begin{minipage}{0.6\linewidth}
 % \begin{verbatim}
-% \begin{tabular}{ll}                     
-%    \ldelim\{{3}{*}[type] & dvi \\        
-%                        & ps \\          
-%                        & pdf \\         
+% \begin{tabular}{l@{\,}l}
+%   \ldelim\{{3}{*}[type] & dvi \\        
+%                         & ps \\          
+%                         & pdf \\         
 % \end{tabular}                           
 % \end{verbatim}
 % \end{minipage}
 % \begin{minipage}{0.35\linewidth}
-%   \begin{tabular}{ll}
-%     \ldelim\{{3}{*}[type] & dvi \\
-%                        & ps \\
-%                        & pdf \\
+%   \begin{tabular}{l@{\,}l}
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                          & ps \\
+%                          & pdf \\
 %   \end{tabular}
 %   \\[2ex]
 % \end{minipage}
 % \end{quote}
-% (In the first example we cheated: by using a column width that is too
+% In the first example we cheated: by using a column width that is too
 % small, we swallowed up some of the intercolumn space, at the cost of
-% an ``Overfull \cs{hbox}'' message.) 
+% an ``Overfull \cs{hbox}'' message. In the second example we did it the
+% proper way by inserting \verb+@{\,}+ to replace the default
+% intercolumn space with a narrow space. 
 %
 % Also the commands may be
 % used in the last row of the extension with a negative \meta{n}
@@ -646,9 +651,9 @@
 %       Added \cs{strut}s around \#5 for better vertical positioning.
 %       Additional coding for negative value of \meta{nrows}.}
 % \changes{multirow v1.6}{2004/05/05}{modified by Piet van Oostrum: Replace a space by \cs{relax} after
-%       \texttt{\cs{advance}\cs{@tempdima}\#4}}
+%       \texttt{\cs{advance}\cs{multirow@dima}\#4}}
 %
-% \changes{v1.9}{2016/09/14}{Implement the ``\texttt{!=}'' option for \cs{multirow}'s \meta{width} parameter.}
+% \changes{v1.9}{2016/09/15}{Implement the ``\texttt{!=}'' option for \cs{multirow}'s \meta{width} parameter.}
 % \begin{macro}{\multirow@colwidth}
 % \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
 %    \begin{macrocode}
@@ -656,6 +661,20 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \changes{v1.9}{2016/09/15}{Give \Package{multirow} its own temp
+% registers, so that we can safely pass the box height to \Package{bigdelim}.}
+%\begin{macro}{\multirow@cnta}
+% \begin{macro}{\multirow@cntb}
+% \begin{macro}{\multirow@dima}
+%   Define two counters and a length for internal use in \cs{multirow}.
+%    \begin{macrocode}
+\newcount\multirow@cnta 
+\newcount\multirow@cntb
+\newlength\multirow@dima
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
 % \begin{macro}{\multirow@setcolwidth}
 % This macro calculates \cs{multirow@colwidth} for an entry that has the
 % \meta{width} given as ``\texttt{=}''. We check if we are inside a
@@ -692,7 +711,7 @@
 % If  \meta{vpos} = \texttt{[t]} and \cs{extrarowheight} is present, add that to the top.\\
 % Note: the \cs{relax} is to protect against an empty \meta{vpos}
 % parameter. \begin{macrocode}
-\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \@tempdima{#2%
+\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
     \if #1t\relax\ifx\extrarowheight\@undefined\else\vskip\extrarowheight\fi\else\vfill\fi
     \multirowsetup #3\if #1b\relax\vskip0pt\else\vfill\fi}}
 %    \end{macrocode}
@@ -711,11 +730,11 @@
 %    \end{macrocode}
 % This is the real workhorse. It starts with calculating the height of the multirow box.
 %    \begin{macrocode}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{\@tempcnta=#2%
-  \@tempdima\@tempcnta\ht\@arstrutbox
-  \advance\@tempdima\@tempcnta\dp\@arstrutbox
-  \ifnum\@tempcnta<0\@tempdima=-\@tempdima\fi
-  \advance\@tempdima#3\bigstrutjot
+\def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
+  \multirow@dima\multirow@cnta\ht\@arstrutbox
+  \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
+  \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
+  \advance\multirow@dima#3\bigstrutjot
 %    \end{macrocode}
 %  The text is set in a \cs{vbox} by calling \cs{multirow@vbox}. \\
 % If the \meta{width} parameter is \texttt{*} set just the text in the \cs{vbox}.
@@ -737,11 +756,11 @@
 % Now position the \cs{vbox} properly.
 %    \begin{macrocode}
   \ht0\z@\dp0\z@
-  \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
-  \else\@tempdima=\ht\@arstrutbox
-     \ifnum#3>0 \advance\@tempdima\bigstrutjot \fi
+  \ifnum\multirow@cnta<0\advance\multirow@dima-\dp\@arstrutbox
+  \else\multirow@dima=\ht\@arstrutbox
+     \ifnum#3>0 \advance\multirow@dima\bigstrutjot \fi
   \fi
-  \advance\@tempdima#5\relax\leavevmode\vtop{\vskip-\@tempdima\box0\vss}}
+  \advance\multirow@dima#5\relax\leavevmode\vtop{\vskip-\multirow@dima\box0\vss}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\bigstrutjot}
@@ -774,7 +793,7 @@
 % above and/or below the standard array/tabular strut.
 %    \begin{macrocode}
 \def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}
-\def\@bigstrut[#1]{\unskip\@tempdima\ht\@arstrutbox \@tempdimb\dp\@arstrutbox
+\def\@bigstrut[#1]{\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
   \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
   \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
   \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}
@@ -792,32 +811,33 @@
 % \fi
 % \changes{bigdelim v0.0}{1994/10/02}{bigbrace.sty by \O ystein Bache}
 % \changes{bigdelim v1.0}{1999/11/05}{Initial version bigdelim.sty}
+%    \begin{macrocode}
+\RequirePackage{multirow}
+%    \end{macrocode}
 % \begin{macro}{\ldelim}
 % This macro typesets a left delimiter. It calls \cs{multirow} with the proper parameters.
 % The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
-% zero width next to it.
+% zero width next to it. The height is the one that \cs{multirow}
+% already has calculated in \cs{multirow@dima}.
 %    \begin{macrocode}
 \def\ldelim#1#2#3{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
  {\multirow{#2}{#3}{%
    \ensuremath
-     {\left.\vcenter{\hsize=0pt\vrule height 
-           \ifnum #2<0 -\fi#2\baselineskip width 0pt}%
+     {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
      \textrm{#4}\right#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
 % \begin{macro}{\rdelim}
-% This macro typesets a right delimiter. It calls \cs{multirow} with the proper parameters.
-% The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
-% zero width next to it.
+% This macro typesets a right delimiter. It calls \cs{multirow} with the
+% proper parameters, similar to \cs{ldelim}.
 %    \begin{macrocode}
 \def\rdelim#1#2#3{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
 \def\@rdelim#1#2#3[#4]%
  {\multirow{#2}{#3}{%
    \ensuremath
-     {\left#1\vcenter{\hsize=0pt\vrule height 
-           \ifnum #2<0 -\fi#2\baselineskip width 0pt}%
+     {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
        \textrm{#4}\right.}}}
 %    \end{macrocode}
 % \end{macro}
