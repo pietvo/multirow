@@ -680,7 +680,23 @@
 %    \begin{macrocode}
 \def\multirowsetup{\raggedright} 
 %    \end{macrocode}
-%\end{macro}
+% \end{macro}
+%
+% \begin{macro}{\multirow@vbox}
+% This creates the \cs{vbox}. Parameters:\\
+% \texttt{\#1} = \meta{vpos}, \texttt{\#2} = initialization code (for
+% example to set the width of the \cs{parbox}), \texttt{\#3} = box contents.\\
+% Depending on the \meta{vpos} parameter, it will be top-aligned,
+% vertically centered, or bottom-aligned. This is done by inserting
+% \cs{vfill} in the proper places.\\
+% If  \meta{vpos} = \texttt{[t]} and \cs{extrarowheight} is present, add that to the top.\\
+% Note: the \cs{relax} is to protect against an empty \meta{vpos}
+% parameter. \begin{macrocode}
+\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \@tempdima{#2%
+    \if #1t\relax\ifx\extrarowheight\@undefined\else\vskip\extrarowheight\fi\else\vfill\fi
+    \multirowsetup #3\if #1b\relax\vskip0pt\else\vfill\fi}}
+%    \end{macrocode}
+% \end{macro}
 %
 % \begin{macro}{\multirow}
 % Make an entry that will span multiple rows of a table.\\
@@ -701,30 +717,24 @@
   \ifnum\@tempcnta<0\@tempdima=-\@tempdima\fi
   \advance\@tempdima#3\bigstrutjot
 %    \end{macrocode}
-%  The text is set in a \cs{vbox}. Depending on the \meta{vpos}
-% paramter, it will be top-aligned, vertically centered, or bottom-aligned. This is done by inserting \cs{vfill}
-% in the proper places.\\
+%  The text is set in a \cs{vbox} by calling \cs{multirow@vbox}. \\
 % If the \meta{width} parameter is \texttt{*} set just the text in the \cs{vbox}.
 %    \begin{macrocode}
-  \if*#4\setbox0\vtop to \@tempdima{\if #1t\relax\else\vfill\fi \multirowsetup
-    \hbox{\strut#6\strut}\if #1b\relax\vskip0pt\else\vfill\fi}%
+  \if*#4\multirow@vbox{#1}{}{\hbox{\strut#6\strut}}%
 %    \end{macrocode}
-% Otherwise set it in a \cs{parbox} inside a \cs{vbox}.
-% If the \meta{width} parameter is given as ``\texttt{=}'', we calculate \cs{multirow@colwidth} and use that as width of the \cs{parbox}.
+% Otherwise set it in a \cs{parbox} inside a \cs{vbox}. \\
+% If the \meta{width} parameter is given as ``\texttt{=}'', we calculate
+% \cs{multirow@colwidth} and use that as width of the \cs{parbox}.
 %    \begin{macrocode}
   \else \if=#4\multirow@setcolwidth{#6}%
-    \setbox0\vtop to \@tempdima{\hsize\multirow@colwidth\@parboxrestore
-    \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par \if #1b\relax\vskip0pt\else\vfill\fi}%
-  \else 
+    \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
 %    \end{macrocode}
 % Otherwise the given parameter is used as the width of the \cs{parbox}.
 %    \begin{macrocode}
-    \setbox0\vtop to \@tempdima{\hsize#4\@parboxrestore
-        \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par
-        \if #1b\relax\vskip0pt\else\vfill\fi}%
+  \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
 %    \end{macrocode}
-% Now position the \cs{vbox} properly
+% Now position the \cs{vbox} properly.
 %    \begin{macrocode}
   \ht0\z@\dp0\z@
   \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
@@ -765,8 +775,8 @@
 %    \begin{macrocode}
 \def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}
 \def\@bigstrut[#1]{\unskip\@tempdima\ht\@arstrutbox \@tempdimb\dp\@arstrutbox
-  \ifx #1b\else \advance\@tempdima by \bigstrutjot\fi
-  \ifx #1t\else \advance\@tempdimb by \bigstrutjot\fi
+  \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
+  \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
   \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}
 %    \end{macrocode}
 % \end{macro}

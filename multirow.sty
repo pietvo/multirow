@@ -30,6 +30,9 @@
     \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
     \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
 \def\multirowsetup{\raggedright}
+\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \@tempdima{#2%
+    \if #1t\relax\ifx\extrarowheight\@undefined\else\vskip\extrarowheight\fi\else\vfill\fi
+    \multirowsetup #3\if #1b\relax\vskip0pt\else\vfill\fi}}
 \def\multirowsetup{\raggedright}
 \def\multirow{\relax\@ifnextchar[{\@multirow}{\@multirow[c]}}
 \def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
@@ -40,15 +43,10 @@
   \advance\@tempdima\@tempcnta\dp\@arstrutbox
   \ifnum\@tempcnta<0\@tempdima=-\@tempdima\fi
   \advance\@tempdima#3\bigstrutjot
-  \if*#4\setbox0\vtop to \@tempdima{\if #1t\relax\else\vfill\fi \multirowsetup
-    \hbox{\strut#6\strut}\if #1b\relax\vskip0pt\else\vfill\fi}%
+  \if*#4\multirow@vbox{#1}{}{\hbox{\strut#6\strut}}%
   \else \if=#4\multirow@setcolwidth{#6}%
-    \setbox0\vtop to \@tempdima{\hsize\multirow@colwidth\@parboxrestore
-    \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par \if #1b\relax\vskip0pt\else\vfill\fi}%
-  \else
-    \setbox0\vtop to \@tempdima{\hsize#4\@parboxrestore
-        \if #1t\relax\else\vfill\fi \multirowsetup \strut#6\strut\par
-        \if #1b\relax\vskip0pt\else\vfill\fi}%
+    \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
+  \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
   \ht0\z@\dp0\z@
   \ifnum\@tempcnta<0\advance\@tempdima-\dp\@arstrutbox
