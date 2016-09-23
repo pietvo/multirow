@@ -57,7 +57,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{0}
+% \CheckSum{326}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -117,7 +117,7 @@
 % \item The \meta{width} parameter can be specified as \texttt{=} to use
 % the defined width of the column in which the \cs{multirow} appears.
 % \item Optional prefix letters (\texttt{t}, \texttt{b}, \texttt{x}) for
-% the \meta{bigstruts} parameter (see section \ref{xxx}).
+% the \meta{bigstruts} parameter (see section \ref{sect-refine-bigstrut}).
 % \item Package option \texttt{debug}.
 % \item Better positioning in some cases.
 % \item More examples.
@@ -154,6 +154,11 @@
 %   \cs{bigstrut} within the rows being spanned.  Count 2 uses for each
 %   \cs{bigstrut}, 1 for each \cs{bigstrut}\oarg{x} where \meta{x} is
 %   either \texttt{t} or \texttt{b}.  The default is 0.
+%
+% The \meta{bigstruts} parameter can optionally be preceded by a prefix
+% letter \texttt{t}, \texttt{b} or \texttt{x} for finer control. See
+% section \ref{sect-refine-bigstrut} for details. The letter may be
+% separated from the number by a space character.
 %   
 % \item[\meta{width}] is the width to which the text is to be set.
 % Special values are \texttt{*} to indicate that the text parameter's natural width is to
@@ -203,7 +208,6 @@
 %    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
 % \end{verbatim}
 %
-% 
 % \subsection{Package Options}
 % \label{sec:package-options}
 %
@@ -471,6 +475,117 @@
 %   \end{tabular}
 % \end{quote}
 %
+% 
+% \subsection{Fine tuning the \meta{bigstruts} parameter}
+% \label{sect-refine-bigstrut}
+%
+% \cs{multirow} can calculate the height of the required multirow box
+% from \meta{nrows} and \meta{bigstruts}, supposed that all the rows
+% don't have  ``unusual heights. However, there are cases when this is
+% not enough to properly position the box, especially when there is a
+% \cs{bigstrut} on top of the first row and/or one on the bottom of the
+% last row. In that case \cs{multirow} should be given additional
+% information. This is done by prefixing the \meta{bigstruts} parameter
+% with a letter indicating which of these two are present. 
+%
+% See the following examples:\\ (in these examples we have
+% \verb+\setlength{\bigstrutjot}{10pt}+ to make the effect clearly visible)\\[5mm]
+% \begin{minipage}[c]{0.23\linewidth}
+%   \setlength{\bigstrutjot}{10pt} 
+%   \begin{tabular}{|c|c|}
+%     \hline 
+%     \multirow{3}[1]{*}{Multirow} & T \bigstrut[t] \\
+%     \cline{2-2} 
+%     &  X \\
+%     \cline{2-2} 
+%     &  B \\
+%     \hline
+%   \end{tabular} \\[2mm]
+%   \begin{tabular}{|c|c|}
+%     \hline 
+%     \multirow{3}[t 1]{*}{Multirow} & T \bigstrut[t] \\
+%     \cline{2-2} 
+%     &  X \\
+%     \cline{2-2} 
+%     &  B \\
+%     \hline
+%   \end{tabular}
+% \end{minipage}
+% \begin{minipage}[c]{0.75\linewidth}
+% \begin{verbatim}
+%   \begin{tabular}{|c|c|}
+%     \hline 
+%     \multirow{3}[1]{*}{Multirow} & T \bigstrut[t] \\
+%     \cline{2-2} 
+%     &  X \\
+%     \cline{2-2} 
+%     &  B \\
+%     \hline
+%   \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \\[5mm]
+% In the top box in the above example the text ``Multirow'' should be centered, but it
+% is a bit below the center, because of the \cs{bigstrut[t]} in the top
+% row. We can correct this by giving the \meta{bigstruts} parameter as
+% ``t 1'', indicating a bigstrut in the top. This is done in the bottom box, where
+% \verb+\multirow{3}[t 1]{*}{Multirow}+ is used.
+%
+% A second example:\\[5mm]
+% \begin{minipage}{0.23\linewidth}
+%   \setlength{\bigstrutjot}{10pt} 
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     & T \\
+%     \cline{2-2} 
+%     &  X \\
+%     \cline{2-2} 
+%     \multirow[t]{-3}[1]{*}{Multirow} &  B \bigstrut[b] \\
+%     \hline
+%   \end{tabular} \\[2mm]
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     & T \\
+%     \cline{2-2} 
+%     &  X \\
+%     \cline{2-2} 
+%     \multirow[t]{-3}[b 1]{*}{Multirow} &  B \bigstrut[b] \\
+%     \hline
+%   \end{tabular}
+% \end{minipage}
+% \begin{minipage}{0.75\linewidth}
+% \begin{verbatim}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     & T \\
+%     \cline{2-2} 
+%     &  X \\
+%     \cline{2-2} 
+%     \multirow[t]{-3}[1]{*}{Multirow} &  B \bigstrut[b] \\
+%     \hline
+%   \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \\[5mm]
+% In the top box the \verb+\multirow[t]+ should be positioned on the
+% same height as the \texttt{T}, but it is too high, because there is a
+% \cs{bigstrut} in the bottom. We can correct that by specifying the
+% \meta{bigstruts} parameter as ``b 1'', i.e. using
+% \verb+\multirow[t]{-3}[b 1]{*}{Multirow}+.
+% \\[5mm]
+% The possibilities for the prefix are:
+% \begin{description}
+% \item[\texttt{t}] There is a bigstrut in the top, i.e. a \cs{bigstrut}
+% or \cs{bigstrut[t]} in the top row.
+% \item[\texttt{b}] There is a bigstrut in the bottom, i.e. a \cs{bigstrut}
+% or \cs{bigstrut[b]} in the bottom row.
+% \item[\texttt{x}] They are both present.
+% \end{description}
+% The space between the letter and the number is optional.
+% Please note that the prefix does not depend on whether the
+% \cs{multirow} is in the top or the bottom row.
+% 
+
 % \section{Using \Package{bigstrut}}
 %
 % \DescribeMacro{\bigstrut}
@@ -503,7 +618,6 @@
 % is used, \cs{bigstrutjot} will be set to \texttt{3pt}. 
 % If \Package{bigstrut} is used, with or without \Package{multirow},
 % \cs{bigstrutjot} will be \texttt{2pt}.
-%
 %
 % \section{Using \Package{bigdelim}}
 %
@@ -805,7 +919,7 @@
 %    \end{macrocode}
 % Now position the \cs{vbox} properly. More details are given in the
 % appendix. We set the depth of the \cs{vbox}
-% to 0, so that it will not influence the height of the current row.
+% to 0, so that it will not influence the depth of the current row.
 %    \begin{macrocode}
   \dp0=\z@
 %    \end{macrocode}

@@ -25,6 +25,7 @@
 \ProvidesPackage{bigdelim}
            [2016/09/23 v1.9a
                   Create big delimiters in tabular or array]
+
 \RequirePackage{multirow}
 \newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
