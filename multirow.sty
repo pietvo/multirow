@@ -18,13 +18,16 @@
 %% and version 1.3 or later is part of all distributions of LaTeX version
 %% 2005/12/01 or later.
 %% 
-%% Copyright (C) 1994 by Jerry Leichter <jerrold.leichter@smarts.com>
+%% Copyright (C) 1994 by Jerry Leichter
 %% Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/09/15 v1.9
+           [2016/09/23 v1.9a
                   Span multiple rows of a table]%
+\newif\ifmultirowdebug
+\DeclareOption{debug}{\multirowdebugtrue}
+\ProcessOptions
 \newlength{\multirow@colwidth}
 \newcount\multirow@cnta
 \newcount\multirow@cntb
@@ -32,31 +35,60 @@
 \def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
     \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
     \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
-\def\multirowsetup{\raggedright}
+\newcommand\multirowsetup{\raggedright}
 \long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
-    \if #1t\relax\ifx\extrarowheight\@undefined\else\vskip\extrarowheight\fi\else\vfill\fi
-    \multirowsetup #3\if #1b\relax\vskip0pt\else\vfill\fi}}
-\def\multirowsetup{\raggedright}
-\def\multirow{\relax\@ifnextchar[{\@multirow}{\@multirow[c]}}
+    \if #1t\relax\else\vfill\fi
+    \multirowsetup #3\if #1b\relax\else\vfill\fi}}
+%% \multirow [vpos] {nrows} [bigstruts] {width} [fixup] {text}
+\newcommand\multirow[2][c]{\@multirow[#1]{#2}}
 \def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
 \def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%
                                 {\@xmultirow[#1]{#2}[#3]{#4}[0pt]}}
+\def\multirow@piii#1{%
+   \multirow@cntb=\if b#1\def\multirow@prefixiii{b}%
+              \else\if t#1\def\multirow@prefixiii{t}%
+              \else\if x#1\def\multirow@prefixiii{x}%
+              \else #1\def\multirow@prefixiii{z}\fi\fi\fi}
 \def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
+  \multirow@piii{#3}%
   \multirow@dima\multirow@cnta\ht\@arstrutbox
   \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
   \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
-  \advance\multirow@dima#3\bigstrutjot
+  \advance\multirow@dima \multirow@cntb\bigstrutjot
   \if*#4\multirow@vbox{#1}{}{\hbox{\strut#6\strut}}%
   \else \if=#4\multirow@setcolwidth{#6}%
     \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
   \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
-  \ht0\z@\dp0\z@
-  \ifnum\multirow@cnta<0\advance\multirow@dima-\dp\@arstrutbox
-  \else\multirow@dima=\ht\@arstrutbox
-     \ifnum#3>0 \advance\multirow@dima\bigstrutjot \fi
+  \dp0=\z@
+  \ifnum\multirow@cnta>0
+    \if#1t\relax\multirow@dima=\ht0\else
+      \multirow@dima=\ht\@arstrutbox
+      \if t\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \if x\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \if#1b\relax \advance\multirow@dima\dp\@arstrutbox
+        \if b\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+        \if x\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \fi
+    \fi
+  \else
+    \if#1b\relax\else
+      \advance\multirow@dima-\dp\@arstrutbox
+      \if b\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+      \if x\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+      \if#1t\relax\advance\multirow@dima-\ht\@arstrutbox
+        \if t\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+        \if x\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+        \advance\multirow@dima\ht0
+      \fi
+    \fi
   \fi
-  \advance\multirow@dima#5\relax\leavevmode\vtop{\vskip-\multirow@dima\box0\vss}}
+  \advance\multirow@dima#5\relax
+  \leavevmode
+  \ifmultirowdebug\setbox0\vtop{\vskip-\multirow@dima\box0\vss}%
+    {\showboxdepth=5 \showboxbreadth=10 \showbox0}\box0
+  \else\vtop{\vskip-\multirow@dima\box0\vss}\fi
+}
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
 \endinput
 %%

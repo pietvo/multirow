@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Parts of this file, Copyright (C) 1994 by Jerry Leichter <jerrold.leichter@smarts.com>
+% Parts of this file, Copyright (C) 1994 by Jerry Leichter
 % Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
 % -------------------------------------------------------
 % 
@@ -22,8 +22,8 @@
 %</driver>
 % This is the variable part of the preamble
 % 
-%<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter <jerrold.leichter@smarts.com>
-%<bigdelim>%% Copyright (C) 1994 by \Oystein Bache <bache@kjemi.unit.no>
+%<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter
+%<bigdelim>%% Copyright (C) 1994 by \O ystein Bache
 %% Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
 %%
 %
@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/15 v1.9
+%<multirow|bigstrut|bigdelim>           [2016/09/23 v1.9a
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -88,7 +88,7 @@
 %   \Package{bigstrut} and
 %   \Package{bigdelim} packages}
 % \author{Piet van Oostrum\thanks{catalogued ``active author''}\\
-%   \O{}ystein Bache\\
+%   \O ystein Bache\\
 %   Jerry Leichter\thanks{Documentation originally put together by Robin
 %     Fairbairns}}
 %
@@ -116,6 +116,9 @@
 % \item \cs{multirow} now has an first optional parameter \oarg{vpos}.
 % \item The \meta{width} parameter can be specified as \texttt{=} to use
 % the defined width of the column in which the \cs{multirow} appears.
+% \item Optional prefix letters (\texttt{t}, \texttt{b}, \texttt{x}) for
+% the \meta{bigstruts} parameter (see section \ref{xxx}).
+% \item Package option \texttt{debug}.
 % \item Better positioning in some cases.
 % \item More examples.
 % \item The distribution is now based on a \texttt{.dtx} file.
@@ -166,7 +169,7 @@
 %   width; you can use \bsbs{} to force linebreaks where you like.
 %
 %   If the width was given as \texttt{*} the text will be set in LR
-%   mode.  If you want a multiline entry in this case you should use a
+%   mode.  If you want a multiline entry in this case you could use a
 %   \texttt{tabular} or \texttt{array} environment in the text
 %   parameter. See for example the \environment{minitab} below.
 %
@@ -199,6 +202,27 @@
 % \begin{verbatim}
 %    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
 % \end{verbatim}
+%
+% 
+% \subsection{Package Options}
+% \label{sec:package-options}
+%
+% \DescribeMacro{multirowdebugtrue}
+% \DescribeMacro{multirowdebugfalse}
+% The following options are defined:
+% \begin{description}
+% \item[debug] 
+% This option causes information about multirow boxes
+% to be written to the log file. This is done by the \TeX{} \cs{showbox}
+% command. Note: this will cause the \LaTeX{} compilation to be considered
+% failed, even if there is no real error.
+% This option can also be activated anywhere in the document with the
+% command \cs{multirowdebugtrue} and deactivated with
+% \cs{multirowdebugfalse}. When such a command is placed just before a
+% \cs{multirow}, it applies only to that specific \cs{multirow} entry.
+% \item[cline] 
+% The \texttt{cline} option.
+% \end{description}
 %
 %\subsection{Examples}
 %\label{sec:examples}
@@ -342,8 +366,7 @@
 % \cs{hline} and the following text. However, this is not applied to the
 % \cs{multirow}, because this is thought to be centered. In this case
 % you can give the \meta{vpos} parameter as \texttt{[t]}, in which case
-% \cs{multirow} will insert the \cs{extrarowheight} to align it with the
-% other rows.
+% \cs{multirow} will do the proper positioning.
 % \end{enumerate}
 % 
 % Now with a negative \meta{nrows}.
@@ -415,18 +438,9 @@
 % size.)
 %
 % \cs{multirow} is mainly designed for use with \environment{tabular}, as
-% opposed to \environment{array}, environments.  It will not work well in an
-% array environment since the lines have an extra \texttt{jot} of space
-% between them which it won't account for.  Fixing this is difficult in
-% general, and doesn't seem worth it.  The \meta{bigstruts} parameter may
-% be used to provide a semi-automatic fix: First set \cs{bigstrutjot} to
-% \texttt{.5}\cs{jot}.  Then simply repeat \meta{nrows} as the bigstruts
-% parameter.  This will be close, but probably not exact; you can use the
-% \meta{fixup} parameter to refine the result.  (If you do this repeatedly,
-% you'll probably want to wrap these steps up in a simple macro.  Note
-% that the modified \cs{bigstrutjot} value will not give reasonable
-% results if you have bigstruts and use this parameter for its intended
-% purpose elsewhere.  In that case, you might want to set it locally.)
+% opposed to \environment{array}, environments.  It might not work well in an
+% array environment if there are big formulas in some rows; in that case you can use the
+% \meta{fixup} parameter to refine the result.
 %
 % If you use \cs{multirow} with the \Package{colortbl} package you have
 % \index{colortbl=\Package{colortbl}|usage}
@@ -653,6 +667,24 @@
 % \changes{multirow v1.6}{2004/05/05}{modified by Piet van Oostrum: Replace a space by \cs{relax} after
 %       \texttt{\cs{advance}\cs{multirow@dima}\#4}}
 %
+% \changes{v1.9a}{2016/09/23}{Implement the \texttt{debug} option.}
+%
+% \begin{macro}{\ifmultirowdebug}
+% \begin{macro}{\multirowdebugtrue}
+% \begin{macro}{\multirowdebugfalse}
+% This is a boolean to [de]activate debugging (showing the generated box
+% contents). It is activated by the \texttt{debug} package option.
+%    \begin{macrocode}
+\newif\ifmultirowdebug
+\DeclareOption{debug}{\multirowdebugtrue}
+\ProcessOptions
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% 
+% \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
+%
 % \changes{v1.9}{2016/09/15}{Implement the ``\texttt{!=}'' option for \cs{multirow}'s \meta{width} parameter.}
 % \begin{macro}{\multirow@colwidth}
 % \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
@@ -685,8 +717,7 @@
 % by spaces), so that \environment{tabulary} will gives us enough space.
 % On the second pass (characterized by \cs{TY@box} = \cs{TY@box@v}) we use
 % the value that \environment{tabulary} has given us in \cs{hsize}.
-%
-% The algorithm is not perfect, but in most cases good enough.
+% This algorithm is not perfect, but good enough in most cases.
 %    \begin{macrocode}
 \def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
     \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
@@ -697,7 +728,7 @@
 % \begin{macro}{\multirowsetup}
 % \cs{multirowsetup} is executed at the beginning of each \cs{multirow}.
 %    \begin{macrocode}
-\def\multirowsetup{\raggedright} 
+\newcommand\multirowsetup{\raggedright}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -708,12 +739,12 @@
 % Depending on the \meta{vpos} parameter, it will be top-aligned,
 % vertically centered, or bottom-aligned. This is done by inserting
 % \cs{vfill} in the proper places.\\
-% If  \meta{vpos} = \texttt{[t]} and \cs{extrarowheight} is present, add that to the top.\\
 % Note: the \cs{relax} is to protect against an empty \meta{vpos}
-% parameter. \begin{macrocode}
+% parameter.
+%    \begin{macrocode}
 \long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
-    \if #1t\relax\ifx\extrarowheight\@undefined\else\vskip\extrarowheight\fi\else\vfill\fi
-    \multirowsetup #3\if #1b\relax\vskip0pt\else\vfill\fi}}
+    \if #1t\relax\else\vfill\fi
+    \multirowsetup #3\if #1b\relax\else\vfill\fi}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -722,20 +753,39 @@
 % First collect all the parameters and replace missing optional parameters by their default values.
 % \changes{v1.8}{2016/09/14}{Add the optional first parameter \meta{vpos}.}
 %    \begin{macrocode}
-\def\multirowsetup{\raggedright}
-\def\multirow{\relax\@ifnextchar[{\@multirow}{\@multirow[c]}}
+%% \multirow [vpos] {nrows} [bigstruts] {width} [fixup] {text}
+\newcommand\multirow[2][c]{\@multirow[#1]{#2}}
 \def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
 \def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%
                                 {\@xmultirow[#1]{#2}[#3]{#4}[0pt]}}
 %    \end{macrocode}
-% This is the real workhorse. It starts with calculating the height of the multirow box.
+% \changes{v1.9a}{2016/09/23}{Add the optional prefix to the \meta{bigstruts} parameter.}
+% \begin{macro}{\multirow@piii}
+% This macro splits off a \texttt{t}, \texttt{b}, or \texttt{x} prefix
+% of the \meta{bigstruts} parameter, and sets \cs{multirow@cntb} to
+% the numerical value. The prefix letter (if any) is saved in
+% \cs{multirow@prefixiii}; if none is present that macro is set to
+% \texttt{z}.
+%    \begin{macrocode}
+\def\multirow@piii#1{%
+   \multirow@cntb=\if b#1\def\multirow@prefixiii{b}%
+              \else\if t#1\def\multirow@prefixiii{t}%
+              \else\if x#1\def\multirow@prefixiii{x}%
+              \else #1\def\multirow@prefixiii{z}\fi\fi\fi}
+%    \end{macrocode}
+% \end{macro}
+% This is the real workhorse. It starts with splitting the
+% \meta{bigstruts} parameter, and then calculating the height of the multirow box.
+% \meta{nrows} is saved in \cs{multirow@cnta}.
 %    \begin{macrocode}
 \def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
+  \multirow@piii{#3}%
   \multirow@dima\multirow@cnta\ht\@arstrutbox
   \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
   \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
-  \advance\multirow@dima#3\bigstrutjot
+  \advance\multirow@dima \multirow@cntb\bigstrutjot
 %    \end{macrocode}
+% \changes{v1.9a}{2016/09/23}{Redo the \cs{vbox} calculation and positioning.}
 %  The text is set in a \cs{vbox} by calling \cs{multirow@vbox}. \\
 % If the \meta{width} parameter is \texttt{*} set just the text in the \cs{vbox}.
 %    \begin{macrocode}
@@ -753,14 +803,66 @@
   \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
 %    \end{macrocode}
-% Now position the \cs{vbox} properly.
+% Now position the \cs{vbox} properly. More details are given in the
+% appendix. We set the depth of the \cs{vbox}
+% to 0, so that it will not influence the height of the current row.
 %    \begin{macrocode}
-  \ht0\z@\dp0\z@
-  \ifnum\multirow@cnta<0\advance\multirow@dima-\dp\@arstrutbox
-  \else\multirow@dima=\ht\@arstrutbox
-     \ifnum#3>0 \advance\multirow@dima\bigstrutjot \fi
+  \dp0=\z@
+%    \end{macrocode}
+% Case \meta{nrows}${}> 0$: \\
+% If \meta{vpos} = \texttt{[t]}, then the box is already positioned
+% correctly (the baseline is on the baseline of the row). However, later
+% the top of the box will be taken as the reference point (instead
+% of the baseline), therefore we take
+% the height of the box as the shift amount.\\
+% If   \meta{vpos} = \texttt{[c]} we shift it up $h1$ (see figure 1), where $h1$ = \cs{ht}\cs{@arstrutbox}
+% + (\cs{bigstrutjot} if \cs{multirow@prefixiii} = \texttt{t} or \texttt{x}).\\
+% If   \meta{vpos} = \texttt{[b]} we shift it up $h1 + h2$ (see figure 2), where $h2$ = \cs{dp}\cs{@arstrutbox}
+% + (\cs{bigstrutjot} if \cs{multirow@prefixiii} = \texttt{b} or \texttt{x}).\\
+% We calculate the required shift  in \cs{multirow@dima}.
+%    \begin{macrocode}
+  \ifnum\multirow@cnta>0 
+    \if#1t\relax\multirow@dima=\ht0\else
+      \multirow@dima=\ht\@arstrutbox
+      \if t\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \if x\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \if#1b\relax \advance\multirow@dima\dp\@arstrutbox
+        \if b\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+        \if x\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \fi
+    \fi
+%    \end{macrocode}
+% Case \meta{nrows}${}< 0$: \\
+% If \meta{vpos} = \texttt{[t]}, shift the box up $H - h1 - h2)$. But
+% because later the top of the box will be taken as the reference point (instead
+% of the baseline) we add also the height of the box (\cs{ht0}).\\
+% If \meta{vpos} = \texttt{[c]}, shift the box up $H - h2$.\\
+% If \meta{vpos} = \texttt{[b]}, shift the box up $H$. See figures 3-5.\\
+% $H$ is the current value of \cs{multirow@dima}.
+%    \begin{macrocode}
+  \else
+    \if#1b\relax\else
+      \advance\multirow@dima-\dp\@arstrutbox
+      \if b\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+      \if x\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+      \if#1t\relax\advance\multirow@dima-\ht\@arstrutbox
+        \if t\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+        \if x\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+        \advance\multirow@dima\ht0 
+      \fi
+    \fi
   \fi
-  \advance\multirow@dima#5\relax\leavevmode\vtop{\vskip-\multirow@dima\box0\vss}}
+%    \end{macrocode}
+% Finally, we add the \meta{fixup} parameter (\verb+#5+), and go into
+% horizontal mode. Then we shift the box up by putting a \cs{vskip} above it,
+% and add it to the output. If \cs{multirowdebug} is true, we show the box.
+%    \begin{macrocode}
+  \advance\multirow@dima#5\relax
+  \leavevmode
+  \ifmultirowdebug\setbox0\vtop{\vskip-\multirow@dima\box0\vss}%
+    {\showboxdepth=5 \showboxbreadth=10 \showbox0}\box0
+  \else\vtop{\vskip-\multirow@dima\box0\vss}\fi
+}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\bigstrutjot}
@@ -792,8 +894,8 @@
 % This macro inserts a strut. Depending on the optional parameter it extends
 % above and/or below the standard array/tabular strut.
 %    \begin{macrocode}
-\def\bigstrut{\relax\@ifnextchar [{\@bigstrut}{\@bigstrut[x]}}
-\def\@bigstrut[#1]{\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
+\newcommand\bigstrut[1][x]{%
+  \unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
   \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
   \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
   \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}
@@ -820,7 +922,7 @@
 % zero width next to it. The height is the one that \cs{multirow}
 % already has calculated in \cs{multirow@dima}.
 %    \begin{macrocode}
-\def\ldelim#1#2#3{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
+\newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
  {\multirow{#2}{#3}{%
    \ensuremath
@@ -833,7 +935,7 @@
 % This macro typesets a right delimiter. It calls \cs{multirow} with the
 % proper parameters, similar to \cs{ldelim}.
 %    \begin{macrocode}
-\def\rdelim#1#2#3{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
+\newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
 \def\@rdelim#1#2#3[#4]%
  {\multirow{#2}{#3}{%
    \ensuremath
@@ -844,6 +946,16 @@
 % \iffalse
 %</bigdelim>
 % \fi
+%
+% \appendix
+%
+%
+% \section{Appendix}
+% \label{sec:appendix}
+%
+% \index{vbox=\verb!*+\vbox+|usage}
+%
+% Here we explain the \cs{vbox} positioning in \cs{multirow}.
 %
 % \Finale
 \endinput
