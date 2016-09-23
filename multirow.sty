@@ -23,19 +23,36 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/09/23 v1.9a
+           [2016/09/24 v1.9b
                   Span multiple rows of a table]%
-
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
+\DeclareOption{cline}{%
+\def\@cline#1-#2\@nil{%
+  \omit
+  \@multicnt#1%
+  \advance\@multispan\m@ne
+  \ifnum\@multicnt=\@ne\@firstofone{&\omit}\fi
+  \@multicnt#2%
+  \advance\@multicnt-#1%
+  \advance\@multispan\@ne
+  \leaders\hrule\@height\arrayrulewidth\hfill
+  \cr
+  \noalign{\nobreak\vskip-\arrayrulewidth}}
+}
 \ProcessOptions
 \newlength{\multirow@colwidth}
 \newcount\multirow@cnta
 \newcount\multirow@cntb
 \newlength\multirow@dima
-\def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
-    \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
-    \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
+\def\multirow@setcolwidth#1{%
+    \ifx\TY@final\@undefined \multirow@colwidth=\hsize
+    \else
+      \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
+      \else \setbox0\hbox
+        {\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0
+      \fi
+    \fi}
 \newcommand\multirowsetup{\raggedright}
 \long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
     \if #1t\relax\else\vfill\fi

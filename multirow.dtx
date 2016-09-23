@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/23 v1.9a
+%<multirow|bigstrut|bigdelim>           [2016/09/24 v1.9b
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -43,6 +43,8 @@
 \usepackage[T1]{fontenc}
 \usepackage{multirow,bigstrut,bigdelim,colortbl}
 \usepackage{tabulary}
+\usepackage{longtable}
+\usepackage{url}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
 \DisableCrossrefs         
 \CodelineIndex
@@ -57,7 +59,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{326}
+% \CheckSum{357}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -119,6 +121,8 @@
 % \item Optional prefix letters (\texttt{t}, \texttt{b}, \texttt{x}) for
 % the \meta{bigstruts} parameter (see section \ref{sect-refine-bigstrut}).
 % \item Package option \texttt{debug}.
+% \item Package option \texttt{cline} to work around a bug in
+% \Package{longtable}. See section \ref{sec:use-with-longtable}.
 % \item Better positioning in some cases.
 % \item More examples.
 % \item The distribution is now based on a \texttt{.dtx} file.
@@ -225,7 +229,8 @@
 % \cs{multirowdebugfalse}. When such a command is placed just before a
 % \cs{multirow}, it applies only to that specific \cs{multirow} entry.
 % \item[cline] 
-% The \texttt{cline} option.
+% The \texttt{cline} option redefines the \cs{cline} macro to work
+% around a bug in the \Package{longtable} package. See section \ref{sec:use-with-longtable}.
 % \end{description}
 %
 %\subsection{Examples}
@@ -475,7 +480,6 @@
 %   \end{tabular}
 % \end{quote}
 %
-% 
 % \subsection{Fine tuning the \meta{bigstruts} parameter}
 % \label{sect-refine-bigstrut}
 %
@@ -585,7 +589,78 @@
 % Please note that the prefix does not depend on whether the
 % \cs{multirow} is in the top or the bottom row.
 % 
-
+% \subsection{Use with \Package{longtable}}
+% \label{sec:use-with-longtable}
+%
+% It is possible to use \cs{multirow} within a \environment{longtable}
+% environment (as well as in its descendent \environment{longtabu}).
+% However, care must be taken that the longtable doesn't break the
+% multirow entry when it is near the bottom of the page. For example:
+% 
+% \noindent
+% \begin{minipage}[t]{0.4\linewidth}
+% \begin{longtable}{|l|l|l|}
+% \ldots & \ldots & \ldots \\
+% \hline
+% Sept. 21 & 09:00 & event 1 \\
+% \hline
+% Sept. 22 & 10:00 & event 2 \\
+% \hline
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\
+%               & 12:00 & event 4 \\
+%               & 15:00 & event 5 \\
+% \hline
+% Sept. 24 & 09:00 & event 6 \\
+% \hline
+% \ldots & \ldots & \ldots \\
+% \end{longtable}
+% \end{minipage}
+% \begin{minipage}[t]{0.58\linewidth}
+% \begin{verbatim}
+% \begin{longtable}{|p{0.2\textwidth}|l|l|}
+% \ldots & \ldots & \ldots \\
+% \hline
+% Sept. 21 & 09:00 & event 1\\
+% \hline
+% Sept. 22 & 10:00 & event 2\\
+% \hline
+% \multirow{3}*{Sept. 23} & 10:00 & event 3\\
+%               & 12:00 & event 4 \\
+%               & 15:00 & event 5 \\
+% \hline
+% Sept. 24 & 09:00 & event 6 \\
+% \hline
+% \ldots & \ldots & \ldots \\
+% \end{longtable}
+% \end{verbatim}
+% \end{minipage}
+%
+% In this case if the ``Sept. 23'' entry comes close to the bottom of the
+% page, you want to prevent the pagebreak to occur in the middle of this
+% entry. You can do this by anding the rows with \verb+\\*+ instead of \verb+\\+.
+%
+% \begin{verbatim}
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\*
+%               & 12:00 & event 4 \\*
+%               & 15:00 & event 5 \\*
+% \end{verbatim}
+%
+% There is, however, a bug in \Package{longtable}, that causes the
+% \verb+\\*+ not to work if it is followed by a \cs{cline}, like in the
+% following example:
+%
+% \begin{verbatim}
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\*
+% \cline{2-3}
+%               & 12:00 & event 4 \\*
+% \cline{2-3}
+%               & 15:00 & event 5 \\*
+% \end{verbatim}
+%
+% \Package{multirow} has a package option \texttt{cline} that redefines
+% \cs{cline} so that the \verb+\\*+ will also work when followed by
+% \cs{cline}. The code comes from David Carlisle.
+% 
 % \section{Using \Package{bigstrut}}
 %
 % \DescribeMacro{\bigstrut}
@@ -791,10 +866,34 @@
 %    \begin{macrocode}
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
-\ProcessOptions
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
+% \end{macro}
+% 
+% \changes{v1.9b}{2016/09/24}{Implement the \texttt{cline} option.}
+% \begin{macro}{\cline}
+% The package option \texttt{cline} redefines the \cs{cline} macro to
+% work around a bug in \Package{longtable}. See section \ref{sec:use-with-longtable}\footnote{%
+% Thanks to David Carlisle. See
+% \url{http://tex.stackexchange.com/questions/52100/longtable-multirow-problem-with-cline-and-nopagebreak#answer-52101} }.
+%    \begin{macrocode}
+\DeclareOption{cline}{%
+\def\@cline#1-#2\@nil{%
+  \omit
+  \@multicnt#1%
+  \advance\@multispan\m@ne
+  \ifnum\@multicnt=\@ne\@firstofone{&\omit}\fi
+  \@multicnt#2%
+  \advance\@multicnt-#1%
+  \advance\@multispan\@ne
+  \leaders\hrule\@height\arrayrulewidth\hfill
+  \cr
+  \noalign{\nobreak\vskip-\arrayrulewidth}}
+}
+\ProcessOptions
+%    \end{macrocode}
+% 
 % \end{macro}
 % 
 % \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
@@ -833,9 +932,14 @@
 % the value that \environment{tabulary} has given us in \cs{hsize}.
 % This algorithm is not perfect, but good enough in most cases.
 %    \begin{macrocode}
-\def\multirow@setcolwidth#1{\ifx\TY@final\@undefined\multirow@colwidth=\hsize\else
-    \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
-    \else \setbox0\hbox{\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0\fi\fi}
+\def\multirow@setcolwidth#1{%
+    \ifx\TY@final\@undefined \multirow@colwidth=\hsize
+    \else
+      \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
+      \else \setbox0\hbox
+        {\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0
+      \fi
+    \fi}
 %    \end{macrocode}
 % \end{macro}
 %
