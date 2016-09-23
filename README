@@ -1,7 +1,7 @@
 Multirow package
 ================
 
-multirow.sty  V1.6 version (5-May-2004)
+multirow.sty  V1.9a version (24-Sep-2016)
 
 Original authors: Jerry Leichter {multirow,sty, bigstrut.sty}
                   Øystein Bache {predecessor of bigdelim.sty}
@@ -17,7 +17,7 @@ multirow.sty:
 
 Make an entry that will span multiple rows of a table.
 
-\multirow{nrows}[bigstruts]{width}[fixup]{text}
+\multirow [vpos] {nrows} [bigstruts] {width} [fixup] {text}
 
 
 bigstrut.sty:
