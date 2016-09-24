@@ -59,7 +59,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{357}
+% \CheckSum{337}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -95,7 +95,7 @@
 %     Fairbairns}}
 %
 % \date{Released \filedate, version \fileversion}
-% 
+%
 % \maketitle
 %
 % \section{Introduction}
@@ -118,7 +118,7 @@
 % \item \cs{multirow} now has an first optional parameter \oarg{vpos}.
 % \item The \meta{width} parameter can be specified as \texttt{=} to use
 % the defined width of the column in which the \cs{multirow} appears.
-% \item Optional prefix letters (\texttt{t}, \texttt{b}, \texttt{x}) for
+% \item Optional prefix letters (\texttt{t}, \texttt{b}) for
 % the \meta{bigstruts} parameter (see section \ref{sect-refine-bigstrut}).
 % \item Package option \texttt{debug}.
 % \item Package option \texttt{cline} to work around a bug in
@@ -160,7 +160,7 @@
 %   either \texttt{t} or \texttt{b}.  The default is 0.
 %
 % The \meta{bigstruts} parameter can optionally be preceded by a prefix
-% letter \texttt{t}, \texttt{b} or \texttt{x} for finer control. See
+% letter \texttt{t}, \texttt{b} or \texttt{tb} for finer control. See
 % section \ref{sect-refine-bigstrut} for details. The letter may be
 % separated from the number by a space character.
 %   
@@ -365,7 +365,7 @@
 % be vertically centered, but it isn't. This is because \cs{multirow}
 % doesn't know the height of the box. The only estimate \cs{multirow}
 % can make about the height is the number of rows${}\times{}$the normal
-% height of a row. It tries to center the text in that space, but that
+% height of a row. It tries to center the text in that space, but that space
 % is too low in this example. Therefore the text is at the top of the
 % box. If you want it to be centered, you have to supply a \meta{fixup}
 % parameter to shift it down.
@@ -490,7 +490,7 @@
 % \cs{bigstrut} on top of the first row and/or one on the bottom of the
 % last row. In that case \cs{multirow} should be given additional
 % information. This is done by prefixing the \meta{bigstruts} parameter
-% with a letter indicating which of these two are present. 
+% with a letter (or two) indicating which of these two are present. 
 %
 % See the following examples:\\ (in these examples we have
 % \verb+\setlength{\bigstrutjot}{10pt}+ to make the effect clearly visible)\\[5mm]
@@ -583,16 +583,19 @@
 % or \cs{bigstrut[t]} in the top row.
 % \item[\texttt{b}] There is a bigstrut in the bottom, i.e. a \cs{bigstrut}
 % or \cs{bigstrut[b]} in the bottom row.
-% \item[\texttt{x}] They are both present.
+% \item[\texttt{tb}] They are both present. Note: this cannot be given
+% as \texttt{bt}.
 % \end{description}
-% The space between the letter and the number is optional.
+% The space between the letter(s) and the number is optional.
 % Please note that the prefix does not depend on whether the
 % \cs{multirow} is in the top or the bottom row.
 % 
 % \subsection{Use with \Package{longtable}}
 % \label{sec:use-with-longtable}
 %
-% It is possible to use \cs{multirow} within a \environment{longtable}
+% \index{longtable=\environment{longtable}|usage}
+% \index{longtabu=\environment{longtabu}|usage}
+% It is possible to use \cs{multirow} in a \environment{longtable}
 % environment (as well as in its descendent \environment{longtabu}).
 % However, care must be taken that the longtable doesn't break the
 % multirow entry when it is near the bottom of the page. For example:
@@ -660,6 +663,9 @@
 % \Package{multirow} has a package option \texttt{cline} that redefines
 % \cs{cline} so that the \verb+\\*+ will also work when followed by
 % \cs{cline}. The code comes from David Carlisle.
+% 
+% \subsection{Use with \Package{supertabular}}
+% \label{sec:use-with-supertabular}
 % 
 % \section{Using \Package{bigstrut}}
 %
@@ -862,7 +868,8 @@
 % \begin{macro}{\multirowdebugtrue}
 % \begin{macro}{\multirowdebugfalse}
 % This is a boolean to [de]activate debugging (showing the generated box
-% contents). It is activated by the \texttt{debug} package option.
+% contents). It is activated by the \texttt{debug} package option. The
+% \cs{newif} initializes it to false.
 %    \begin{macrocode}
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -979,26 +986,45 @@
 %    \end{macrocode}
 % \changes{v1.9a}{2016/09/23}{Add the optional prefix to the \meta{bigstruts} parameter.}
 % \begin{macro}{\multirow@piii}
-% This macro splits off a \texttt{t}, \texttt{b}, or \texttt{x} prefix
+% \begin{macro}{\ifmultirow@prefixt}
+% \begin{macro}{\multirow@prefixttrue}
+% \begin{macro}{\multirow@prefixtfalse}
+% \begin{macro}{\ifmultirow@prefixb}
+% \begin{macro}{\multirow@prefixbtrue}
+% \begin{macro}{\multirow@prefixbfalse}
+% This macro splits off a \texttt{t}, \texttt{b}, or \texttt{tb} prefix
 % of the \meta{bigstruts} parameter, and sets \cs{multirow@cntb} to
-% the numerical value. The prefix letter (if any) is saved in
-% \cs{multirow@prefixiii}; if none is present that macro is set to
-% \texttt{z}.
+% the numerical value. The prefix is remembered in two booleans:
+% \cs{ifmultirow@prefixt} and \cs{ifmultirow@prefixb}.
 %    \begin{macrocode}
-\def\multirow@piii#1{%
-   \multirow@cntb=\if b#1\def\multirow@prefixiii{b}%
-              \else\if t#1\def\multirow@prefixiii{t}%
-              \else\if x#1\def\multirow@prefixiii{x}%
-              \else #1\def\multirow@prefixiii{z}\fi\fi\fi}
+\newif\ifmultirow@prefixt
+\newif\ifmultirow@prefixb
+\def\multirow@piii#1#2#3\end{\multirow@prefixtfalse\multirow@prefixbfalse
+  \if t#1\multirow@prefixttrue
+    \if b#2\multirow@prefixbtrue \multirow@cntb=#3%
+    \else \multirow@cntb=#2#3%
+    \fi
+  \else
+    \if b#1\multirow@prefixbtrue \multirow@cntb=#2#3%
+    \else \multirow@cntb=#1#2#3%
+    \fi
+  \fi}
 %    \end{macrocode}
 % \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% 
 % This is the real workhorse. It starts with splitting the
 % \meta{bigstruts} parameter, and then calculating the height of the multirow box.
 % \meta{nrows} is saved in \cs{multirow@cnta}.
 %    \begin{macrocode}
 \def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
-  \multirow@piii{#3}%
-  \multirow@dima\multirow@cnta\ht\@arstrutbox
+  \expandafter\multirow@piii#3\relax\end%
+  \multirow@dima=\multirow@cnta\ht\@arstrutbox
   \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
   \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
   \advance\multirow@dima \multirow@cntb\bigstrutjot
@@ -1032,21 +1058,19 @@
 % correctly (the baseline is on the baseline of the row). However, later
 % the top of the box will be taken as the reference point (instead
 % of the baseline), therefore we take
-% the height of the box as the shift amount.\\
-% If   \meta{vpos} = \texttt{[c]} we shift it up $h1$ (see figure 1), where $h1$ = \cs{ht}\cs{@arstrutbox}
-% + (\cs{bigstrutjot} if \cs{multirow@prefixiii} = \texttt{t} or \texttt{x}).\\
-% If   \meta{vpos} = \texttt{[b]} we shift it up $h1 + h2$ (see figure 2), where $h2$ = \cs{dp}\cs{@arstrutbox}
-% + (\cs{bigstrutjot} if \cs{multirow@prefixiii} = \texttt{b} or \texttt{x}).\\
+% the height of the box as the shift amount. \\
+% If \meta{vpos} = \texttt{[c]} we shift it up $h1$ (see figure 1), where $h1$ = \cs{ht}\cs{@arstrutbox}
+% + (\cs{bigstrutjot} \cs{ifmultirow@prefixt}).\\
+% If \meta{vpos} = \texttt{[b]} we shift it up $h1 + h2$ (see figure 2), where $h2$ = \cs{dp}\cs{@arstrutbox}
+% + (\cs{bigstrutjot} \cs{ifmultirow@prefixb}).\\
 % We calculate the required shift  in \cs{multirow@dima}.
 %    \begin{macrocode}
-  \ifnum\multirow@cnta>0 
+  \ifnum\multirow@cnta>0
     \if#1t\relax\multirow@dima=\ht0\else
       \multirow@dima=\ht\@arstrutbox
-      \if t\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
-      \if x\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+      \ifmultirow@prefixt \advance\multirow@dima\bigstrutjot\fi
       \if#1b\relax \advance\multirow@dima\dp\@arstrutbox
-        \if b\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
-        \if x\multirow@prefixiii \advance\multirow@dima\bigstrutjot\fi
+        \ifmultirow@prefixb \advance\multirow@dima\bigstrutjot\fi
       \fi
     \fi
 %    \end{macrocode}
@@ -1061,12 +1085,10 @@
   \else
     \if#1b\relax\else
       \advance\multirow@dima-\dp\@arstrutbox
-      \if b\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
-      \if x\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
+      \ifmultirow@prefixb \advance\multirow@dima-\bigstrutjot\fi
       \if#1t\relax\advance\multirow@dima-\ht\@arstrutbox
-        \if t\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
-        \if x\multirow@prefixiii \advance\multirow@dima-\bigstrutjot\fi
-        \advance\multirow@dima\ht0 
+        \ifmultirow@prefixt \advance\multirow@dima-\bigstrutjot\fi
+        \advance\multirow@dima\ht0
       \fi
     \fi
   \fi
