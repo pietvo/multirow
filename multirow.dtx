@@ -59,7 +59,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{337}
+% \CheckSum{347}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -119,10 +119,12 @@
 % \item The \meta{width} parameter can be specified as \texttt{=} to use
 % the defined width of the column in which the \cs{multirow} appears.
 % \item Optional prefix letters (\texttt{t}, \texttt{b}) for
-% the \meta{bigstruts} parameter (see section \ref{sect-refine-bigstrut}).
+% the \meta{bigstruts} parameter (see section~\ref{sect-refine-bigstrut}).
 % \item Package option \texttt{debug}.
 % \item Package option \texttt{cline} to work around a bug in
-% \Package{longtable}. See section \ref{sec:use-with-longtable}.
+% \Package{longtable}. See section~\ref{sec:use-with-longtable}.
+% \item The \cs{STneed} command to support \Package{supertabular}. See
+% section~\ref{sec:use-with-supertabular}. 
 % \item Better positioning in some cases.
 % \item More examples.
 % \item The distribution is now based on a \texttt{.dtx} file.
@@ -620,7 +622,7 @@
 % \end{minipage}
 % \begin{minipage}[t]{0.58\linewidth}
 % \begin{verbatim}
-% \begin{longtable}{|p{0.2\textwidth}|l|l|}
+% \begin{longtable}{|l|l|l|}
 % \ldots & \ldots & \ldots \\
 % \hline
 % Sept. 21 & 09:00 & event 1\\
@@ -666,7 +668,52 @@
 % 
 % \subsection{Use with \Package{supertabular}}
 % \label{sec:use-with-supertabular}
+%
+% \index{supertabular=\environment{supertabular}|usage}
+% With the package \Package{supertabular} there is the same requirement
+% to keep the rows of a multirow together when a pagebreak occurs.
+% Unfortunately, \Package{supertabular} does not have a way to specify
+% that a pagebreak should be suppressed. I.e. \verb+\\*+ does not
+% suppress a pagebreak.
+% \DescribeMacro{\shrinkheight}
+% There is a command \cs{shrinkheight} that can be used to decrease or
+% increase the amount of space left on the page for the table. 
+% So you would want to use something like \cs{shrinkheight\{3cm\}}
+% before and \cs{shrinkheight\{-3cm\}} after the multirow. But when the
+% pagebreak occurs before the multirow (and after the \cs{shrinkheight})
+% the page height will have been reset, so the
+% \cs{shrinkheight\{-3cm\}} makes the page too large.
+% \DescribeMacro{\STneed}
+% Therefore \Package{multirow} provides a command \cs{STneed} to be used
+% in a \environment{supertabular} that specifies how much space we need
+% on the page. Due to the way \Package{supertabular} works, this command
+% must be given 2 or 3 rows before the multirow block. For example:
+% \begin{verbatim}
+% \tabletail{\hline}
+% \begin{supertabular}{|l|l|l|}
+% \ldots & \ldots & \ldots \\
+% \hline
+% Sept. 20 & 10:00 & event 1\\ 
+% \hline
+% \STneed {3cm}
+% Sept. 21 & 10:00 & event 2\\
+% \hline 
+% Sept. 22 & 10:00 & event 3\\  
+% \hline  
+% \multirow{3}*{Sept. 23} & 10:00 & event 4\\
+% \cline{2-3}
+%               & 12:00 & event 5 \\
+% \cline{2-3}
+%               & 15:00 & event 6 \\
+% \hline 
+%  Sept. 24 & 09:00 & event 7 \\
+% \hline
+% \ldots & \ldots & \ldots \\
+% \end{verbatim}
 % 
+% You will have to experiment a bit with the place and the value to see
+% what works. In general it is best to exaggerate the required space a bit.
+%
 % \section{Using \Package{bigstrut}}
 %
 % \DescribeMacro{\bigstrut}
@@ -1109,6 +1156,16 @@
 % Define \cs{bigstrutjot} if not already defined.
 %    \begin{macrocode}
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
+%    \end{macrocode}
+% \end{macro}
+% \changes{v1.9b}{2016/09/24}{Implement the \cs{STneed} command.}
+% \begin{macro}{\STneed}
+% This macro can be used in a \environment{supertabular} to indicate how
+% much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.
+%    \begin{macrocode}
+\newcommand\STneed[1]{%
+       \noalign{\ifdim\ST@pageleft<#1\relax
+         \global\ST@pageleft=\z@\fi}}
 %    \end{macrocode}
 % \end{macro}
 % \iffalse
