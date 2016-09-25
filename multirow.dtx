@@ -45,6 +45,7 @@
 \usepackage{tabulary}
 \usepackage{longtable}
 \usepackage{url}
+\usepackage{tikz}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
 \DisableCrossrefs         
 \CodelineIndex
@@ -1096,19 +1097,20 @@
 %    \end{macrocode}
 % Now position the \cs{vbox} properly. More details are given in the
 % appendix. We set the depth of the \cs{vbox}
-% to 0, so that it will not influence the depth of the current row.
+% to 0, so that it will not influence the depth of the current row. The
+% overview of the shift amount can be found in section~\ref{sec:overview}.
 %    \begin{macrocode}
   \dp0=\z@
 %    \end{macrocode}
-% Case \meta{nrows}${}> 0$: \\
+% If \meta{nrows}${}> 0$: \\
 % If \meta{vpos} = \texttt{[t]}, then the box is already positioned
 % correctly (the baseline is on the baseline of the row). However, later
 % the top of the box will be taken as the reference point (instead
 % of the baseline), therefore we take
-% the height of the box as the shift amount. \\
-% If \meta{vpos} = \texttt{[c]} we shift it up $h1$ (see figure 1), where $h1$ = \cs{ht}\cs{@arstrutbox}
+% the height of the box (h) as the shift amount.  See fig.~\ref{fig:top-t}.\\
+% If \meta{vpos} = \texttt{[c]} we shift it up h1 (see fig.~\ref{fig:top-c}), where h1 = \cs{ht}\cs{@arstrutbox}
 % + (\cs{bigstrutjot} \cs{ifmultirow@prefixt}).\\
-% If \meta{vpos} = \texttt{[b]} we shift it up $h1 + h2$ (see figure 2), where $h2$ = \cs{dp}\cs{@arstrutbox}
+% If \meta{vpos} = \texttt{[b]} we shift it up h1 + h2 (see fig.~\ref{fig:top-b}), where h2 = \cs{dp}\cs{@arstrutbox}
 % + (\cs{bigstrutjot} \cs{ifmultirow@prefixb}).\\
 % We calculate the required shift  in \cs{multirow@dima}.
 %    \begin{macrocode}
@@ -1121,13 +1123,11 @@
       \fi
     \fi
 %    \end{macrocode}
-% Case \meta{nrows}${}< 0$: \\
-% If \meta{vpos} = \texttt{[t]}, shift the box up $H - h1 - h2)$. But
-% because later the top of the box will be taken as the reference point (instead
-% of the baseline) we add also the height of the box (\cs{ht0}).\\
-% If \meta{vpos} = \texttt{[c]}, shift the box up $H - h2$.\\
-% If \meta{vpos} = \texttt{[b]}, shift the box up $H$. See figures 3-5.\\
-% $H$ is the current value of \cs{multirow@dima}.
+% If \meta{nrows}${}< 0$: \\
+% If \meta{vpos} = \texttt{[t]}, shift the box up $\textrm{H} - \textrm{h1} -\textrm{h2} + \textrm{h}$.  See fig.~\ref{fig:bot-t}.\\
+% If \meta{vpos} = \texttt{[c]}, shift the box up $\textrm{H} - \textrm{h2}$.  See fig.~\ref{fig:bot-c}.\\
+% If \meta{vpos} = \texttt{[b]}, shift the box up H.  See fig.~\ref{fig:bot-b}.\\
+% H is the current value of \cs{multirow@dima}.
 %    \begin{macrocode}
   \else
     \if#1b\relax\else
@@ -1142,7 +1142,9 @@
 %    \end{macrocode}
 % Finally, we add the \meta{fixup} parameter (\verb+#5+), and go into
 % horizontal mode. Then we shift the box up by putting a \cs{vskip} above it,
-% and add it to the output. If \cs{multirowdebug} is true, we show the box.
+% and add it to the output. Because of the \cs{vskip} the resulting box
+% will have a height 0. \\
+% If \cs{multirowdebug} is true, we show the box.
 %    \begin{macrocode}
   \advance\multirow@dima#5\relax
   \leavevmode
@@ -1246,13 +1248,333 @@
 %
 % \appendix
 %
-%
 % \section{Appendix}
 % \label{sec:appendix}
 %
 % \index{vbox=\verb!*+\vbox+|usage}
 %
-% Here we explain the \cs{vbox} positioning in \cs{multirow}.
+% In this section we explain the \cs{vbox} positioning in \cs{multirow}.
+% The positioning depends on the \meta{nrows}, \meta{vpos},
+% \meta{bigstruts} and \meta{fixup} parameters. The box is constructed with \cs{vtop}. The
+% algorithm of \cs{vtop} is described in \emph{The \TeX{}book}, p.~81.
 %
+% Each case is described by a figure. In the figure the lefthand column
+% indicates the context of the tabular in which the multirow appears,
+% i.e \meta{nrows} rows. The righthand column is the multirow box that
+% is to be inserted. The baseline is the natural position where the material will be
+% positioned in the first place. Later it will be shifted up
+% to the desired location.
+% 
+% H is the calculated height of the box: $\meta{nrows} \times 
+% \textrm{the natural height of a row}  + \meta{bigstruts} \times
+% \mathrm{\cs{bigstrutjot}} $. 
+%
+% {topstrut} = \cs{bigstrutjot} if there is  a \cs{bigstrut} on the top of
+% the first row (as indicated by the \texttt{t} prefix in the
+% \meta{bigstruts} parameter), otherwise 0. 
+%
+% {botstrut} = \cs{bigstrutjot} if there is  a \cs{bigstrut} on bottom of
+% the last row (as indicated by the \texttt{b} prefix in the
+% \meta{bigstruts} parameter), otherwise 0. 
+%
+% h1 = $\textrm{height of a tabular row} + \textrm{topstrut}$
+% 
+% h2 = $\textrm{depth of a tabular row} + \textrm{botstrut}$
+%
+% Note: the following descriptions describe the vertical shift of the
+% box without taking the \meta{fixup} into account. In all cases
+% \meta{fixup} has to be added if it is given.
+% 
+% \subsection{Case \meta{nrows}${}> 0$}
+%
+% \subsubsection*{\meta{vpos}  = [t]}
+%
+% In this case the \cs{vbox} contains the text followed by a \cs{vfill}.
+% Such a \cs{vbox} has a height that is the height of the top line of
+% the text (h). H = height + depth of the box. This means that the box is
+% already positioned correctly. However, later we will put the box
+% inside another \cs{vbox}, with a \cs{vskip} on to of it, and this will
+% make the top of the box its reference point. Therefore we will
+% have to shift it up again over a distance h
+% (which probably will be different from the height of the tabular row).
+% So the total shift becomes h. See fig.~\ref{fig:top-t}.
+%
+% Alternatively, we could have omitted the \cs{vskip} in this case,
+% thereby leaving the baseline undisturbed, but this would make the code
+% unsymmetrical. Therefore we choose to set the shift amount to h here.
+% 
+% \begin{figure}[htpb]
+%   \centering
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%
+%   \draw (6.5, 4) rectangle (9.5, -1);
+%   \draw[<->] (9.7, -1) -- (9.7, 4);
+%   \draw (10, 1.5) node {H};
+%   \draw[<->] (10, 3.3) -- (10, 4);
+%   \draw (10.3, 3.7) node {h};
+%   \draw[fill=lightgray] (6.6, 1) rectangle (9.4, 3.9);
+%   \draw (8, 0)  node[align=center] {\cs{vfill}};
+%   \draw (8, 2) node[align=center] {text};
+%   \draw[draw=gray] (6.6, 3) -- (9.4, 3);
+%   \draw[dashed] (6.2, 3.3) -- (9.8, 3.3);
+%   \draw[->, line width=4pt, draw=gray] (8, 3.3) -- (8, 4);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${}> 0$, \meta{vpos} = [t]}
+% \label{fig:top-t}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [c]}
+%
+% In this case  the \cs{vbox} contains a \cs{vfill}, the text, and another \cs{vfill}.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline. Because both boxes have the same size (H), they can be
+% aligned by shifting the \cs{vbox} up over h1.  See fig.~\ref{fig:top-c}.
+% 
+% \begin{figure}[htpb]
+%   \centering
+%\begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%
+%   \draw (6.5, 3.3) rectangle (9.5, -1.7);
+%   \draw[<->] (9.7, -1.7) -- (9.7, 3.3);
+%   \draw (10, 0.8) node {H};
+%   \draw[fill=lightgray] (6.6, -0.5) rectangle (9.4, 2.1);
+%   \draw (8, 2.7)  node[align=center] {\cs{vfill}};
+%   \draw (8, 0.8) node[align=center] {text};
+%   \draw (8, -1) node[align=center] {\cs{vfill}};
+%   \draw[->, line width=4pt, draw=gray] (8, 3.3) -- (8, 4.5);
+%   \draw[draw=gray] (6.5, 4.5) -- (9.5, 4.5);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${}> 0$, \meta{vpos} = [c]}
+% \label{fig:top-c}
+% \end{figure}
+% 
+% \subsubsection*{\meta{vpos}  = [b]}
+%
+% Now the  \cs{vbox} contains a \cs{vfill}, followed by the text.
+% Because it ends with the text, it gets an additional depth equal to
+% the depth of the last line of the text.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline, but its depth is H + that depth. In other words the baseline
+% of the last text line is H below the top.
+%
+% Because \meta{vpos}  = \texttt{[b]} we want the baseline of the last
+% textline to shift to the baseline of the last tabular row. The amount
+% of the shift is h1 + h2.  See fig.~\ref{fig:top-b}.
+% 
+% \begin{figure}[htpb]
+%   \centering
+%\begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+% 
+%   \draw (6.5, 3.3) rectangle (9.5, -2.1); 
+%   \draw[<->] (9.7, -1.7) -- (9.7, 3.3);
+%   \draw (10, 0.8) node {H};
+%   \draw[fill=lightgray] (6.6, -2) rectangle (9.4, 1);
+%   \draw (8, 2)  node[align=center] {{\cs{vfill}}};
+%   \draw (8, -0.5) node[align=center] {text};
+%   \draw (0, 0.3) node (baseline) {baseline};
+%   \draw[dashed] (6.3, -1.7) -- (10, -1.7); 
+%   \draw (3.5, -1.7) node (baseline) {baseline of last text line};
+%   \draw[dashed] (1.7, 0.3) -- (10, 0.3);
+%   \draw[->, line width=4pt, draw=gray] (8.5, -1.7) -- (8.5, 0.3); 
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${}> 0$, \meta{vpos} = [b]}
+% \label{fig:top-b}
+% \end{figure}
+% 
+% \subsection{Case \meta{nrows}${}<0$}
+%
+% \meta{nrows}${}<0$ when the multirow is positioned in the last row of
+% the multirow block.
+%
+% \subsubsection*{\meta{vpos}  = [t]}
+%
+% In this case the \cs{vbox} contains the text followed by a \cs{vfill}.
+% Such a \cs{vbox} has a height that is the height of the top line of
+% the text. The baseline is aligned with the baseline of the last row.
+% Because \meta{vpos}  = [t], we want it to be aligned with the baseline
+% of the first row. Therefore it has to be shifted up $\textrm{H} -
+% \textrm{h1} - \textrm{h2}$. But because later the height of the box
+% will be set to 0, we must also add the current height h. Therefore the
+% total shift becomes $\textrm{H} - \textrm{h1} - \textrm{h2} +
+% \textrm{h}$.  See fig.~\ref{fig:bot-t}.
+%
+% \begin{figure}[htpb]
+%   \centering
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%   \draw (0, 0.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (5.9, 0.3); 
+% 
+%   \draw (6.5, 1) rectangle (9.5, -4);
+%   \draw[<->] (9.7, -4) -- (9.7, 1);
+%   \draw (10, -1.5) node {H};
+%   \draw[<->] (10, 0.3) -- (10, 1);
+%   \draw (10.3, 0.7) node {h};
+%   \draw[fill=lightgray] (6.6, -2) rectangle (9.4, 0.9);
+%   \draw (8, -3)  node[align=center] {\cs{vfill}};
+%   \draw (8, -1) node[align=center] {text};
+%   \draw[draw=gray] (6.6, 0) -- (9.4, 0);
+%   \draw[dashed] (6.2, 0.3) -- (10.3, 0.3);
+%   \draw[->, line width=4pt, draw=gray] (8, 0.3) -- (8, 3.3);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${} < 0$, \meta{vpos} = [t]}
+% \label{fig:bot-t}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [c]}
+%
+% In this case  the \cs{vbox} contains a \cs{vfill}, the text, and another \cs{vfill}.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline. Because both boxes have the same size (H), they can be
+% aligned by shifting the \cs{vbox} up over $\textrm{H} - \textrm{h2}$.
+% See fig.~\ref{fig:bot-c}. 
+%
+% \begin{figure}[htpb]
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.8, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%   \draw (0, 0.3) node {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (5.9, 0.3); 
+% 
+%   \draw (6.5, 0.3) rectangle (9.5, -4.7);
+%   \draw[<->] (9.7, -4.7) -- (9.7, 0.3);
+%   \draw (10, -3.2) node {H};
+%   \draw[fill=lightgray] (6.6, -3.5) rectangle (9.4, -0.9);
+%   \draw (8, -0.3)  node[align=center] {\cs{vfill}};
+%   \draw (8, -2.2) node[align=center] {text};
+%   \draw (8, -4) node[align=center] {\cs{vfill}};
+%   \draw[->, line width=4pt, draw=gray] (8, 0.3) -- (8, 4.5);
+%   \draw[draw=gray] (6.5, 4.5) -- (9.5, 4.5);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${} < 0$, \meta{vpos} = [c]}
+% \label{fig:bot-c}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [b]}
+%
+% The  \cs{vbox} contains a \cs{vfill}, followed by the text.
+% Because it ends with the text, it gets an additional depth equal to
+% the depth of the last line of the text.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline, but its depth is H + that depth. In other words the baseline
+% of the last text line is H below the top.
+%
+% Because \meta{vpos}  = \texttt{[b]} we want the baseline of the last
+% textline to shift to the baseline of the last tabular row. The amount
+% of the shift is H.  See fig.~\ref{fig:bot-b}.
+% 
+% \begin{figure}[htpb]
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.8, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%   \draw (0, 0.3) node {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (5.9, 0.3); 
+% 
+%   \draw (6.5, 0.3) rectangle (9.5, -5.1); 
+%   \draw[<->] (9.7, -4.7) -- (9.7, 0.3);
+%   \draw (10, -3.2) node {H};
+%   \draw[fill=lightgray] (6.6, -5) rectangle (9.4, -2);
+%   \draw (8, -1)  node[align=center] {{vfill}};
+%   \draw (8, -3.5) node[align=center] {text};
+%   \draw (0, 0.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (10, 0.3); 
+%   \draw[dashed] (6.3, -4.7) -- (10, -4.7); 
+%   \draw (3.5, -4.7) node {baseline of last text line};
+%   \draw[->, line width=4pt, draw=gray] (8.5, -4.7) -- (8.5, 0.3); 
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${} < 0$, \meta{vpos} = [b]}
+% \label{fig:bot-b}
+% \end{figure}
+%
+% \subsection{Overview}
+% \label{sec:overview}
+% 
+% \begin{tabular}{| l | l | l |}
+%     \hline
+%   \meta{vpos} & \meta{nrows} > 0  & \meta{nrows} < 0 \\
+%   \hline
+%   \texttt{[t]}  & h            &  $\textrm{H} - \textrm{h1} -\textrm{h2} + \textrm{h}$  \\
+%   \texttt{[c]}  & h1          &  $\textrm{H} - \textrm{h2}$ \\
+%   \texttt{[b]}  & h1 + h2 &   H \\
+%   \hline
+%                    &  x          &   $\textrm{H} - \textrm{h1} -\textrm{h2} + x$ \\
+% \hline
+%   \end{tabular}
+% 
 % \Finale
 \endinput
