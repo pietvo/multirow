@@ -111,9 +111,7 @@
   \else\vtop{\vskip-\multirow@dima\box0\vss}\fi
 }
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
-\newcommand\STneed[1]{%
-       \noalign{\ifdim\ST@pageleft<#1\relax
-         \global\ST@pageleft=\z@\fi}}
+\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
 \endinput
 %%
 %% End of file `multirow.sty'.

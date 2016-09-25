@@ -60,7 +60,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{347}
+% \CheckSum{344}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -687,8 +687,7 @@
 % \DescribeMacro{\STneed}
 % Therefore \Package{multirow} provides a command \cs{STneed} to be used
 % in a \environment{supertabular} that specifies how much space we need
-% on the page. Due to the way \Package{supertabular} works, this command
-% must be given 2 or 3 rows before the multirow block. For example:
+% on the page. For example:
 % \begin{verbatim}
 % \tabletail{\hline}
 % \begin{supertabular}{|l|l|l|}
@@ -696,11 +695,11 @@
 % \hline
 % Sept. 20 & 10:00 & event 1\\ 
 % \hline
-% \STneed {3cm}
 % Sept. 21 & 10:00 & event 2\\
 % \hline 
 % Sept. 22 & 10:00 & event 3\\  
 % \hline  
+% \STneed {3cm}
 % \multirow{3}*{Sept. 23} & 10:00 & event 4\\
 % \cline{2-3}
 %               & 12:00 & event 5 \\
@@ -1165,9 +1164,7 @@
 % This macro can be used in a \environment{supertabular} to indicate how
 % much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.
 %    \begin{macrocode}
-\newcommand\STneed[1]{%
-       \noalign{\ifdim\ST@pageleft<#1\relax
-         \global\ST@pageleft=\z@\fi}}
+\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
 %    \end{macrocode}
 % \end{macro}
 % \iffalse
