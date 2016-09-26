@@ -41,6 +41,45 @@
   \cr
   \noalign{\nobreak\vskip-\arrayrulewidth}}
 }}
+\DeclareOption{supertabular}{%
+\AtBeginDocument{%
+\def\ST@tabularcr{%
+  {\ifnum0=`}\fi
+  \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\def\MRST@xtabularcr{%
+  \@ifnextchar[%]
+    {\MRST@argtabularcr}%
+    {\ifnum0=`{\fi}\cr\MRST@cr}}
+\def\MRST@argtabularcr[#1]{%
+  \ifnum0=`{\fi}%
+  \ifdim #1>\z@
+    \unskip\MRST@xargarraycr{#1}
+  \else
+    \MRST@yargarraycr{#1}%
+  \fi}
+\def\MRST@xargarraycr#1{%
+  \@tempdima #1\advance\@tempdima \dp \@arstrutbox
+  \vrule \@height\z@ \@depth\@tempdima \@width\z@ \cr
+  \noalign{\global\ST@toadd=#1}\MRST@cr}
+\def\MRST@yargarraycr#1{%
+  \cr\noalign{\vskip #1\global\MRST@toadd=#1}\MRST@cr}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\advance\ST@pageleft -\ST@stretchht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@}}
+}
+\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
+}
 \ProcessOptions
 \newlength{\multirow@colwidth}
 \newcount\multirow@cnta
@@ -112,7 +151,6 @@
   \else\vtop{\vskip-\multirow@dima\box0\vss}\fi
 }
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
-\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
 \endinput
 %%
 %% End of file `multirow.sty'.

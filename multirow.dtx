@@ -60,7 +60,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{344}
+% \CheckSum{440}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -124,7 +124,7 @@
 % \item Package option \texttt{debug}.
 % \item Package option \texttt{longtable} to work around a bug in
 % \Package{longtable}. See section~\ref{sec:use-with-longtable}.
-% \item The \cs{STneed} command to support \Package{supertabular}. See
+% \item Package option \texttt{supertabular} to support \Package{supertabular}. See
 % section~\ref{sec:use-with-supertabular}. 
 % \item Better positioning in some cases.
 % \item More examples.
@@ -678,19 +678,20 @@
 % Unfortunately, \Package{supertabular} does not have a way to specify
 % that a pagebreak should be suppressed. I.e. \verb+\\*+ does not
 % suppress a pagebreak.
-% \DescribeMacro{\shrinkheight}
-% \Package{Supertabular} has a command \cs{shrinkheight} that can be used to decrease or
-% increase the amount of space left on the page for the table. 
-% So you would want to use something like \cs{shrinkheight\{3cm\}}
-% before and \cs{shrinkheight\{-3cm\}} after the multirow. But when the
-% pagebreak occurs before the multirow (and after the \cs{shrinkheight})
-% the page height will have been reset, so the
-% \cs{shrinkheight\{-3cm\}} makes the page too large. So this will not
-% really work reliably.
+% Therefore \Package{multirow} provides a package option
+% \texttt{supertabular} that redefines \verb+\\*+ inside a
+% \environment{supertabular} to suppress the pagebreak. You should use
+% this to end the intermediate rows in a multirow block. However, this
+% does not cause \environment{supertabular} to consider breaking the
+% page before the \cs{multirow}, contrary to \environment{longtable}.
+% Thus the table may become too long.
+% 
 % \DescribeMacro{\STneed}
-% Therefore \Package{multirow} provides a command \cs{STneed} to be used
+% Therefore when the \texttt{supertabular} option is given,
+% \Package{multirow} also provides a command \cs{STneed} to be used
 % in a \environment{supertabular} that specifies how much space we need
-% on the page. For example:
+% on the page. Then if there is not enough space, a pagebreak will occur
+% at that place. For example:
 % \begin{verbatim}
 % \tabletail{\hline}
 % \begin{supertabular}{|l|l|l|}
@@ -702,10 +703,10 @@
 % \hline 
 % Sept. 22 & 10:00 & event 3\\  
 % \hline  
-% \STneed {3cm}
-% \multirow{3}*{Sept. 23} & 10:00 & event 4\\
+% \STneed {2cm}
+% \multirow{3}*{Sept. 23} & 10:00 & event 4\\*
 % \cline{2-3}
-%               & 12:00 & event 5 \\
+%               & 12:00 & event 5 \\*
 % \cline{2-3}
 %               & 15:00 & event 6 \\
 % \hline 
@@ -714,8 +715,8 @@
 % \ldots & \ldots & \ldots \\
 % \end{verbatim}
 % 
-% You will have to experiment a bit with the place and the value to see
-% what works. In general it is best to exaggerate the required space a bit.
+% You will have to experiment a bit with the value to see
+% what works. Sometimes it is better to exaggerate the required space a bit.
 %
 % \subsection{Dealing with tall multirow entries}
 % \label{sec:dealing-with-tall}
@@ -958,10 +959,91 @@
   \cr
   \noalign{\nobreak\vskip-\arrayrulewidth}}
 }}
+%    \end{macrocode}
+% \end{macro}
+% 
+% \changes{v1.9b}{2016/09/26}{Implement the \texttt{supertabular} option
+% and the \cs{STneed} command.}
+% The package option \texttt{supertabular} redefines \verb+\\*+ inside a
+% \environment{supertabular}.
+% The redefinition is delayed until the \verb+\begin{document}+.
+%    \begin{macrocode}
+\DeclareOption{supertabular}{%
+\AtBeginDocument{%
+%    \end{macrocode}
+% \begin{macro}{\ST@tabularcr}
+% This macro is the definition of \verb+\\+ inside a
+% \environment{supertabular}.  We check for a \verb+*+, and if it is
+% present we call our own version, otherwise the
+% \environment{supertabular} version. 
+%    \begin{macrocode}
+\def\ST@tabularcr{%
+  {\ifnum0=`}\fi
+  \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\MRST@xtabularc}
+% \begin{macro}{\MRST@argtabularc}
+% \begin{macro}{\MRST@xargtabularc}
+% \begin{macro}{\MRST@yargtabularc}
+% These are copies of the corresponding macros from
+% \Package{supertabular}, but instead of \cs{ST@cr} they call \cs{MRST@cr}.
+%    \begin{macrocode}
+\def\MRST@xtabularcr{%
+  \@ifnextchar[%]
+    {\MRST@argtabularcr}%
+    {\ifnum0=`{\fi}\cr\MRST@cr}}
+\def\MRST@argtabularcr[#1]{%
+  \ifnum0=`{\fi}%
+  \ifdim #1>\z@
+    \unskip\MRST@xargarraycr{#1}
+  \else 
+    \MRST@yargarraycr{#1}%
+  \fi}
+\def\MRST@xargarraycr#1{%
+  \@tempdima #1\advance\@tempdima \dp \@arstrutbox
+  \vrule \@height\z@ \@depth\@tempdima \@width\z@ \cr
+  \noalign{\global\ST@toadd=#1}\MRST@cr}
+\def\MRST@yargarraycr#1{%
+  \cr\noalign{\vskip #1\global\MRST@toadd=#1}\MRST@cr}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\MRST@cr}
+% This is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
+% about the space the \environment{longtable} occupies, but it doesn't
+% do the pagebreaking part.
+%    \begin{macrocode}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\advance\ST@pageleft -\ST@stretchht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@}}
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\STneed}
+% This macro can be used in a \environment{supertabular} to indicate how
+% much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.
+%    \begin{macrocode}
+\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
+}
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
 \ProcessOptions
 %    \end{macrocode}
-% 
-% \end{macro}
 % 
 % \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
 %
@@ -975,7 +1057,7 @@
 %
 % \changes{v1.9}{2016/09/15}{Give \Package{multirow} its own temp
 % registers, so that we can safely pass the box height to \Package{bigdelim}.}
-%\begin{macro}{\multirow@cnta}
+% \begin{macro}{\multirow@cnta}
 % \begin{macro}{\multirow@cntb}
 % \begin{macro}{\multirow@dima}
 %   Define two counters and a length for internal use in \cs{multirow}.
@@ -1170,14 +1252,6 @@
 % Define \cs{bigstrutjot} if not already defined.
 %    \begin{macrocode}
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
-%    \end{macrocode}
-% \end{macro}
-% \changes{v1.9b}{2016/09/25}{Implement the \cs{STneed} command.}
-% \begin{macro}{\STneed}
-% This macro can be used in a \environment{supertabular} to indicate how
-% much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.
-%    \begin{macrocode}
-\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
 %    \end{macrocode}
 % \end{macro}
 % \iffalse
