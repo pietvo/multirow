@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/24 v1.9b
+%<multirow|bigstrut|bigdelim>           [2016/09/26 v1.9b
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -122,7 +122,7 @@
 % \item Optional prefix letters (\texttt{t}, \texttt{b}) for
 % the \meta{bigstruts} parameter (see section~\ref{sect-refine-bigstrut}).
 % \item Package option \texttt{debug}.
-% \item Package option \texttt{cline} to work around a bug in
+% \item Package option \texttt{longtable} to work around a bug in
 % \Package{longtable}. See section~\ref{sec:use-with-longtable}.
 % \item The \cs{STneed} command to support \Package{supertabular}. See
 % section~\ref{sec:use-with-supertabular}. 
@@ -231,8 +231,8 @@
 % command \cs{multirowdebugtrue} and deactivated with
 % \cs{multirowdebugfalse}. When such a command is placed just before a
 % \cs{multirow}, it applies only to that specific \cs{multirow} entry.
-% \item[cline] 
-% The \texttt{cline} option redefines the \cs{cline} macro to work
+% \item[longtable] 
+% The \texttt{longtable} option redefines the \cs{cline} macro to work
 % around a bug in the \Package{longtable} package. See section \ref{sec:use-with-longtable}.
 % \end{description}
 %
@@ -643,12 +643,12 @@
 %
 % In this case if the ``Sept. 23'' entry comes close to the bottom of the
 % page, you want to prevent the pagebreak to occur in the middle of this
-% entry. You can do this by anding the rows with \verb+\\*+ instead of \verb+\\+.
+% entry. You can do this by ending the intermediate rows with \verb+\\*+ instead of \verb+\\+.
 %
 % \begin{verbatim}
 % \multirow{3}*{Sept. 23} & 10:00 & event 3 \\*
 %               & 12:00 & event 4 \\*
-%               & 15:00 & event 5 \\*
+%               & 15:00 & event 5 \\
 % \end{verbatim}
 %
 % There is, however, a bug in \Package{longtable}, that causes the
@@ -660,10 +660,10 @@
 % \cline{2-3}
 %               & 12:00 & event 4 \\*
 % \cline{2-3}
-%               & 15:00 & event 5 \\*
+%               & 15:00 & event 5 \\
 % \end{verbatim}
 %
-% \Package{multirow} has a package option \texttt{cline} that redefines
+% \Package{multirow} has a package option \texttt{longtable} that redefines
 % \cs{cline} so that the \verb+\\*+ will also work when followed by
 % \cs{cline}. The code comes from David Carlisle.
 % 
@@ -671,19 +671,22 @@
 % \label{sec:use-with-supertabular}
 %
 % \index{supertabular=\environment{supertabular}|usage}
-% With the package \Package{supertabular} there is the same requirement
+% \index{xtab=\environment{xtab}|usage}
+% With the package \Package{supertabular} (or the augmented version
+% \Package{xtab}) there is the same requirement
 % to keep the rows of a multirow together when a pagebreak occurs.
 % Unfortunately, \Package{supertabular} does not have a way to specify
 % that a pagebreak should be suppressed. I.e. \verb+\\*+ does not
 % suppress a pagebreak.
 % \DescribeMacro{\shrinkheight}
-% There is a command \cs{shrinkheight} that can be used to decrease or
+% \Package{Supertabular} has a command \cs{shrinkheight} that can be used to decrease or
 % increase the amount of space left on the page for the table. 
 % So you would want to use something like \cs{shrinkheight\{3cm\}}
 % before and \cs{shrinkheight\{-3cm\}} after the multirow. But when the
 % pagebreak occurs before the multirow (and after the \cs{shrinkheight})
 % the page height will have been reset, so the
-% \cs{shrinkheight\{-3cm\}} makes the page too large.
+% \cs{shrinkheight\{-3cm\}} makes the page too large. So this will not
+% really work reliably.
 % \DescribeMacro{\STneed}
 % Therefore \Package{multirow} provides a command \cs{STneed} to be used
 % in a \environment{supertabular} that specifies how much space we need
@@ -713,6 +716,15 @@
 % 
 % You will have to experiment a bit with the place and the value to see
 % what works. In general it is best to exaggerate the required space a bit.
+%
+% \subsection{Dealing with tall multirow entries}
+% \label{sec:dealing-with-tall}
+% 
+% Sometimes you have a \cs{multirow} entry that is taller than the rows
+% that it is supposed to span. For example:
+% 
+%
+% 
 %
 % \section{Using \Package{bigstrut}}
 %
@@ -925,14 +937,15 @@
 % \end{macro}
 % \end{macro}
 % 
-% \changes{v1.9b}{2016/09/24}{Implement the \texttt{cline} option.}
+% \changes{v1.9b}{2016/09/24}{Implement the \texttt{longtable} option.}
 % \begin{macro}{\cline}
-% The package option \texttt{cline} redefines the \cs{cline} macro to
+% The package option \texttt{longtable} redefines the \cs{cline} macro to
 % work around a bug in \Package{longtable}. See section \ref{sec:use-with-longtable}\footnote{%
 % Thanks to David Carlisle. See
 % \url{http://tex.stackexchange.com/questions/52100/longtable-multirow-problem-with-cline-and-nopagebreak#answer-52101} }.
 %    \begin{macrocode}
-\DeclareOption{cline}{%
+\DeclareOption{longtable}{%
+\AtBeginDocument{%
 \def\@cline#1-#2\@nil{%
   \omit
   \@multicnt#1%
@@ -944,7 +957,7 @@
   \leaders\hrule\@height\arrayrulewidth\hfill
   \cr
   \noalign{\nobreak\vskip-\arrayrulewidth}}
-}
+}}
 \ProcessOptions
 %    \end{macrocode}
 % 
@@ -1159,7 +1172,7 @@
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
 %    \end{macrocode}
 % \end{macro}
-% \changes{v1.9b}{2016/09/24}{Implement the \cs{STneed} command.}
+% \changes{v1.9b}{2016/09/25}{Implement the \cs{STneed} command.}
 % \begin{macro}{\STneed}
 % This macro can be used in a \environment{supertabular} to indicate how
 % much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.

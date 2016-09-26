@@ -23,11 +23,12 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/09/24 v1.9b
+           [2016/09/26 v1.9b
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
-\DeclareOption{cline}{%
+\DeclareOption{longtable}{%
+\AtBeginDocument{%
 \def\@cline#1-#2\@nil{%
   \omit
   \@multicnt#1%
@@ -39,7 +40,7 @@
   \leaders\hrule\@height\arrayrulewidth\hfill
   \cr
   \noalign{\nobreak\vskip-\arrayrulewidth}}
-}
+}}
 \ProcessOptions
 \newlength{\multirow@colwidth}
 \newcount\multirow@cnta
