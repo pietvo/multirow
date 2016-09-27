@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/26 v1.9b
+%<multirow|bigstrut|bigdelim>           [2016/09/27 v2.0
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -80,6 +80,7 @@
 %   Right brace   \}     Tilde         \~}
 %
 % \changes{v1.7}{2016/09/13}{Give all the files the same version number}
+% \changes{v2.0}{2016/09/27}{Release v2.0}
 %
 % \GetFileInfo{multirow.sty}
 %
@@ -130,8 +131,9 @@
 % \item Package option \texttt{supertabular} to better support \Package{supertabular}. See
 % section~\ref{sec:use-with-supertabular}.
 % \item Better positioning in some cases.
-% \item More examples.
+% \item Lots of documentation.
 % \item The distribution is now based on a \texttt{.dtx} file.
+% \item Backwards compatible with v1.6.
 % \end{itemize}
 %
 % \section{Using \Package{multirow}}\label{sec:multirow}
@@ -789,14 +791,15 @@
 % out of its block. We must now enlarge the other rows, and that is
 % something \cs{multirow} cannot do.
 %
-% An example (Please don't take this as a medical advice):
+% An example:
+% (Don't take this as a medical advice. The names are fake anyway.)
 % \begin{verbatim}
 % \begin{tabular}{| p{2mm} l | p{5cm} |}
 %  \hline
 %  \multicolumn{2}{|l|}{\textbf{Medicine \& dose}}
 %                               & \textbf{Possible Side effects} \\
 %  \hline
-%  \multicolumn{2}{|l|}{Aspirin}
+%  \multicolumn{2}{|l|}{Spirino}
 %                      & \multirow{3}={Confusion,
 %                        hallucinations, rapid breathing,
 %                        seizure (convulsions);
@@ -807,7 +810,7 @@
 %  \cline{1-2}
 %    & maintenance: 100-400 mg/day & \\
 %  \hline
-%  \multicolumn{2}{|l|}{Prozac}
+%  \multicolumn{2}{|l|}{Conzac}
 %                      & \multirow{3}={Anxiety; nervousness;
 %                       insomnia; anorexia; mild bradycardia;
 %                       SA node slowing; weight loss;
@@ -826,7 +829,7 @@
 %  \multicolumn{2}{|l|}{\textbf{Medicine \& dose}}
 %                               & \textbf{Possible Side effects} \\
 %  \hline
-%  \multicolumn{2}{|l|}{Aspirin}
+%  \multicolumn{2}{|l|}{Spirino}
 %                      & \multirow{3}={Confusion,
 %                        hallucinations, rapid breathing,
 %                        seizure (convulsions);
@@ -837,7 +840,7 @@
 %  \cline{1-2}
 %    & maintenance: 100-400 mg/day & \\
 %  \hline
-%  \multicolumn{2}{|l|}{Prozac}
+%  \multicolumn{2}{|l|}{Conzac}
 %                      & \multirow{3}={Anxiety; nervousness;
 %                       insomnia; anorexia; mild bradycardia;
 %                       SA node slowing; weight loss;
@@ -866,7 +869,7 @@
 %   \multicolumn{2}{|l|}{\textbf{Medicine \& dose}}
 %                               & \textbf{Possible Side effects} \\
 %   \hline
-%  \multicolumn{2}{|l|}{Aspirin}
+%  \multicolumn{2}{|l|}{Spirino}
 %                      & \multirow{3}={Confusion,
 %                        hallucinations, rapid breathing,
 %                        seizure (convulsions);
@@ -879,7 +882,7 @@
 %     & & \\
 %     & & \\
 %   \hline
-%  \multicolumn{2}{|l|}{Prozac}
+%  \multicolumn{2}{|l|}{Conzac}
 %                      & \multirow{3}={Anxiety; nervousness;
 %                       insomnia; anorexia; mild bradycardia;
 %                       SA node slowing; weight loss;
@@ -919,19 +922,24 @@
 % 2\cs{bigstrutjot}s, we set \cs{bigstrutjot} to 8pt. The
 % \Package{booktabs} package adds some extra vertical space around the rules,
 % therefore when using the normal \environment{tabular} environment, it
-% is probably better to make the struts a little bit bigger.
+% is probably better to make the struts a little bit bigger, or a bit
+% smaller with \Package{booktabs}. After some experimentation it appeared
+% that a \cs{bigstrutjot} of \texttt{7pt} was enough. Of course we added
+% the \meta{bigstruts} parameter of \texttt{[tb6]} to the second
+% multirow. Please note that this is not possible with our own struts,
+% unless we cheat.
 %
 % \index{booktabs=\environment{booktabs}|usage}
 % Now with \Package{booktabs} the code becomes:
 % \begin{verbatim}
 % \newcommand{\mystrut}{\rule[-8pt]{0pt}{20pt}}
-% \setlength{\bigstrutjot}{8pt}
+% \setlength{\bigstrutjot}{7pt}
 % \begin{tabular}{ p{2mm} l  p{5cm} }
 %  \toprule
 %  \multicolumn{2}{l}{\textbf{Medicine \& dose}}
 %                               & \textbf{Possible Side effects} \\
 %  \cmidrule(r){1-2} \cmidrule(l){3-3}
-%  \multicolumn{2}{l}{Aspirin}
+%  \multicolumn{2}{l}{Spirino} \mystrut
 %                      & \multirow{3}={Confusion,
 %                        hallucinations, rapid breathing,
 %                        seizure (convulsions);
@@ -942,8 +950,8 @@
 %  \cmidrule(r){1-2}
 %      & maintenance: 100-400 mg/day \mystrut & \\
 %  \midrule
-%  \multicolumn{2}{l}{Prozac} \bigstrut
-%                      & \multirow{3}={Anxiety; nervousness;
+%  \multicolumn{2}{l}{Conzac} \bigstrut
+%                      & \multirow{3}[tb6]={Anxiety; nervousness;
 %                       insomnia; anorexia; mild bradycardia;
 %                       SA node slowing; weight loss;
 %                       solar photosensitivity; hyponatremia;
@@ -958,13 +966,13 @@
 % \end{verbatim}
 %
 % \newcommand{\mystrut}{\rule[-8pt]{0pt}{20pt}}
-% \setlength{\bigstrutjot}{8pt}
+% \setlength{\bigstrutjot}{7pt}
 % \begin{tabular}{ p{2mm} l  p{5cm} }
 %  \toprule
 %  \multicolumn{2}{l}{\textbf{Medicine \& dose}}
 %                               & \textbf{Possible Side effects} \\
 %  \cmidrule(r){1-2} \cmidrule(l){3-3}
-%  \multicolumn{2}{l}{Aspirin}
+%  \multicolumn{2}{l}{Spirino} \mystrut
 %                      & \multirow{3}={Confusion,
 %                        hallucinations, rapid breathing,
 %                        seizure (convulsions);
@@ -975,8 +983,8 @@
 %  \cmidrule(r){1-2}
 %      & maintenance: 100-400 mg/day \mystrut & \\
 %  \midrule
-%  \multicolumn{2}{l}{Prozac} \bigstrut
-%                      & \multirow{3}={Anxiety; nervousness;
+%  \multicolumn{2}{l}{Conzac} \bigstrut
+%                      & \multirow{3}[tb6]={Anxiety; nervousness;
 %                       insomnia; anorexia; mild bradycardia;
 %                       SA node slowing; weight loss;
 %                       solar photosensitivity; hyponatremia;
