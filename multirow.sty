@@ -23,7 +23,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/09/27 v2.0
+           [2016/10/06 v2.1
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -97,7 +97,7 @@
 \long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
     \if #1t\relax\else\vfill\fi
     \multirowsetup #3\if #1b\relax\else\vfill\fi}}
-%% \multirow [vpos] {nrows} [bigstruts] {width} [fixup] {text}
+%% \multirow [vpos] {nrows} [bigstruts] {width} [vmove] {text}
 \newcommand\multirow[2][c]{\@multirow[#1]{#2}}
 \def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
 \def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%

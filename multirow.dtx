@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/09/27 v2.0
+%<multirow|bigstrut|bigdelim>           [2016/10/06 v2.1
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -144,10 +144,11 @@
 % rows and columns that the text spans the multirow block. Usually this
 % covers one column, but by combining it with \cs{multicolumn} more
 % columns can be covered.
+% \changes{v2.1a}{2016/10/06}{Rename \meta{fixup} to \meta{vmove} as in The LaTeX Companion.}
 %
 % The basic syntax is:
 % \begin{quote}
-%   \cmd{\multirow}\oarg{vpos}\marg{nrows}\oarg{bigstruts}\marg{width}\oarg{fixup}\marg{text}
+%   \cmd{\multirow}\oarg{vpos}\marg{nrows}\oarg{bigstruts}\marg{width}\oarg{vmove}\marg{text}
 % \end{quote}
 % where
 % \begin{description}
@@ -177,8 +178,8 @@
 %   be used, and \texttt{=} to indicate that the specified width of the column in
 %   which the \cs{multirow} entry is set should be used.
 %
-% \item[\meta{fixup}] is a length used for fine tuning: the text will be
-%   raised (or lowered, if \meta{fixup} is negative) by that length
+% \item[\meta{vmove}] is a length used for fine tuning: the text will be
+%   raised (or lowered, if \meta{vmove} is negative) by that length
 %   above (below) wherever it would otherwise have gone.
 %
 % \item[\meta{text}] is the actual text of the construct.  If the width
@@ -375,7 +376,7 @@
 % can make about the height is the number of rows${}\times{}$the normal
 % height of a row. It tries to center the text in that space, but that space
 % is too low in this example. Therefore the text is at the top of the
-% box. If you want it to be centered, you have to supply a \meta{fixup}
+% box. If you want it to be centered, you have to supply a \meta{vmove}
 % parameter to shift it down.
 % \item We have used an \cs{extrarowheight}\footnote{This is only
 % available with the \Package{array} package, which \Package{tabulary}
@@ -434,7 +435,7 @@
 %
 % In this case the text would be centered somewhere in the
 % bottom row, which would make it stick out of the bottom. Therefore we
-% applied a \meta{fixup} of 12mm. The \meta{fixup} usually requires some experimentation.
+% applied a \meta{vmove} of 12mm. The \meta{vmove} usually requires some experimentation.
 %
 % \subsection{Fine Tuning}
 % \label{sec:fine-tuning}
@@ -442,22 +443,22 @@
 % If any of the spanned rows are unusually large, or if you're using the
 % \Package{bigstrut} package and \cs{bigstrut}s are used asymetrically about the
 % centerline of the spanned rows, the vertical centering may not come
-% out right.  Use the \meta{fixup} parameter in this case.
+% out right.  Use the \meta{vmove} parameter in this case.
 %
 % It's just about impossible to deal correctly with descenders.  The
 % text will be set up centred, but it may then have a baseline that
 % doesn't match the baseline of the stuff beside it, in particular if
 % the stuff beside it has descenders and \meta{text} does not.  This may
 % result in a small misalignment.  About all that can be done is to do a
-% final touchup on \meta{text}, using the fixup optional parameter.
+% final touchup on \meta{text}, using the \meta{vmove} optional parameter.
 % (Hint:  If you use a measure like \texttt{.1ex}, there's a reasonable
-% chance that the fixup will still be correct if you change the point
+% chance that the \meta{vmove} will still be correct if you change the point
 % size.)
 %
 % \cs{multirow} is mainly designed for use with \environment{tabular}, as
 % opposed to \environment{array}, environments.  It might not work well in an
 % array environment if there are big formulas in some rows; in that case you can use the
-% \meta{fixup} parameter to refine the result.
+% \meta{vmove} parameter to refine the result.
 %
 % If you use \cs{multirow} with the \Package{colortbl} package you have
 % \index{colortbl=\Package{colortbl}|usage}
@@ -769,7 +770,7 @@
 % specifies that it should cover 3 rows. However, the second row is not
 % the vertical center in this case because the third row is much taller.
 %
-% To remedy this, the \meta{fixup} parameter could be used. However, in
+% To remedy this, the \meta{vmove} parameter could be used. However, in
 % this case it would be easier to pretend that \cs{multirow} spans 6
 % rows (the total number of lines in the last column). So use
 % \verb+\multirow{6}+\ldots{} and we get:
@@ -1391,7 +1392,7 @@
 % First collect all the parameters and replace missing optional parameters by their default values.
 % \changes{v1.8}{2016/09/14}{Add the optional first parameter \meta{vpos}.}
 %    \begin{macrocode}
-%% \multirow [vpos] {nrows} [bigstruts] {width} [fixup] {text}
+%% \multirow [vpos] {nrows} [bigstruts] {width} [vmove] {text}
 \newcommand\multirow[2][c]{\@multirow[#1]{#2}}
 \def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
 \def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%
@@ -1505,7 +1506,7 @@
     \fi
   \fi
 %    \end{macrocode}
-% Finally, we add the \meta{fixup} parameter (\verb+#5+), and go into
+% Finally, we add the \meta{vmove} parameter (\verb+#5+), and go into
 % horizontal mode. Then we shift the box up by putting a \cs{vskip} above it,
 % and add it to the output. Because of the \cs{vskip} the resulting box
 % will have a height 0. \\
@@ -1610,7 +1611,7 @@
 %
 % In this section we explain the \cs{vbox} positioning in \cs{multirow}.
 % The positioning depends on the \meta{nrows}, \meta{vpos},
-% \meta{bigstruts} and \meta{fixup} parameters. The box is constructed with \cs{vtop}. The
+% \meta{bigstruts} and \meta{vmove} parameters. The box is constructed with \cs{vtop}. The
 % algorithm of \cs{vtop} is described in \emph{The \TeX{}book}, p.~81.
 %
 % Each case is described by a figure. In the figure the lefthand column
@@ -1637,8 +1638,8 @@
 % h2 = $\textrm{depth of a tabular row} + \textrm{botstrut}$
 %
 % Note: the following descriptions describe the vertical shift of the
-% box without taking the \meta{fixup} into account. In all cases
-% \meta{fixup} has to be added if it is given.
+% box without taking the \meta{vmove} into account. In all cases
+% \meta{vmove} has to be added if it is given.
 %
 % \subsection{Case \meta{nrows}${}> 0$}
 %
