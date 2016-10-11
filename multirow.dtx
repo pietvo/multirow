@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/10/06 v2.1
+%<multirow|bigstrut|bigdelim>           [2016/10/11 v2.1
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -45,6 +45,7 @@
 \usepackage{tabulary}
 \usepackage{longtable}
 \usepackage{booktabs}
+\usepackage{calc}
 \usepackage{url}
 \usepackage{tikz}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
@@ -61,7 +62,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{440}
+% \CheckSum{434}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -144,7 +145,7 @@
 % rows and columns that the text spans the multirow block. Usually this
 % covers one column, but by combining it with \cs{multicolumn} more
 % columns can be covered.
-% \changes{v2.1a}{2016/10/06}{Rename \meta{fixup} to \meta{vmove} as in The LaTeX Companion.}
+% \changes{v2.1}{2016/10/06}{Rename \meta{fixup} to \meta{vmove} as in The LaTeX Companion.}
 %
 % The basic syntax is:
 % \begin{quote}
@@ -459,6 +460,45 @@
 % opposed to \environment{array}, environments.  It might not work well in an
 % array environment if there are big formulas in some rows; in that case you can use the
 % \meta{vmove} parameter to refine the result.
+%
+% In some cases you might want to align the multirow entry with the top
+% of the other row cells, for example if you have a large capital in it.
+% when you use \meta{vpos} = \texttt{[t]}, the baselines will be
+% aligned, which is the wrong thing in this case. You can then do the
+% positioning with the \meta{vmove} parameter and let \LaTeX{} calculate
+% the amount. For example:
+%
+% \begin{quote}
+% \begin{verbatim}
+% \usepackage{calc}
+% \newlength{\shiftdown}
+% \setlength{\shiftdown}{\heightof{\Huge\bfseries B}-\heightof{f}}
+% . . .
+% \begin{tabular}{cll}
+%   \toprule
+%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B} 
+%                     & foo  & Lorem ipsum dolor sit    \\
+%                     & bar  & Maecenas sed purus       \\
+%                     & baz  & Nullam luctus id tellus  \\
+%                     & qux  & Aenean consequat commodo \\
+%   \bottomrule
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \newlength{\shiftdown}
+% \setlength{\shiftdown}{\heightof{\Huge\bfseries B}-\heightof{f}}
+% \begin{tabular}{cll}
+%   \toprule
+%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B} 
+%                     & foo  & Lorem ipsum dolor sit    \\
+%                     & bar  & Maecenas sed purus       \\
+%                     & baz  & Nullam luctus id tellus  \\
+%                     & qux  & Aenean consequat commodo \\
+%   \bottomrule
+% \end{tabular}
+% \end{quote}
 %
 % If you use \cs{multirow} with the \Package{colortbl} package you have
 % \index{colortbl=\Package{colortbl}|usage}
@@ -1462,12 +1502,9 @@
   \fi \fi
 %    \end{macrocode}
 % Now position the \cs{vbox} properly. More details are given in the
-% appendix. We set the depth of the \cs{vbox}
-% to 0, so that it will not influence the depth of the current row. The
-% overview of the shift amount can be found in section~\ref{sec:overview}.
-%    \begin{macrocode}
-  \dp0=\z@
-%    \end{macrocode}
+% appendix. The overview of the calculation of the shift amount can be
+% found in section~\ref{sec:overview}.
+%
 % If \meta{nrows}${}> 0$: \\
 % If \meta{vpos} = \texttt{[t]}, then the box is already positioned
 % correctly (the baseline is on the baseline of the row). However, later
@@ -1490,7 +1527,8 @@
     \fi
 %    \end{macrocode}
 % If \meta{nrows}${}< 0$: \\
-% If \meta{vpos} = \texttt{[t]}, shift the box up $\textrm{H} - \textrm{h1} -\textrm{h2} + \textrm{h}$.  See fig.~\ref{fig:bot-t}.\\
+% If \meta{vpos} = \texttt{[t]}, shift the box up $\textrm{H} -
+% \textrm{h1} -\textrm{h2} + \textrm{h}$.  See fig.~\ref{fig:bot-t}.\\
 % If \meta{vpos} = \texttt{[c]}, shift the box up $\textrm{H} - \textrm{h2}$.  See fig.~\ref{fig:bot-c}.\\
 % If \meta{vpos} = \texttt{[b]}, shift the box up H.  See fig.~\ref{fig:bot-b}.\\
 % H is the current value of \cs{multirow@dima}.
@@ -1506,17 +1544,20 @@
     \fi
   \fi
 %    \end{macrocode}
+% \changes{v2.1}{2016/10/11}{Set depth of final \cs{vbox} to 0, to
+% prevent a tall multirow line to push the following rows downwards.}
 % Finally, we add the \meta{vmove} parameter (\verb+#5+), and go into
 % horizontal mode. Then we shift the box up by putting a \cs{vskip} above it,
 % and add it to the output. Because of the \cs{vskip} the resulting box
-% will have a height 0. \\
+% will have a height 0.  We set the depth of the \cs{vbox}
+% to 0, so that it will not influence the depth of the current row.\\
 % If \cs{multirowdebug} is true, we show the box.
 %    \begin{macrocode}
   \advance\multirow@dima#5\relax
   \leavevmode
-  \ifmultirowdebug\setbox0\vtop{\vskip-\multirow@dima\box0\vss}%
-    {\showboxdepth=5 \showboxbreadth=10 \showbox0}\box0
-  \else\vtop{\vskip-\multirow@dima\box0\vss}\fi
+  \setbox0\vtop{\vskip-\multirow@dima\box0\vss}\dp0=\z@
+  \ifmultirowdebug{\showboxdepth=5 \showboxbreadth=10 \showbox0}\fi
+  \box0
 }
 %    \end{macrocode}
 % \end{macro}
@@ -1657,7 +1698,8 @@
 %
 % Alternatively, we could have omitted the \cs{vskip} in this case,
 % thereby leaving the baseline undisturbed, but this would make the code
-% unsymmetrical. Therefore we choose to set the shift amount to h here.
+% unsymmetrical. Moreover, this would not work when a non-zero
+% \meta{vmove} is present. Therefore we choose to set the shift amount to h here.
 %
 % \begin{figure}[htpb]
 %   \centering

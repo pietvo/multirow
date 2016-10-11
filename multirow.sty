@@ -23,7 +23,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/10/06 v2.1
+           [2016/10/11 v2.1
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -125,7 +125,6 @@
     \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
   \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
-  \dp0=\z@
   \ifnum\multirow@cnta>0
     \if#1t\relax\multirow@dima=\ht0\else
       \multirow@dima=\ht\@arstrutbox
@@ -146,9 +145,9 @@
   \fi
   \advance\multirow@dima#5\relax
   \leavevmode
-  \ifmultirowdebug\setbox0\vtop{\vskip-\multirow@dima\box0\vss}%
-    {\showboxdepth=5 \showboxbreadth=10 \showbox0}\box0
-  \else\vtop{\vskip-\multirow@dima\box0\vss}\fi
+  \setbox0\vtop{\vskip-\multirow@dima\box0\vss}\dp0=\z@
+  \ifmultirowdebug{\showboxdepth=5 \showboxbreadth=10 \showbox0}\fi
+  \box0
 }
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
 \endinput
