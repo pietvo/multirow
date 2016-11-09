@@ -48,6 +48,7 @@
 \usepackage{calc}
 \usepackage{url}
 \usepackage{tikz}
+\usepackage{hhline}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
 \DisableCrossrefs
 \CodelineIndex
@@ -500,10 +501,13 @@
 % \end{tabular}
 % \end{quote}
 %
+%
+% \subsection{Multirow and colored cells}\label{sec:mult-color-cells}
+%
 % If you use \cs{multirow} with the \Package{colortbl} package you have
 % \index{colortbl=\Package{colortbl}|usage}
-% to take precautions if you want to colour the column that has the
-% \cs{multirow} in it.  The \Package{colortbl} package works by colouring each cell
+% to take precautions if you want to color the column that has the
+% \cs{multirow} in it.  The \Package{colortbl} package works by coloring each cell
 % separately.  So if you use \cs{multirow} with a positive \meta{nrows}
 % value, \Package{colortbl} will first color the top cell, then
 % \cs{multirow} will typeset \meta{nrows} cells starting with this cell,
@@ -527,6 +531,64 @@
 %     cccc & \\
 %     dddd & \multirow{-3}*{bbbb}\\
 %   \end{tabular}
+% \end{quote}
+%
+% \index{hhline=\Package{hhline}|usage}
+% When you use colored multirow cells together with the
+% \Package{hhline} package you may find some white stripes in your
+% colored multirow cell. For example:
+% \begin{quote}
+% \begin{verbatim}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|~|-|}
+%    & 137\\ \hhline{|~|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|~|-|}
+%    & 137\\ \hhline{|~|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{quote}
+%
+% This can be solved by putting colored horizontal rules with the same
+% color in the colored multirow cell.
+% \begin{quote}
+% \begin{verbatim}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%    & 137\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%    & 137\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
 % \end{quote}
 %
 % \subsection{Fine tuning the \meta{bigstruts} parameter}
@@ -1175,8 +1237,7 @@
 % \index{colortbl=\Package{colortbl}|usage}
 % parameter.  This is useful in combination with \Package{colortbl} (see
 % the discussion in section \ref{sec:multirow} on \Package{multirow}).
-% If there are unusually tall rows you may have to enlarge \meta{n} (you
-% can use non-integral values).
+% If there are unusually tall rows you may have to enlarge \meta{n}.
 % If you have horizontal lines that interact with the braces you are
 % \index{hhline=\Package{hhline}|usage}
 % advised to use the \Package{hhline} package to make the lines.
