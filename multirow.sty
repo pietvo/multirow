@@ -85,7 +85,7 @@
 \newcount\multirow@cntb
 \newlength\multirow@dima
 \def\multirow@setcolwidth#1{%
-    \ifx\TY@final\@undefined \multirow@colwidth=\hsize
+    \ifx\TY@final\multirow@undefined \multirow@colwidth=\hsize
     \else
       \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
       \else \setbox0\hbox

@@ -128,7 +128,6 @@
 %
 % \begin{itemize}
 % \item Support for fractional values of \meta{nrows}.
-% \item Support for \cs{extrarowdepth}.
 % \end{itemize}
 % 
 %\subsection*{version 2.0}
@@ -1470,7 +1469,7 @@
 % This algorithm is not perfect, but good enough in most cases.
 %    \begin{macrocode}
 \def\multirow@setcolwidth#1{%
-    \ifx\TY@final\@undefined \multirow@colwidth=\hsize
+    \ifx\TY@final\multirow@undefined \multirow@colwidth=\hsize
     \else
       \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
       \else \setbox0\hbox
