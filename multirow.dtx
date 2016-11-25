@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2016/10/11 v2.1
+%<multirow|bigstrut|bigdelim>           [2016/25/11 v2.2
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -49,6 +49,9 @@
 \usepackage{url}
 \usepackage{tikz}
 \usepackage{hhline}
+\usepackage{color}
+\usepackage{etoolbox}
+\AtBeginEnvironment{macrocode}{\color{red}}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
 \DisableCrossrefs
 \CodelineIndex
@@ -63,7 +66,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{434}
+% \CheckSum{0}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -118,8 +121,17 @@
 %   single multirow, to indicate a relationship between other rows; and
 % \end{description}
 %
-% \section{Changes in version 2.0}
+% \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.2}
+%
+% \begin{itemize}
+% \item Support for fractional values of \meta{nrows}.
+% \item Support for \cs{extrarowdepth}.
+% \end{itemize}
+% 
+%\subsection*{version 2.0}
 %
 % \begin{itemize}
 % \item \cs{multirow} now has an first optional parameter \oarg{vpos}.
@@ -146,7 +158,8 @@
 % rows and columns that the text spans the multirow block. Usually this
 % covers one column, but by combining it with \cs{multicolumn} more
 % columns can be covered.
-% \changes{v2.1}{2016/10/06}{Rename \meta{fixup} to \meta{vmove} as in The LaTeX Companion.}
+% \changes{v2.1}{2016/10/06}{Rename \meta{fixup} to \meta{vmove} in the
+% documentation as in The LaTeX Companion.}
 %
 % The basic syntax is:
 % \begin{quote}
@@ -162,7 +175,8 @@
 %   will over-write it. With a positive value of \meta{nrows} the
 %   spanned columns are this row and (\meta{nrows}-1) rows below
 %   it. With a negative value of \meta{nrows} they are this row and
-%   (1-\meta{nrows}) above it.
+%   (1-\meta{nrows}) above it. Fractional values are permitted for
+%   \meta{nrows}; this allows for some fine-tuning.
 %
 % \item[\meta{bigstruts}] is mainly used if you've used the
 %   \Package{bigstrut} package.  In that case it is the total number of uses of
@@ -180,7 +194,7 @@
 %   be used, and \texttt{=} to indicate that the specified width of the column in
 %   which the \cs{multirow} entry is set should be used.
 %
-% \item[\meta{vmove}] is a length used for fine tuning: the text will be
+% \item[\meta{vmove}] is a length used for fine-tuning: the text will be
 %   raised (or lowered, if \meta{vmove} is negative) by that length
 %   above (below) wherever it would otherwise have gone.
 %
@@ -439,16 +453,18 @@
 % bottom row, which would make it stick out of the bottom. Therefore we
 % applied a \meta{vmove} of 12mm. The \meta{vmove} usually requires some experimentation.
 %
-% \subsection{Fine Tuning}
+% \subsection{Fine-Tuning}
 % \label{sec:fine-tuning}
 %
 % If any of the spanned rows are unusually large, or if you're using the
 % \Package{bigstrut} package and \cs{bigstrut}s are used asymetrically about the
 % centerline of the spanned rows, the vertical centering may not come
-% out right.  Use the \meta{vmove} parameter in this case.
+% out right.  Use the \meta{vmove} parameter in this case. Sometimes it
+% may be more helpful to just use a larger value for \meta{nrows},
+% including fractional values. See an example in section~\ref{sec:dealing-with-tall}.
 %
 % It's just about impossible to deal correctly with descenders.  The
-% text will be set up centred, but it may then have a baseline that
+% text will be set up centered, but it may then have a baseline that
 % doesn't match the baseline of the stuff beside it, in particular if
 % the stuff beside it has descenders and \meta{text} does not.  This may
 % result in a small misalignment.  About all that can be done is to do a
@@ -591,7 +607,7 @@
 % \end{tabular}
 % \end{quote}
 %
-% \subsection{Fine tuning the \meta{bigstruts} parameter}
+% \subsection{Fine-tuning the \meta{bigstruts} parameter}
 % \label{sect-refine-bigstrut}
 %
 % \cs{multirow} can calculate the height of the required multirow box
@@ -1237,7 +1253,8 @@
 % \index{colortbl=\Package{colortbl}|usage}
 % parameter.  This is useful in combination with \Package{colortbl} (see
 % the discussion in section \ref{sec:multirow} on \Package{multirow}).
-% If there are unusually tall rows you may have to enlarge \meta{n}.
+% If there are unusually tall rows you may have to enlarge \meta{n}
+% (you can use fractional values).
 % If you have horizontal lines that interact with the braces you are
 % \index{hhline=\Package{hhline}|usage}
 % advised to use the \Package{hhline} package to make the lines.
@@ -1430,16 +1447,14 @@
 %
 % \changes{v1.9}{2016/09/15}{Give \Package{multirow} its own temp
 % registers, so that we can safely pass the box height to \Package{bigdelim}.}
-% \begin{macro}{\multirow@cnta}
+% \changes{v2.2}{2016/11/25}{Eliminate \cs{multirow@cnta.}}
 % \begin{macro}{\multirow@cntb}
 % \begin{macro}{\multirow@dima}
 %   Define two counters and a length for internal use in \cs{multirow}.
 %    \begin{macrocode}
-\newcount\multirow@cnta
 \newcount\multirow@cntb
 \newlength\multirow@dima
 %    \end{macrocode}
-% \end{macro}
 % \end{macro}
 % \end{macro}
 % \begin{macro}{\multirow@setcolwidth}
@@ -1535,13 +1550,16 @@
 %
 % This is the real workhorse. It starts with splitting the
 % \meta{bigstruts} parameter, and then calculating the height of the multirow box.
-% \meta{nrows} is saved in \cs{multirow@cnta}.
+% \changes{v2.2}{2016/11/25}{Support fractional values for \meta{nrows}.}
+% Because \meta{nrows} (\verb+#2+) can be fractional, we cannot use
+% \cs{ifnum} to test for positive or negative. Therefore we use
+% \cs{ifdim} by putting a unit (\texttt{pt}) after the number.
 %    \begin{macrocode}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
+\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
   \expandafter\multirow@piii#3\relax\end%
-  \multirow@dima=\multirow@cnta\ht\@arstrutbox
-  \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
-  \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
+  \multirow@dima=#2\ht\@arstrutbox
+  \advance\multirow@dima#2\dp\@arstrutbox
+  \ifdim#2pt<\z@\multirow@dima=-\multirow@dima\fi
   \advance\multirow@dima \multirow@cntb\bigstrutjot
 %    \end{macrocode}
 % \changes{v1.9a}{2016/09/23}{Redo the \cs{vbox} calculation and positioning.}
@@ -1578,7 +1596,7 @@
 % + (\cs{bigstrutjot} \cs{ifmultirow@prefixb}).\\
 % We calculate the required shift  in \cs{multirow@dima}.
 %    \begin{macrocode}
-  \ifnum\multirow@cnta>0
+  \ifdim#2pt>\z@
     \if#1t\relax\multirow@dima=\ht0\else
       \multirow@dima=\ht\@arstrutbox
       \ifmultirow@prefixt \advance\multirow@dima\bigstrutjot\fi

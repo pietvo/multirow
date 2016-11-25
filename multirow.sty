@@ -23,7 +23,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2016/10/11 v2.1
+           [2016/25/11 v2.2
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -82,7 +82,6 @@
 }
 \ProcessOptions
 \newlength{\multirow@colwidth}
-\newcount\multirow@cnta
 \newcount\multirow@cntb
 \newlength\multirow@dima
 \def\multirow@setcolwidth#1{%
@@ -114,18 +113,18 @@
     \else \multirow@cntb=#1#2#3%
     \fi
   \fi}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{\multirow@cnta=#2%
+\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
   \expandafter\multirow@piii#3\relax\end%
-  \multirow@dima=\multirow@cnta\ht\@arstrutbox
-  \advance\multirow@dima\multirow@cnta\dp\@arstrutbox
-  \ifnum\multirow@cnta<0\multirow@dima=-\multirow@dima\fi
+  \multirow@dima=#2\ht\@arstrutbox
+  \advance\multirow@dima#2\dp\@arstrutbox
+  \ifdim#2pt<\z@\multirow@dima=-\multirow@dima\fi
   \advance\multirow@dima \multirow@cntb\bigstrutjot
   \if*#4\multirow@vbox{#1}{}{\hbox{\strut#6\strut}}%
   \else \if=#4\multirow@setcolwidth{#6}%
     \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
   \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
-  \ifnum\multirow@cnta>0
+  \ifdim#2pt>\z@
     \if#1t\relax\multirow@dima=\ht0\else
       \multirow@dima=\ht\@arstrutbox
       \ifmultirow@prefixt \advance\multirow@dima\bigstrutjot\fi
