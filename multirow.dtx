@@ -1,0 +1,2056 @@
+% \iffalse meta-comment
+%
+% Parts of this file, Copyright (C) 1994 by Jerry Leichter
+% Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
+% -------------------------------------------------------
+% 
+% This file may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either version 1.3
+% of this license or (at your option) any later version.
+% The latest version of this license is in:
+%
+%    http://www.latex-project.org/lppl.txt
+%
+% and version 1.3 or later is part of all distributions of LaTeX 
+% version 2005/12/01 or later.
+%
+% \fi
+%
+% \iffalse
+%<*driver>
+\ProvidesFile{\jobname.dtx}
+%</driver>
+% This is the variable part of the preamble
+% 
+%<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter
+%<bigdelim>%% Copyright (C) 1994 by \O ystein Bache
+%% Copyright (C) 2016 by Piet van Oostrum <piet@vanoostrum.org>
+%%
+%
+%    \begin{macrocode}
+%<multirow|bigstrut|bigdelim>\NeedsTeXFormat{LaTeX2e}
+%<multirow>\ProvidesPackage{multirow}%
+%<bigstrut>\ProvidesPackage{bigstrut}
+%<bigdelim>\ProvidesPackage{bigdelim}
+%<multirow|bigstrut|bigdelim>           [2016/11/25 v2.2
+%<multirow>                  Span multiple rows of a table]%
+%<bigstrut>                  Provide larger struts in tabulars]
+%<bigdelim>                  Create big delimiters in tabular or array]
+%    \end{macrocode}
+%
+%<*driver>
+\documentclass[a4paper]{ltxdoc}
+\usepackage[T1]{fontenc}
+\usepackage{multirow,bigstrut,bigdelim,colortbl}
+\usepackage{tabulary}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{calc}
+\usepackage{url}
+\usepackage{tikz}
+\usepackage{hhline}
+\usepackage{color}
+\usepackage{etoolbox}
+\AtBeginEnvironment{macrocode}{\color{red}}
+\newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
+\DisableCrossrefs
+\CodelineIndex
+\RecordChanges
+\let\environment\texttt
+\let\Package\textsf
+\def\bsbs{\cs{\char`\\}}
+\begin{document}
+  \DeleteShortVerb{\|}
+  \DocInput{\jobname.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \CheckSum{0}
+%
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+%
+% \changes{v1.7}{2016/09/13}{Give all the files the same version number}
+% \changes{v2.0}{2016/09/27}{Release v2.0}
+%
+% \GetFileInfo{multirow.sty}
+%
+% \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\ }
+% \DoNotIndex{\@ne}
+% \DoNotIndex{\advance,\begingroup,\catcode,\closein}
+% \DoNotIndex{\closeout,\day,\def,\edef,\else,\empty,\endgroup}
+%
+% \title{The \Package{multirow},
+%   \Package{bigstrut} and
+%   \Package{bigdelim} packages}
+% \author{Piet van Oostrum\thanks{catalogued ``active author''}\\
+%   \O ystein Bache\\
+%   Jerry Leichter\thanks{Documentation originally put together by Robin
+%     Fairbairns}}
+%
+% \date{Released \filedate, version \fileversion}
+%
+% \maketitle
+%
+% \tableofcontents
+%
+% \section{Introduction}
+% These packages offer a series of extensions to the standard \LaTeX{}
+% \texttt{tabular} environment.  Their respective functions are:
+% \begin{description}
+% \item[\Package{multirow}] which provides a construction for table cells
+%   that span more than one row of the table;
+% \item[\Package{bigstrut}] which creates struts which (slightly) stretch
+%   the table row in which they sit.
+% \item[\Package{bigdelim}] which creates an appropriately-sized
+%   delimiter (for example, brace, parenthesis or bracket) to fit in a
+%   single multirow, to indicate a relationship between other rows; and
+% \end{description}
+%
+% \section{Changes in version 2}
+% \label{sec:changes-2}
+%
+%\subsection*{version 2.2}
+%
+% \begin{itemize}
+% \item Support for fractional values of \meta{nrows}.
+% \end{itemize}
+% 
+%\subsection*{version 2.0}
+%
+% \begin{itemize}
+% \item \cs{multirow} now has an first optional parameter \oarg{vpos}.
+% \item The \meta{width} parameter can be specified as \texttt{=} to use
+% the defined width of the column in which the \cs{multirow} appears.
+% \item Optional prefix letters (\texttt{t}, \texttt{b}) for
+% the \meta{bigstruts} parameter (see section~\ref{sect-refine-bigstrut}).
+% \item Package option \texttt{debug}.
+% \item Package option \texttt{longtable} to work around a bug in
+% \Package{longtable}. See section~\ref{sec:use-with-longtable}.
+% \item Package option \texttt{supertabular} to better support \Package{supertabular}. See
+% section~\ref{sec:use-with-supertabular}.
+% \item Better positioning in some cases.
+% \item Lots of documentation.
+% \item The distribution is now based on a \texttt{.dtx} file.
+% \item Backwards compatible with v1.6.
+% \end{itemize}
+%
+% \section{Using \Package{multirow}}\label{sec:multirow}
+%
+% \DescribeMacro{\multirow}
+% \cs{multirow} sets a piece of text in a \environment{tabular} or
+% similar environment, spanning multiple rows. We will call the block of
+% rows and columns that the text spans the multirow block. Usually this
+% covers one column, but by combining it with \cs{multicolumn} more
+% columns can be covered.
+% \changes{v2.1}{2016/10/06}{Rename \meta{fixup} to \meta{vmove} in the
+% documentation as in The LaTeX Companion.}
+%
+% The basic syntax is:
+% \begin{quote}
+%   \cmd{\multirow}\oarg{vpos}\marg{nrows}\oarg{bigstruts}\marg{width}\oarg{vmove}\marg{text}
+% \end{quote}
+% where
+% \begin{description}
+% \item[\meta{vpos}] defines the vertical positioning of the text in the multirow block.
+% The default is \texttt{[c]} which means the text will be vertically centered.
+% Other options are \texttt{[t]} for top alignment and \texttt{[b]} for bottom alignment.
+% \item[\meta{nrows}] is the number of rows to span.  You should
+%   leave the other rows empty at this column, otherwise the stuff created by \cs{multirow}
+%   will over-write it. With a positive value of \meta{nrows} the
+%   spanned columns are this row and (\meta{nrows}-1) rows below
+%   it. With a negative value of \meta{nrows} they are this row and
+%   (1-\meta{nrows}) above it. Fractional values are permitted for
+%   \meta{nrows}; this allows for some fine-tuning.
+%
+% \item[\meta{bigstruts}] is mainly used if you've used the
+%   \Package{bigstrut} package.  In that case it is the total number of uses of
+%   \cs{bigstrut} within the rows being spanned.  Count 2 uses for each
+%   \cs{bigstrut}, 1 for each \cs{bigstrut}\oarg{x} where \meta{x} is
+%   either \texttt{t} or \texttt{b}.  The default is 0.
+%
+% The \meta{bigstruts} parameter can optionally be preceded by a prefix
+% letter \texttt{t}, \texttt{b} or \texttt{tb} for finer control. See
+% section \ref{sect-refine-bigstrut} for details. The letter may be
+% separated from the number by a space character.
+%
+% \item[\meta{width}] is the width to which the text is to be set.
+% Special values are \texttt{*} to indicate that the text parameter's natural width is to
+%   be used, and \texttt{=} to indicate that the specified width of the column in
+%   which the \cs{multirow} entry is set should be used.
+%
+% \item[\meta{vmove}] is a length used for fine-tuning: the text will be
+%   raised (or lowered, if \meta{vmove} is negative) by that length
+%   above (below) wherever it would otherwise have gone.
+%
+% \item[\meta{text}] is the actual text of the construct.  If the width
+%   was set explicitly, the text will be set in a \cs{parbox} of that
+%   width; you can use \bsbs{} to force linebreaks where you like.
+%
+%   If the width was given as \texttt{*} the text will be set in LR
+%   mode.  If you want a multiline entry in this case you could use a
+%   \texttt{tabular} or \texttt{array} environment in the text
+%   parameter. See for example the \environment{minitab} below.
+%
+% The width can also be given as \texttt{=} when the \cs{multirow} entry is given in a
+% column that has a defined width, for example in a \texttt{p\{\}} column, an
+% \texttt{X} column in \environment{tabularx} or a \texttt{L}, \texttt{C},
+% \texttt{R} or \texttt{J} column in a \environment{tabulary} environment.
+% The text will be set in a \cs{parbox} of that width.
+% If you give ``\texttt{=}'' in other situations, you will get strange
+% results (usually a too wide column).
+% \end{description}
+%
+% N.B. \cs{multirow} can be used in the \environment{tabular} environment and
+% most derivatives of it, for example \environment{tabularx},
+% \environment{tabulary}, \environment{supertabular}, \environment{ltablex},
+% \environment{xtab}, \environment{longtable}, \environment{tabu},
+% \environment{booktabs} and \environment{ctable}. For some of these you
+% have to pay special attention to certain cases, see below.
+%
+% \DescribeMacro{\multirowsetup}
+% Just before \meta{text} is expanded, the \cs{multirowsetup} macro is
+% expanded to set up any special environment.  Initially,
+% \cs{multirowsetup} contains just \cs{raggedright}.  It may be
+% redefined with \cs{renewcommand}.
+%
+% If you want to use both \cs{multirow} and \cs{multicolumn}
+% \index{multicolumn=\verb!*+\multicolumn+|usage}
+% on the same entry, you must put the \cs{multirow} inside the \cs{multicolumn}. The other way around will not work.
+% For example:
+% \begin{verbatim}
+%    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
+% \end{verbatim}
+%
+% \subsection{Package Options}
+% \label{sec:package-options}
+%
+% \DescribeMacro{multirowdebugtrue}
+% \DescribeMacro{multirowdebugfalse}
+% The following options are defined:
+% \begin{description}
+% \item[debug]
+% This option causes information about multirow boxes
+% to be written to the log file. This is done by the \TeX{} \cs{showbox}
+% command. Note: this will cause the \LaTeX{} compilation to be considered
+% failed, even if there is no real error.
+% This option can also be activated anywhere in the document with the
+% command \cs{multirowdebugtrue} and deactivated with
+% \cs{multirowdebugfalse}. When such a command is placed just before a
+% \cs{multirow}, it applies only to that specific \cs{multirow} entry.
+% \item[longtable]
+% The \texttt{longtable} option redefines the \cs{cline} macro to work
+% around a bug in the \Package{longtable} package. See section \ref{sec:use-with-longtable}.
+% \end{description}
+%
+%\subsection{Examples}
+%\label{sec:examples}
+%
+% An example with both \Package{multirow} and \Package{bigstrut}):
+%
+% \begin{quote}
+% \begin{verbatim}
+% \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
+% \begin{tabular}{|c|c|}
+% \hline
+% \multirow{4}{1in}{Common g text} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+% \hline
+% \multirow{3}[6]*{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\
+% \hline
+% \multirow{4}[8]{1in}{Common g text, but a bit longer.} &
+%                                    Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\\cline{2-2}
+%       & Column g2d \bigstrut\\
+% \hline
+% \multirow{4}*{\minitab[c]{Common \\ g text}} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+% \hline
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+% which will appear as:
+% \begin{quote}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     \multirow{4}{1in}{Common g text} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+%     \hline
+%     \multirow{3}[6]*{Common g text} & Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\
+%     \hline
+%     \multirow{4}[8]{1in}{Common g text, but a bit longer.} &
+%                                        Column g2a\bigstrut\\\cline{2-2}
+%       & Column g2b \bigstrut\\\cline{2-2}
+%       & Column g2c \bigstrut\\\cline{2-2}
+%       & Column g2d \bigstrut\\
+%     \hline
+%     \multirow{4}*{\minitab[c]{Common \\ g text}} & Column g2a\\
+%       & Column g2b \\
+%       & Column g2c \\
+%       & Column g2d \\
+%     \hline
+%   \end{tabular}
+%   \quad
+%   \begin{tabular}{ll}
+%     \multirow{4}{*}{Normal case} & \\
+%       & \\
+%       & \\
+%       & \\
+%     \multirow{3}[6]*{With \cs{bigstrut}s and \texttt{*} as \meta{width}} & \bigstrut\\
+%       & \bigstrut\\
+%       & \bigstrut\\
+%     \multirow{4}[8]{*}{With \cs{bigstrut}s and normal \meta{width}} & \bigstrut\\
+%       & \bigstrut\\
+%       & \bigstrut\\
+%       & \bigstrut\\
+%     \multirow{4}*{Multiline text in \cs{multirow}} & \\
+%       & \\
+%       & \\
+%       & \\
+%   \end{tabular}
+%
+% \end{quote}
+% \vspace{1ex}
+% An example with the ``\texttt{=}'' \meta{width} specifier in a
+% \environment{tabulary} (Note: The braces around the \texttt{=} may be omitted):
+%
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \begin{verbatim}
+% \setlength{\extrarowheight}{2pt}
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%      \multirow{2}{=}{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of
+%      any kind, such as race, colour, sex, language, religion,
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline
+% \end{tabulary}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \setlength{\extrarowheight}{2pt}
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%      \multirow{2}{=}{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of
+%      any kind, such as race, colour, sex, language, religion,
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline
+% \end{tabulary}
+% \end{quote}
+%
+% A few observations about this example:
+% \begin{enumerate}
+% \item  The middle column is the \cs{multirow}. You would expect it to
+% be vertically centered, but it isn't. This is because \cs{multirow}
+% doesn't know the height of the box. The only estimate \cs{multirow}
+% can make about the height is the number of rows${}\times{}$the normal
+% height of a row. It tries to center the text in that space, but that space
+% is too low in this example. Therefore the text is at the top of the
+% box. If you want it to be centered, you have to supply a \meta{vmove}
+% parameter to shift it down.
+% \item We have used an \cs{extrarowheight}\footnote{This is only
+% available with the \Package{array} package, which \Package{tabulary}
+% includes automatically.} of 2pt, to make a bit room between the
+% \cs{hline} and the following text. However, this is not applied to the
+% \cs{multirow}, because this is thought to be centered. In this case
+% you can give the \meta{vpos} parameter as \texttt{[t]}, in which case
+% \cs{multirow} will do the proper positioning.
+% \end{enumerate}
+%
+% Now with a negative \meta{nrows}.
+%
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \begin{verbatim}
+% \setlength{\extrarowheight}{2pt}
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%      \multirow{-2}{=}[12mm]{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of
+%      any kind, such as race, colour, sex, language, religion,
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline
+% \end{tabulary}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \index{extrarowheight=\verb!*+\extrarowheight+|usage}
+% \setlength{\extrarowheight}{2pt}
+% \begin{tabulary}{11cm}{|L|L|L|}
+%   \hline
+%   All human beings are born free and equal in dignity and rights. &
+%   & Everyone has the right to life, liberty and security of person. \\
+% \cline{1-1}\cline{3-3}
+%      No one shall be held in slavery or servitude; slavery and the
+%      slave trade shall be prohibited in all their forms. &
+%      \multirow{-2}{=}[12mm]{Everyone is entitled to all the rights and
+%      freedoms set forth in this Declaration, without distinction of
+%      any kind, such as race, colour, sex, language, religion,
+%      political or other opinion, national or social origin, property,
+%      birth or other status.}
+%   & No one shall be subjected to torture or to cruel, inhuman or
+%   degrading treatment or punishment. \\
+% \hline
+% \end{tabulary}
+% \end{quote}
+%
+% In this case the text would be centered somewhere in the
+% bottom row, which would make it stick out of the bottom. Therefore we
+% applied a \meta{vmove} of 12mm. The \meta{vmove} usually requires some experimentation.
+%
+% \subsection{Fine-Tuning}
+% \label{sec:fine-tuning}
+%
+% If any of the spanned rows are unusually large, or if you're using the
+% \Package{bigstrut} package and \cs{bigstrut}s are used asymetrically about the
+% centerline of the spanned rows, the vertical centering may not come
+% out right.  Use the \meta{vmove} parameter in this case. Sometimes it
+% may be more helpful to just use a larger value for \meta{nrows},
+% including fractional values. See an example in section~\ref{sec:dealing-with-tall}.
+%
+% It's just about impossible to deal correctly with descenders.  The
+% text will be set up centered, but it may then have a baseline that
+% doesn't match the baseline of the stuff beside it, in particular if
+% the stuff beside it has descenders and \meta{text} does not.  This may
+% result in a small misalignment.  About all that can be done is to do a
+% final touchup on \meta{text}, using the \meta{vmove} optional parameter.
+% (Hint:  If you use a measure like \texttt{.1ex}, there's a reasonable
+% chance that the \meta{vmove} will still be correct if you change the point
+% size.)
+%
+% \cs{multirow} is mainly designed for use with \environment{tabular}, as
+% opposed to \environment{array}, environments.  It might not work well in an
+% array environment if there are big formulas in some rows; in that case you can use the
+% \meta{vmove} parameter to refine the result.
+%
+% In some cases you might want to align the multirow entry with the top
+% of the other row cells, for example if you have a large capital in it.
+% when you use \meta{vpos} = \texttt{[t]}, the baselines will be
+% aligned, which is the wrong thing in this case. You can then do the
+% positioning with the \meta{vmove} parameter and let \LaTeX{} calculate
+% the amount. For example:
+%
+% \begin{quote}
+% \begin{verbatim}
+% \usepackage{calc}
+% \newlength{\shiftdown}
+% \setlength{\shiftdown}{\heightof{\Huge\bfseries B}-\heightof{f}}
+% . . .
+% \begin{tabular}{cll}
+%   \toprule
+%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B} 
+%                     & foo  & Lorem ipsum dolor sit    \\
+%                     & bar  & Maecenas sed purus       \\
+%                     & baz  & Nullam luctus id tellus  \\
+%                     & qux  & Aenean consequat commodo \\
+%   \bottomrule
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \newlength{\shiftdown}
+% \setlength{\shiftdown}{\heightof{\Huge\bfseries B}-\heightof{f}}
+% \begin{tabular}{cll}
+%   \toprule
+%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B} 
+%                     & foo  & Lorem ipsum dolor sit    \\
+%                     & bar  & Maecenas sed purus       \\
+%                     & baz  & Nullam luctus id tellus  \\
+%                     & qux  & Aenean consequat commodo \\
+%   \bottomrule
+% \end{tabular}
+% \end{quote}
+%
+%
+% \subsection{Multirow and colored cells}\label{sec:mult-color-cells}
+%
+% If you use \cs{multirow} with the \Package{colortbl} package you have
+% \index{colortbl=\Package{colortbl}|usage}
+% to take precautions if you want to color the column that has the
+% \cs{multirow} in it.  The \Package{colortbl} package works by coloring each cell
+% separately.  So if you use \cs{multirow} with a positive \meta{nrows}
+% value, \Package{colortbl} will first color the top cell, then
+% \cs{multirow} will typeset \meta{nrows} cells starting with this cell,
+% and later \Package{colortbl} will color the other cells, effectively
+% hiding the text in that area.  This can be solved by putting the
+% \cs{multirow} in the last row with a negative \meta{nrows} value.
+% See, for example:
+% \begin{quote}
+% \begin{verbatim}
+% \begin{tabular}{l>{\columncolor{yellow}}l}
+%   aaaa & \\
+%   cccc & \\
+%   dddd & \multirow{-3}*{bbbb}\\
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+% which will produce:
+% \begin{quote}
+%   \begin{tabular}{l>{\columncolor{yellow}}l}
+%     aaaa & \\
+%     cccc & \\
+%     dddd & \multirow{-3}*{bbbb}\\
+%   \end{tabular}
+% \end{quote}
+%
+% \index{hhline=\Package{hhline}|usage}
+% When you use colored multirow cells together with the
+% \Package{hhline} package you may find some white stripes in your
+% colored multirow cell. For example:
+% \begin{quote}
+% \begin{verbatim}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|~|-|}
+%    & 137\\ \hhline{|~|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|~|-|}
+%    & 137\\ \hhline{|~|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{quote}
+%
+% This can be solved by putting colored horizontal rules with the same
+% color in the colored multirow cell.
+% \begin{quote}
+% \begin{verbatim}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%    & 137\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+%   \begin{tabular}{|>{\columncolor{red}}c|c|}
+%   \hline
+%   \bfseries ColumnOne & \bfseries ColumnTwo\\ \hline
+%   First data & 932\\ \hline
+%    & 239\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%    & 137\\ \hhline{|>{\arrayrulecolor{red}}->{\arrayrulecolor{black}}|-|}
+%   \multirow{-3}{*}{More data} & 319\\ \hline
+%   Last data & 132\\ \hline
+% \end{tabular}
+% \end{quote}
+%
+% \subsection{Fine-tuning the \meta{bigstruts} parameter}
+% \label{sect-refine-bigstrut}
+%
+% \cs{multirow} can calculate the height of the required multirow box
+% from \meta{nrows} and \meta{bigstruts}, supposed that all the rows
+% don't have  ``unusual heights. However, there are cases when this is
+% not enough to properly position the box, especially when there is a
+% \cs{bigstrut} on top of the first row and/or one on the bottom of the
+% last row. In that case \cs{multirow} should be given additional
+% information. This is done by prefixing the \meta{bigstruts} parameter
+% with a letter (or two) indicating which of these two are present.
+%
+% See the following examples:\\ (in these examples we have
+% \verb+\setlength{\bigstrutjot}{10pt}+ to make the effect clearly visible)\\[5mm]
+% \begin{minipage}[c]{0.23\linewidth}
+%   \setlength{\bigstrutjot}{10pt}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     \multirow{3}[1]{*}{Multirow} & T \bigstrut[t] \\
+%     \cline{2-2}
+%     &  X \\
+%     \cline{2-2}
+%     &  B \\
+%     \hline
+%   \end{tabular} \\[2mm]
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     \multirow{3}[t 1]{*}{Multirow} & T \bigstrut[t] \\
+%     \cline{2-2}
+%     &  X \\
+%     \cline{2-2}
+%     &  B \\
+%     \hline
+%   \end{tabular}
+% \end{minipage}
+% \begin{minipage}[c]{0.75\linewidth}
+% \begin{verbatim}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     \multirow{3}[1]{*}{Multirow} & T \bigstrut[t] \\
+%     \cline{2-2}
+%     &  X \\
+%     \cline{2-2}
+%     &  B \\
+%     \hline
+%   \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \\[5mm]
+% In the top box in the above example the text ``Multirow'' should be centered, but it
+% is a bit below the center, because of the \cs{bigstrut[t]} in the top
+% row. We can correct this by giving the \meta{bigstruts} parameter as
+% ``t 1'', indicating a bigstrut in the top. This is done in the bottom box, where
+% \verb+\multirow{3}[t 1]{*}{Multirow}+ is used.
+%
+% A second example:\\[5mm]
+% \begin{minipage}{0.23\linewidth}
+%   \setlength{\bigstrutjot}{10pt}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     & T \\
+%     \cline{2-2}
+%     &  X \\
+%     \cline{2-2}
+%     \multirow[t]{-3}[1]{*}{Multirow} &  B \bigstrut[b] \\
+%     \hline
+%   \end{tabular} \\[2mm]
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     & T \\
+%     \cline{2-2}
+%     &  X \\
+%     \cline{2-2}
+%     \multirow[t]{-3}[b 1]{*}{Multirow} &  B \bigstrut[b] \\
+%     \hline
+%   \end{tabular}
+% \end{minipage}
+% \begin{minipage}{0.75\linewidth}
+% \begin{verbatim}
+%   \begin{tabular}{|c|c|}
+%     \hline
+%     & T \\
+%     \cline{2-2}
+%     &  X \\
+%     \cline{2-2}
+%     \multirow[t]{-3}[1]{*}{Multirow} &  B \bigstrut[b] \\
+%     \hline
+%   \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \\[5mm]
+% In the top box the \verb+\multirow[t]+ should be positioned on the
+% same height as the \texttt{T}, but it is too high, because there is a
+% \cs{bigstrut} in the bottom. We can correct that by specifying the
+% \meta{bigstruts} parameter as ``b 1'', i.e. using
+% \verb+\multirow[t]{-3}[b 1]{*}{Multirow}+.
+% \\[5mm]
+% The possibilities for the prefix are:
+% \begin{description}
+% \item[\texttt{t}] There is a bigstrut in the top, i.e. a \cs{bigstrut}
+% or \cs{bigstrut[t]} in the top row.
+% \item[\texttt{b}] There is a bigstrut in the bottom, i.e. a \cs{bigstrut}
+% or \cs{bigstrut[b]} in the bottom row.
+% \item[\texttt{tb}] They are both present. Note: this cannot be given
+% as \texttt{bt}.
+% \end{description}
+% The space between the letter(s) and the number is optional.
+% Please note that the prefix does not depend on whether the
+% \cs{multirow} is in the top or the bottom row.
+%
+% \subsection{Use with \Package{longtable}}
+% \label{sec:use-with-longtable}
+%
+% \index{longtable=\environment{longtable}|usage}
+% \index{longtabu=\environment{longtabu}|usage}
+% It is possible to use \cs{multirow} in a \environment{longtable}
+% environment (as well as in its descendent \environment{longtabu}).
+% However, care must be taken that the longtable doesn't break the
+% multirow entry when it is near the bottom of the page. For example:
+%
+% \noindent
+% \begin{minipage}[t]{0.4\linewidth}
+% \begin{longtable}{|l|l|l|}
+% \ldots & \ldots & \ldots \\
+% \hline
+% Sept. 21 & 09:00 & event 1 \\
+% \hline
+% Sept. 22 & 10:00 & event 2 \\
+% \hline
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\
+%                         & 12:00 & event 4 \\
+%                         & 15:00 & event 5 \\
+% \hline
+% Sept. 24 & 09:00 & event 6 \\
+% \hline
+% \ldots & \ldots & \ldots \\
+% \end{longtable}
+% \end{minipage}
+% \begin{minipage}[t]{0.58\linewidth}
+% \begin{verbatim}
+% \begin{longtable}{|l|l|l|}
+% \ldots & \ldots & \ldots \\
+% \hline
+% Sept. 21 & 09:00 & event 1 \\
+% \hline
+% Sept. 22 & 10:00 & event 2 \\
+% \hline
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\
+%                         & 12:00 & event 4 \\
+%                         & 15:00 & event 5 \\
+% \hline
+% Sept. 24 & 09:00 & event 6 \\
+% \hline
+% \ldots & \ldots & \ldots \\
+% \end{longtable}
+% \end{verbatim}
+% \end{minipage}
+%
+% In this case if the ``Sept. 23'' entry comes close to the bottom of the
+% page, you want to prevent the pagebreak to occur in the middle of this
+% entry. You can do this by ending the intermediate rows with \verb+\\*+ instead of \verb+\\+.
+%
+% \begin{verbatim}
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\*
+%                         & 12:00 & event 4 \\*
+%                         & 15:00 & event 5 \\
+% \end{verbatim}
+%
+% There is, however, a bug in \Package{longtable}, that causes the
+% \verb+\\*+ not to work if it is followed by a \cs{cline}, like in the
+% following example:
+%
+% \begin{verbatim}
+% \multirow{3}*{Sept. 23} & 10:00 & event 3 \\*
+% \cline{2-3}
+%                         & 12:00 & event 4 \\*
+% \cline{2-3}
+%                         & 15:00 & event 5 \\
+% \end{verbatim}
+%
+% \Package{multirow} has a package option \texttt{longtable} that redefines
+% \cs{cline} so that the \verb+\\*+ will also work when followed by
+% \cs{cline}. The code comes from David Carlisle.
+%
+% \subsection{Use with \Package{supertabular}}
+% \label{sec:use-with-supertabular}
+%
+% \index{supertabular=\environment{supertabular}|usage}
+% \index{xtab=\environment{xtab}|usage}
+% With the package \Package{supertabular} (or the augmented version
+% \Package{xtab}) there is the same requirement
+% to keep the rows of a multirow together when a pagebreak occurs.
+% Unfortunately, \Package{supertabular} does not have a way to specify
+% that a pagebreak should be suppressed. I.e. \verb+\\*+ does not
+% suppress a pagebreak.
+% Therefore \Package{multirow} provides a package option
+% \texttt{supertabular} that redefines \verb+\\*+ inside a
+% \environment{supertabular} to suppress the pagebreak. You should use
+% this to end the intermediate rows in a multirow block. However, this
+% does not cause \environment{supertabular} to consider breaking the
+% page before the \cs{multirow}, contrary to \environment{longtable}.
+% Thus the table may become too long.
+%
+% \DescribeMacro{\STneed}
+% Therefore when the \texttt{supertabular} option is given,
+% \Package{multirow} also provides a command \cs{STneed} to be used
+% in a \environment{supertabular} that specifies how much space we need
+% on the page. Then if there is not enough space, a pagebreak will occur
+% at that place. For example:
+% \begin{verbatim}
+% \tabletail{\hline}
+% \begin{supertabular}{|l|l|l|}
+% \ldots & \ldots & \ldots \\
+% \hline
+% Sept. 20 & 10:00 & event 1\\
+% \hline
+% Sept. 21 & 10:00 & event 2\\
+% \hline
+% Sept. 22 & 10:00 & event 3\\
+% \hline
+% \STneed {2cm}
+% \multirow{3}*{Sept. 23} & 10:00 & event 4\\*
+% \cline{2-3}
+%                         & 12:00 & event 5 \\*
+% \cline{2-3}
+%                         & 15:00 & event 6 \\
+% \hline
+%  Sept. 24 & 09:00 & event 7 \\
+% \hline
+% \ldots & \ldots & \ldots \\
+% \end{verbatim}
+%
+% You will have to experiment a bit with the value to see
+% what works. Sometimes it is better to exaggerate the required space a bit.
+%
+% \subsection{Dealing with tall entries}
+% \label{sec:dealing-with-tall}
+%
+% Sometimes there are rows that are taller than what is expected. This
+% section gives some hints how to deal with these situations. There are
+% two cases:
+% \begin{enumerate}
+% \item When there is an exceptionally tall row outside of the multirow
+% block the positioning of the \cs{multirow} might be wrong. This is
+% because \cs{multirow} does not have information about the heights
+% of the rows. This can happen for example when a large formula is
+% entered in a cell, or a multi-line paragraph in a \texttt{[\{\}]}
+% column. An example:
+%
+% \begin{quote}
+% \begin{verbatim}
+% \begin{tabular}{| l | l | p{4cm} |}
+%   \hline
+%   \multirow{3}*{Week 38} & Monday & Rain most of the day\\
+%   \cline{2-3}
+%                     & Tuesday & Sunny with some clouds\\
+%   \cline{2-3}
+%                     & Wednesday & A clear day with a lot of sunshine.
+%                     However, the strong wind will bring down the
+%                     temperature. \\
+%   \hline
+% \end{tabular}
+% \end{verbatim}
+%  \end{quote}
+% \begin{quote}
+% \begin{tabular}{| l | l | p{4cm} |}
+%   \hline
+%   \multirow{3}*{Week 38} & Monday & Rain most of the day\\
+%   \cline{2-3}
+%                     & Tuesday & Sunny with some clouds\\
+%   \cline{2-3}
+%                     & Wednesday & A clear day with a lot of sunshine.
+%                     However, the strong wind will bring down the
+%                     temperature. \\
+%   \hline
+% \end{tabular}
+% \end{quote}
+% The \cs{multirow} is positioned on the second row, because it
+% specifies that it should cover 3 rows. However, the second row is not
+% the vertical center in this case because the third row is much taller.
+%
+% To remedy this, the \meta{vmove} parameter could be used. However, in
+% this case it would be easier to pretend that \cs{multirow} spans 6
+% rows (the total number of lines in the last column). So use
+% \verb+\multirow{6}+\ldots{} and we get:
+% \begin{quote}
+% \begin{tabular}{| l | l | p{4cm} |}
+%   \hline
+%   \multirow{6}*{Week 38} & Monday & Rain most of the day\\
+%   \cline{2-3}
+%                     & Tuesday & Sunny with some clouds\\
+%   \cline{2-3}
+%                     & Wednesday & A clear day with a lot of sunshine.
+%                     However, the strong wind will bring down the
+%                     temperature. \\
+%   \hline
+% \end{tabular}
+% \end{quote}
+% \item The second case is when the \cs{multirow} entry is taller than
+% the surrounding normal rows. In that case the multirow text will stick
+% out of its block. We must now enlarge the other rows, and that is
+% something \cs{multirow} cannot do.
+%
+% An example:
+% (Don't take this as a medical advice. The names are fake anyway.)
+% \begin{verbatim}
+% \begin{tabular}{| p{2mm} l | p{5cm} |}
+%  \hline
+%  \multicolumn{2}{|l|}{\textbf{Medicine \& dose}}
+%                               & \textbf{Possible Side effects} \\
+%  \hline
+%  \multicolumn{2}{|l|}{Spirino}
+%                      & \multirow{3}={Confusion,
+%                        hallucinations, rapid breathing,
+%                        seizure (convulsions);
+%                        upset stomach, heartburn; severe nausea,
+%                        vomiting, or stomach pain or mild headache.} \\
+%  \cline{1-2}
+%   & initial: 200 mg/day & \\
+%  \cline{1-2}
+%    & maintenance: 100-400 mg/day & \\
+%  \hline
+%  \multicolumn{2}{|l|}{Conzac}
+%                      & \multirow{3}={Anxiety; nervousness;
+%                       insomnia; anorexia; mild bradycardia;
+%                       SA node slowing; weight loss;
+%                       solar photosensitivity; hyponatremia;
+%                       sexual dysfunction (both genders); may
+%                       alter glycemic control in diabetic patients.} \\
+%  \cline{1-2}
+%   & initial: 10 mg/day & \\
+%  \cline{1-2}
+%    & maintenance: 10-40 mg/day & \\
+%  \hline
+% \end{tabular}
+% \end{verbatim}
+% \begin{tabular}{| p{2mm} l | p{5cm} |}
+%  \hline
+%  \multicolumn{2}{|l|}{\textbf{Medicine \& dose}}
+%                               & \textbf{Possible Side effects} \\
+%  \hline
+%  \multicolumn{2}{|l|}{Spirino}
+%                      & \multirow{3}={Confusion,
+%                        hallucinations, rapid breathing,
+%                        seizure (convulsions);
+%                        upset stomach, heartburn; severe nausea,
+%                        vomiting, or stomach pain or mild headache.} \\
+%  \cline{1-2}
+%   & initial: 200 mg/day & \\
+%  \cline{1-2}
+%    & maintenance: 100-400 mg/day & \\
+%  \hline
+%  \multicolumn{2}{|l|}{Conzac}
+%                      & \multirow{3}={Anxiety; nervousness;
+%                       insomnia; anorexia; mild bradycardia;
+%                       SA node slowing; weight loss;
+%                       solar photosensitivity; hyponatremia;
+%                       sexual dysfunction (both genders); may
+%                       alter glycemic control in diabetic patients.} \\
+%  \cline{1-2}
+%   & initial: 10 mg/day & \\
+%  \cline{1-2}
+%    & maintenance: 10-40 mg/day & \\
+%  \hline
+% \end{tabular}
+% \\[2cm]
+% Both \cs{multirow} entries are too high; the first sticks out into the
+% second entry, and the second one sticks out of the table.
+%
+% There are two ways we can correct this:
+% The simplest would be to add extra empty rows to cover the overlapping
+% space. For the first entry that would be 2 extra rows; for the second
+% 4. So we add twice \verb+ & & \\+ before the third \verb+\hline+,
+% and four of these before the last \verb+\hline+.
+% This gives us just the correct table:
+% \\[5mm]
+% \begin{tabular}{| p{2mm} l | p{5cm} |}
+%   \hline
+%   \multicolumn{2}{|l|}{\textbf{Medicine \& dose}}
+%                               & \textbf{Possible Side effects} \\
+%   \hline
+%  \multicolumn{2}{|l|}{Spirino}
+%                      & \multirow{3}={Confusion,
+%                        hallucinations, rapid breathing,
+%                        seizure (convulsions);
+%                        upset stomach, heartburn; severe nausea,
+%                        vomiting, or stomach pain or mild headache.} \\
+%   \cline{1-2}
+%     & initial: 200 mg/day & \\
+%   \cline{1-2}
+%      & maintenance: 100-400 mg/day & \\
+%     & & \\
+%     & & \\
+%   \hline
+%  \multicolumn{2}{|l|}{Conzac}
+%                      & \multirow{3}={Anxiety; nervousness;
+%                       insomnia; anorexia; mild bradycardia;
+%                       SA node slowing; weight loss;
+%                       solar photosensitivity; hyponatremia;
+%                       sexual dysfunction (both genders); may
+%                       alter glycemic control in diabetic patients.} \\
+%   \cline{1-2}
+%     & initial: 10 mg/day & \\
+%   \cline{1-2}
+%      & maintenance: 10-40 mg/day & \\
+%     & & \\
+%     & & \\
+%     & & \\
+%     & & \\
+%   \hline
+% \end{tabular}
+%
+% The second way is to stretch the normal rows vertically, such that
+% they fit with the multirow entry. In this table, where the font size
+% is 10pt,  each row has a total
+% height of 12pt. For the first entry we need 24pt extra (2 rows),
+% Because this space must be divided over 3 rows that is 8pt per row,
+% making the total height of the row 20pt.
+% The normal row has a height of 8.4pt and a depth of 3.6pt (total
+% 12pt). We can add 4pt on the top and 4pt on the bottom, or any other
+% combination that adds up to 8pt. In this case I have chosen to make
+% the height 12pt and the depth 8pt. We do this with a \cs{rule} with 0 width.
+% \DescribeMacro{\mystrut}
+% \verb+\newcommand{\mystrut}{\rule[-8pt]{0pt}{20pt}}+
+% and put \cs{mystrut} in each of the first 3 rows. By defining your own
+% struts you have complete control over the layout. You can choose to
+% give some rows more space than others, or to put all the space is the
+% last row, for example.
+%
+% For the second entry we need 48pt extra (4 rows). We will use
+% \cs{bigstrut} in each row, that is 16pt per row, and as a \cs{bigstrut} is
+% 2\cs{bigstrutjot}s, we set \cs{bigstrutjot} to 8pt. The
+% \Package{booktabs} package adds some extra vertical space around the rules,
+% therefore when using the normal \environment{tabular} environment, it
+% is probably better to make the struts a little bit bigger, or a bit
+% smaller with \Package{booktabs}. After some experimentation it appeared
+% that a \cs{bigstrutjot} of \texttt{7pt} was enough. Of course we added
+% the \meta{bigstruts} parameter of \texttt{[tb6]} to the second
+% multirow. Please note that this is not possible with our own struts,
+% unless we cheat.
+%
+% \index{booktabs=\environment{booktabs}|usage}
+% Now with \Package{booktabs} the code becomes:
+% \begin{verbatim}
+% \newcommand{\mystrut}{\rule[-8pt]{0pt}{20pt}}
+% \setlength{\bigstrutjot}{7pt}
+% \begin{tabular}{ p{2mm} l  p{5cm} }
+%  \toprule
+%  \multicolumn{2}{l}{\textbf{Medicine \& dose}}
+%                               & \textbf{Possible Side effects} \\
+%  \cmidrule(r){1-2} \cmidrule(l){3-3}
+%  \multicolumn{2}{l}{Spirino} \mystrut
+%                      & \multirow{3}={Confusion,
+%                        hallucinations, rapid breathing,
+%                        seizure (convulsions);
+%                        upset stomach, heartburn; severe nausea,
+%                        vomiting, or stomach pain or mild headache.} \\
+%  \cmidrule(r){1-2}
+%     & initial: 200 mg/day \mystrut & \\
+%  \cmidrule(r){1-2}
+%      & maintenance: 100-400 mg/day \mystrut & \\
+%  \midrule
+%  \multicolumn{2}{l}{Conzac} \bigstrut
+%                      & \multirow{3}[tb6]={Anxiety; nervousness;
+%                       insomnia; anorexia; mild bradycardia;
+%                       SA node slowing; weight loss;
+%                       solar photosensitivity; hyponatremia;
+%                       sexual dysfunction (both genders); may
+%                       alter glycemic control in diabetic patients.} \\
+%  \cmidrule(r){1-2}
+%    & initial: 10 mg/day \bigstrut & \\
+%  \cmidrule(r){1-2}
+%    & maintenance: 10-40 mg/day \bigstrut  & \\
+%  \bottomrule
+% \end{tabular}
+% \end{verbatim}
+%
+% \newcommand{\mystrut}{\rule[-8pt]{0pt}{20pt}}
+% \setlength{\bigstrutjot}{7pt}
+% \begin{tabular}{ p{2mm} l  p{5cm} }
+%  \toprule
+%  \multicolumn{2}{l}{\textbf{Medicine \& dose}}
+%                               & \textbf{Possible Side effects} \\
+%  \cmidrule(r){1-2} \cmidrule(l){3-3}
+%  \multicolumn{2}{l}{Spirino} \mystrut
+%                      & \multirow{3}={Confusion,
+%                        hallucinations, rapid breathing,
+%                        seizure (convulsions);
+%                        upset stomach, heartburn; severe nausea,
+%                        vomiting, or stomach pain or mild headache.} \\
+%  \cmidrule(r){1-2}
+%     & initial: 200 mg/day \mystrut & \\
+%  \cmidrule(r){1-2}
+%      & maintenance: 100-400 mg/day \mystrut & \\
+%  \midrule
+%  \multicolumn{2}{l}{Conzac} \bigstrut
+%                      & \multirow{3}[tb6]={Anxiety; nervousness;
+%                       insomnia; anorexia; mild bradycardia;
+%                       SA node slowing; weight loss;
+%                       solar photosensitivity; hyponatremia;
+%                       sexual dysfunction (both genders); may
+%                       alter glycemic control in diabetic patients.} \\
+%  \cmidrule(r){1-2}
+%    & initial: 10 mg/day \bigstrut & \\
+%  \cmidrule(r){1-2}
+%    & maintenance: 10-40 mg/day \bigstrut  & \\
+%  \bottomrule
+% \end{tabular}
+% \end{enumerate}
+%
+% \section{Using \Package{bigstrut}}
+%
+% \DescribeMacro{\bigstrut}
+% \DescribeMacro{\bigstrutjot}
+% \cs{bigstrut}\oarg{x} produces a strut (a rule with width 0) which is \cs{bigstrutjot}
+% (\texttt{2pt} by default) higher, lower, or both than the standard
+% array/tabular strut.  Use it in table entries that are adjacent to
+% \cs{hline}s to leave an extra bit of space\,---\,according to the
+% TeXbook (page 246), ``This is a little touch that improves the
+% appearance of boxed tables; look for it as a mark of quality.''
+%
+% Although you could use \cs{bigstrut} in an array, there isn't normally
+% much point since arrays are `opened up' by \cs{jot} anyway.
+%
+% \cs{bigstrut[t]} adds height; \cs{bigstrut[b]}  adds
+% depth.  Just \cs{bigstrut} adds both.  So:  Use
+% \cs{bigstrut[t]} in the row just \emph{after} an \cs{hline};
+% \cs{bigstrut[b]} in the row just \emph{before}; and
+% \cs{bigstrut} if there are \cs{hline}s both before and after.
+%
+% Spaces after the \cs{bigstrut} are ignored, even if it has an optional
+% parameter.  Spaces before the \cs{bigstrut} are generally ignored (by a
+% single \cs{unskip}).
+%
+% \DescribeMacro{\bigstrutjot}
+% Note: The \Package{multirow} package makes use of \cs{bigstrutjot}.  If
+% both packages are used, they can be used in either order, as each checks
+% to see if the other has already defined \cs{bigstrutjot}.  However,
+% the default values they set are different: if only \Package{multirow}
+% is used, \cs{bigstrutjot} will be set to \texttt{3pt}.
+% If \Package{bigstrut} is used, with or without \Package{multirow},
+% \cs{bigstrutjot} will be \texttt{2pt}.
+%
+% \section{Using \Package{bigdelim}}
+%
+% The package is for working in a \environment{tabular} or \environment{array}
+% environment, in which the \Package{multirow} package is also used.
+%
+% \DescribeMacro{\ldelim}
+% \DescribeMacro{\rdelim}
+% Syntax of use is
+% \begin{quote}
+%   \cs{ldelim} ( \marg{n}\marg{width}\oarg{text}\\
+%   \cs{rdelim} ) \marg{n}\marg{width}\oarg{text}
+% \end{quote}
+% The commands are used in a column of a \environment{tabular} or
+% \environment{array}; they create a big parenthesis, brace or whatever
+% delimiter that extends over the \meta{n} rows starting at the one
+% containing the command.  Corresponding cells in the following rows
+% must be explicitly given as empty cells.
+%
+% The first parameter is a delimiter to be used, e.g., \cs{\char`\{}
+% \cs{\char`\}} \texttt{[} \texttt{]} \texttt{(} \texttt{)}\,---\,in fact,
+% anything that can be used with \cs{left} or \cs{right}, as appropriate.
+%
+% Here is an example:
+% \begin{quote}
+% \begin{verbatim}
+% \begin{equation}
+%   \begin{array}{ccccccc}
+%     \ldelim({4}{4mm} & x & x & x & x & \rdelim){4}{4mm}  \\
+%     & x & x & x & x &  & i \\
+%     & x & x & x & x &  & j \\
+%     & x & x & x & x &  \\
+%     &   & u & v &   &
+%   \end{array}
+% \end{equation}
+% \end{verbatim}
+% \end{quote}
+%
+% \begin{quote}
+% \begin{equation}
+%   \begin{array}{ccccccc}
+%     \ldelim({4}{4mm} & x & x & x & x & \rdelim){4}{4mm}  \\
+%     & x & x & x & x &  & i \\
+%     & x & x & x & x &  & j \\
+%     & x & x & x & x &  \\
+%     &   & u & v &   &
+%   \end{array}
+% \end{equation}
+% \end{quote}
+%
+% When \cs{ldelim} is used, the optional \meta{text} is set centred to the left of \cs{ldelim}.
+% If \cs{rdelim} is used it is set to the right of \cs{rdelim}.  The
+% \meta{width} parameter is the space that is reserved for
+% the delimiter and its text; as with the
+% \Package{multirow} package, the \meta{width} may be given as
+% \texttt{*}. Compare for example these:
+% \begin{quote}
+% \begin{minipage}{0.6\linewidth}
+% \begin{verbatim}
+% \begin{tabular}{p{2em}l}
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                         & ps \\
+%                         & pdf \\
+% \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \begin{minipage}{0.35\linewidth}
+% \begin{tabular}{p{2em}l}
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                             & ps \\
+%                             & pdf \\
+%    \end{tabular}
+%    \\[2ex]
+% \end{minipage}
+%
+% \begin{minipage}{0.6\linewidth}
+% \begin{verbatim}
+% \begin{tabular}{l@{\,}l}
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                         & ps \\
+%                         & pdf \\
+% \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \begin{minipage}{0.35\linewidth}
+%   \begin{tabular}{l@{\,}l}
+%   \ldelim\{{3}{*}[type] & dvi \\
+%                          & ps \\
+%                          & pdf \\
+%   \end{tabular}
+%   \\[2ex]
+% \end{minipage}
+% \end{quote}
+% In the first example we cheated: by using a column width that is too
+% small, we swallowed up some of the intercolumn space, at the cost of
+% an ``Overfull \cs{hbox}'' message. In the second example we did it the
+% proper way by inserting \verb+@{\,}+ to replace the default
+% intercolumn space with a narrow space.
+%
+% Also the commands may be
+% used in the last row of the extension with a negative \meta{n}
+% \index{colortbl=\Package{colortbl}|usage}
+% parameter.  This is useful in combination with \Package{colortbl} (see
+% the discussion in section \ref{sec:multirow} on \Package{multirow}).
+% If there are unusually tall rows you may have to enlarge \meta{n}
+% (you can use fractional values).
+% If you have horizontal lines that interact with the braces you are
+% \index{hhline=\Package{hhline}|usage}
+% advised to use the \Package{hhline} package to make the lines.
+%
+% In case you want to have a paragraph type text as optional parameter you could put it in a \cs{parbox}.
+% Alternatively you could add an extra column with the text in a \cs{multirow}, like in
+% \begin{quote}
+% \begin{verbatim}
+% \begin{tabular}{l@{}l@{}l}
+%    dvi   & \rdelim\}{3}{1em} & \multirow{3}{4cm}{These are the output types,
+%         that are commonly used for \TeX.} \\
+%    ps    & & \\
+%    pdf   & & \\
+% \end{tabular}
+% \end{verbatim}
+% \end{quote}
+% \begin{quote}
+% \begin{tabular}{l@{}l@{}l}
+%    dvi   & \rdelim\}{3}{1em} & \multirow{3}{4cm}{These are the output types,
+%         that are commonly used for \TeX.} \\
+%    ps   & & \\
+%    pdf   & & \\
+% \end{tabular}
+% \end{quote}
+% Note that we used \texttt{@\{\}} to eliminate the intercolumn space to get the text tight to the brace.
+% \StopEventually{%
+% \PrintChanges
+% \PrintIndex}
+%
+% \section{Implementation}
+%
+%
+%\subsection{The \Package{multirow} package}
+%\label{sec:pack-multirow}
+% \iffalse
+%<*multirow>
+% \fi
+%
+% \changes{multirow v1.0}{}{distributed anonymously, based on a Usenet posting}
+% \changes{multirow v1.1}{}{allow it to work without bigstrut.sty (Piet van Oostrum)}
+% \changes{multirow v1.2}{}{modified by Jerry Leichter for the same goal, but using a
+%   different approach which will work properly with bigstrut.sty}
+% \changes{multirow v1.2a}{}{modified by Piet van Oostrum to use \cs{vskip}
+%   instead of \cs{raise} in positioning, avoiding making rows too high
+%   when the adjustment is large}
+% \changes{multirow v1.3}{}{modified by Piet van Oostrum to work properly in a p{} column
+%    (\cs{leavevmode} added)}
+% \changes{multirow v1.4}{}{modified by Piet van Oostrum to check for the special case that
+%       the width is given as an *. In this case the natural
+%       width of the text parameter will be used and the parameter
+%       is processed in LR-mode.}
+% \changes{multirow v1.5}{}{modified by Piet van Oostrum: Added a \texttt{\%} after \texttt{\cs{hbox}\{\#5\}\cs{vfill}}.\\
+%       Added \cs{strut}s around \#5 for better vertical positioning.
+%       Additional coding for negative value of \meta{nrows}.}
+% \changes{multirow v1.6}{2004/05/05}{modified by Piet van Oostrum: Replace a space by \cs{relax} after
+%       \texttt{\cs{advance}\cs{multirow@dima}\#4}}
+%
+% \changes{v1.9a}{2016/09/23}{Implement the \texttt{debug} option.}
+%
+% \begin{macro}{\ifmultirowdebug}
+% \begin{macro}{\multirowdebugtrue}
+% \begin{macro}{\multirowdebugfalse}
+% This is a boolean to [de]activate debugging (showing the generated box
+% contents). It is activated by the \texttt{debug} package option. The
+% \cs{newif} initializes it to false.
+%    \begin{macrocode}
+\newif\ifmultirowdebug
+\DeclareOption{debug}{\multirowdebugtrue}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \changes{v1.9b}{2016/09/24}{Implement the \texttt{longtable} option.}
+% \begin{macro}{\cline}
+% The package option \texttt{longtable} redefines the \cs{cline} macro to
+% work around a bug in \Package{longtable}. See section \ref{sec:use-with-longtable}\footnote{%
+% Thanks to David Carlisle. See
+% \url{http://tex.stackexchange.com/questions/52100/longtable-multirow-problem-with-cline-and-nopagebreak#answer-52101} }.
+%    \begin{macrocode}
+\DeclareOption{longtable}{%
+\AtBeginDocument{%
+\def\@cline#1-#2\@nil{%
+  \omit
+  \@multicnt#1%
+  \advance\@multispan\m@ne
+  \ifnum\@multicnt=\@ne\@firstofone{&\omit}\fi
+  \@multicnt#2%
+  \advance\@multicnt-#1%
+  \advance\@multispan\@ne
+  \leaders\hrule\@height\arrayrulewidth\hfill
+  \cr
+  \noalign{\nobreak\vskip-\arrayrulewidth}}
+}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{v1.9b}{2016/09/26}{Implement the \texttt{supertabular} option
+% and the \cs{STneed} command.}
+% The package option \texttt{supertabular} redefines \verb+\\*+ inside a
+% \environment{supertabular}.
+% The redefinition is delayed until the \verb+\begin{document}+.
+%    \begin{macrocode}
+\DeclareOption{supertabular}{%
+\AtBeginDocument{%
+%    \end{macrocode}
+% \begin{macro}{\ST@tabularcr}
+% This macro is the definition of \verb+\\+ inside a
+% \environment{supertabular}.  We check for a \verb+*+, and if it is
+% present we call our own version, otherwise the
+% \environment{supertabular} version.
+%    \begin{macrocode}
+\def\ST@tabularcr{%
+  {\ifnum0=`}\fi
+  \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\MRST@xtabularc}
+% \begin{macro}{\MRST@argtabularc}
+% \begin{macro}{\MRST@xargtabularc}
+% \begin{macro}{\MRST@yargtabularc}
+% These are copies of the corresponding macros from
+% \Package{supertabular}, but instead of \cs{ST@cr} they call \cs{MRST@cr}.
+%    \begin{macrocode}
+\def\MRST@xtabularcr{%
+  \@ifnextchar[%]
+    {\MRST@argtabularcr}%
+    {\ifnum0=`{\fi}\cr\MRST@cr}}
+\def\MRST@argtabularcr[#1]{%
+  \ifnum0=`{\fi}%
+  \ifdim #1>\z@
+    \unskip\MRST@xargarraycr{#1}
+  \else
+    \MRST@yargarraycr{#1}%
+  \fi}
+\def\MRST@xargarraycr#1{%
+  \@tempdima #1\advance\@tempdima \dp \@arstrutbox
+  \vrule \@height\z@ \@depth\@tempdima \@width\z@ \cr
+  \noalign{\global\ST@toadd=#1}\MRST@cr}
+\def\MRST@yargarraycr#1{%
+  \cr\noalign{\vskip #1\global\MRST@toadd=#1}\MRST@cr}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\MRST@cr}
+% This is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
+% about the space the \environment{longtable} occupies, but it doesn't
+% do the pagebreaking part.
+%    \begin{macrocode}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\advance\ST@pageleft -\ST@stretchht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@}}
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\STneed}
+% This macro can be used in a \environment{supertabular} to indicate how
+% much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.
+%    \begin{macrocode}
+\def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
+}
+%    \end{macrocode}
+% \end{macro}
+%    \begin{macrocode}
+\ProcessOptions
+%    \end{macrocode}
+%
+% \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
+%
+% \changes{v1.9}{2016/09/15}{Implement the ``\texttt{!=}'' option for \cs{multirow}'s \meta{width} parameter.}
+% \begin{macro}{\multirow@colwidth}
+% \cs{multirow@colwidth} is a length that is used to implement the ``\texttt{=}'' variant of \meta{width}.
+%    \begin{macrocode}
+\newlength{\multirow@colwidth}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{v1.9}{2016/09/15}{Give \Package{multirow} its own temp
+% registers, so that we can safely pass the box height to \Package{bigdelim}.}
+% \changes{v2.2}{2016/11/25}{Eliminate \cs{multirow@cnta.}}
+% \begin{macro}{\multirow@cntb}
+% \begin{macro}{\multirow@dima}
+%   Define two counters and a length for internal use in \cs{multirow}.
+%    \begin{macrocode}
+\newcount\multirow@cntb
+\newlength\multirow@dima
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\multirow@setcolwidth}
+% This macro calculates \cs{multirow@colwidth} for an entry that has the
+% \meta{width} given as ``\texttt{=}''. We check if we are inside a
+% \environment{tabulary} environment, by checking if \cs{TY@final} is defined.
+% If not, then \cs{multirow@colwidth} = \cs{hsize}. The \environment{tabulary}
+% environment will make two passes. On the first pass, we set \cs{multirow@colwidth}
+% to the size that the text would have in LR mode (with newlines replaced
+% by spaces), so that \environment{tabulary} will gives us enough space.
+% On the second pass (characterized by \cs{TY@box} = \cs{TY@box@v}) we use
+% the value that \environment{tabulary} has given us in \cs{hsize}.
+% This algorithm is not perfect, but good enough in most cases.
+%    \begin{macrocode}
+\def\multirow@setcolwidth#1{%
+    \ifx\TY@final\multirow@undefined \multirow@colwidth=\hsize
+    \else
+      \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
+      \else \setbox0\hbox
+        {\let\\\space\let\newline\space #1}\multirow@colwidth=\wd0
+      \fi
+    \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\multirowsetup}
+% \cs{multirowsetup} is executed at the beginning of each \cs{multirow}.
+%    \begin{macrocode}
+\newcommand\multirowsetup{\raggedright}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\multirow@vbox}
+% This creates the \cs{vbox}. Parameters:\\
+% \texttt{\#1} = \meta{vpos}, \texttt{\#2} = initialization code (for
+% example to set the width of the \cs{parbox}), \texttt{\#3} = box contents.\\
+% Depending on the \meta{vpos} parameter, it will be top-aligned,
+% vertically centered, or bottom-aligned. This is done by inserting
+% \cs{vfill} in the proper places.\\
+% Note: the \cs{relax} is to protect against an empty \meta{vpos}
+% parameter.
+%    \begin{macrocode}
+\long\def\multirow@vbox#1#2#3{\setbox0\vtop to \multirow@dima{#2%
+    \if #1t\relax\else\vfill\fi
+    \multirowsetup #3\if #1b\relax\else\vfill\fi}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\multirow}
+% Make an entry that will span multiple rows of a table.\\
+% First collect all the parameters and replace missing optional parameters by their default values.
+% \changes{v1.8}{2016/09/14}{Add the optional first parameter \meta{vpos}.}
+%    \begin{macrocode}
+%% \multirow [vpos] {nrows} [bigstruts] {width} [vmove] {text}
+\newcommand\multirow[2][c]{\@multirow[#1]{#2}}
+\def\@multirow[#1]#2{\@ifnextchar[{\@@multirow[#1]#2}{\@@multirow[#1]#2[0]}}
+\def\@@multirow[#1]#2[#3]#4{\@ifnextchar[{\@xmultirow[#1]{#2}[#3]{#4}}%
+                                {\@xmultirow[#1]{#2}[#3]{#4}[0pt]}}
+%    \end{macrocode}
+% \changes{v1.9a}{2016/09/23}{Add the optional prefix to the \meta{bigstruts} parameter.}
+% \begin{macro}{\multirow@piii}
+% \begin{macro}{\ifmultirow@prefixt}
+% \begin{macro}{\multirow@prefixttrue}
+% \begin{macro}{\multirow@prefixtfalse}
+% \begin{macro}{\ifmultirow@prefixb}
+% \begin{macro}{\multirow@prefixbtrue}
+% \begin{macro}{\multirow@prefixbfalse}
+% This macro splits off a \texttt{t}, \texttt{b}, or \texttt{tb} prefix
+% of the \meta{bigstruts} parameter, and sets \cs{multirow@cntb} to
+% the numerical value. The prefix is remembered in two booleans:
+% \cs{ifmultirow@prefixt} and \cs{ifmultirow@prefixb}.
+%    \begin{macrocode}
+\newif\ifmultirow@prefixt
+\newif\ifmultirow@prefixb
+\def\multirow@piii#1#2#3\end{\multirow@prefixtfalse\multirow@prefixbfalse
+  \if t#1\multirow@prefixttrue
+    \if b#2\multirow@prefixbtrue \multirow@cntb=#3%
+    \else \multirow@cntb=#2#3%
+    \fi
+  \else
+    \if b#1\multirow@prefixbtrue \multirow@cntb=#2#3%
+    \else \multirow@cntb=#1#2#3%
+    \fi
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% This is the real workhorse. It starts with splitting the
+% \meta{bigstruts} parameter, and then calculating the height of the multirow box.
+% \changes{v2.2}{2016/11/25}{Support fractional values for \meta{nrows}.}
+% Because \meta{nrows} (\verb+#2+) can be fractional, we cannot use
+% \cs{ifnum} to test for positive or negative. Therefore we use
+% \cs{ifdim} by putting a unit (\texttt{pt}) after the number.
+%    \begin{macrocode}
+\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
+  \expandafter\multirow@piii#3\relax\end%
+  \multirow@dima=#2\ht\@arstrutbox
+  \advance\multirow@dima#2\dp\@arstrutbox
+  \ifdim#2pt<\z@\multirow@dima=-\multirow@dima\fi
+  \advance\multirow@dima \multirow@cntb\bigstrutjot
+%    \end{macrocode}
+% \changes{v1.9a}{2016/09/23}{Redo the \cs{vbox} calculation and positioning.}
+%  The text is set in a \cs{vbox} by calling \cs{multirow@vbox}. \\
+% If the \meta{width} parameter is \texttt{*} set just the text in the \cs{vbox}.
+%    \begin{macrocode}
+  \if*#4\multirow@vbox{#1}{}{\hbox{\strut#6\strut}}%
+%    \end{macrocode}
+% Otherwise set it in a \cs{parbox} inside a \cs{vbox}. \\
+% If the \meta{width} parameter is given as ``\texttt{=}'', we calculate
+% \cs{multirow@colwidth} and use that as width of the \cs{parbox}.
+%    \begin{macrocode}
+  \else \if=#4\multirow@setcolwidth{#6}%
+    \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
+%    \end{macrocode}
+% Otherwise the given parameter is used as the width of the \cs{parbox}.
+%    \begin{macrocode}
+  \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
+  \fi \fi
+%    \end{macrocode}
+% Now position the \cs{vbox} properly. More details are given in the
+% appendix. The overview of the calculation of the shift amount can be
+% found in section~\ref{sec:overview}.
+%
+% If \meta{nrows}${}> 0$: \\
+% If \meta{vpos} = \texttt{[t]}, then the box is already positioned
+% correctly (the baseline is on the baseline of the row). However, later
+% the top of the box will be taken as the reference point (instead
+% of the baseline), therefore we take
+% the height of the box (h) as the shift amount.  See fig.~\ref{fig:top-t}.\\
+% If \meta{vpos} = \texttt{[c]} we shift it up h1 (see fig.~\ref{fig:top-c}), where h1 = \cs{ht}\cs{@arstrutbox}
+% + (\cs{bigstrutjot} \cs{ifmultirow@prefixt}).\\
+% If \meta{vpos} = \texttt{[b]} we shift it up h1 + h2 (see fig.~\ref{fig:top-b}), where h2 = \cs{dp}\cs{@arstrutbox}
+% + (\cs{bigstrutjot} \cs{ifmultirow@prefixb}).\\
+% We calculate the required shift  in \cs{multirow@dima}.
+%    \begin{macrocode}
+  \ifdim#2pt>\z@
+    \if#1t\relax\multirow@dima=\ht0\else
+      \multirow@dima=\ht\@arstrutbox
+      \ifmultirow@prefixt \advance\multirow@dima\bigstrutjot\fi
+      \if#1b\relax \advance\multirow@dima\dp\@arstrutbox
+        \ifmultirow@prefixb \advance\multirow@dima\bigstrutjot\fi
+      \fi
+    \fi
+%    \end{macrocode}
+% If \meta{nrows}${}< 0$: \\
+% If \meta{vpos} = \texttt{[t]}, shift the box up $\textrm{H} -
+% \textrm{h1} -\textrm{h2} + \textrm{h}$.  See fig.~\ref{fig:bot-t}.\\
+% If \meta{vpos} = \texttt{[c]}, shift the box up $\textrm{H} - \textrm{h2}$.  See fig.~\ref{fig:bot-c}.\\
+% If \meta{vpos} = \texttt{[b]}, shift the box up H.  See fig.~\ref{fig:bot-b}.\\
+% H is the current value of \cs{multirow@dima}.
+%    \begin{macrocode}
+  \else
+    \if#1b\relax\else
+      \advance\multirow@dima-\dp\@arstrutbox
+      \ifmultirow@prefixb \advance\multirow@dima-\bigstrutjot\fi
+      \if#1t\relax\advance\multirow@dima-\ht\@arstrutbox
+        \ifmultirow@prefixt \advance\multirow@dima-\bigstrutjot\fi
+        \advance\multirow@dima\ht0
+      \fi
+    \fi
+  \fi
+%    \end{macrocode}
+% \changes{v2.1}{2016/10/11}{Set depth of final \cs{vbox} to 0, to
+% prevent a tall multirow line to push the following rows downwards.}
+% Finally, we add the \meta{vmove} parameter (\verb+#5+), and go into
+% horizontal mode. Then we shift the box up by putting a \cs{vskip} above it,
+% and add it to the output. Because of the \cs{vskip} the resulting box
+% will have a height 0.  We set the depth of the \cs{vbox}
+% to 0, so that it will not influence the depth of the current row.\\
+% If \cs{multirowdebug} is true, we show the box.
+%    \begin{macrocode}
+  \advance\multirow@dima#5\relax
+  \leavevmode
+  \setbox0\vtop{\vskip-\multirow@dima\box0\vss}\dp0=\z@
+  \ifmultirowdebug{\showboxdepth=5 \showboxbreadth=10 \showbox0}\fi
+  \box0
+}
+%    \end{macrocode}
+% \end{macro}
+% \begin{macro}{\bigstrutjot}
+% Define \cs{bigstrutjot} if not already defined.
+%    \begin{macrocode}
+\@ifundefined{bigstrutjot}{\newdimen\bigstrutjot \bigstrutjot=\jot}{}
+%    \end{macrocode}
+% \end{macro}
+% \iffalse
+%</multirow>
+% \fi
+%
+% \subsection{The \Package{bigstrut} package}
+% \label{sec:pack-bigstrut}
+%
+% \iffalse
+%<*bigstrut>
+% \fi
+% \changes{bigstrut v1.0}{1994/05/31}{Initial version}
+% \begin{macro}{\bigstrutjot}
+% This is a length. By default it is set to 2pt. You can change it
+% with the \cs{setlength} command.
+%    \begin{macrocode}
+\@ifundefined{bigstrutjot}{\newdimen\bigstrutjot}{}\bigstrutjot=2pt
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\bigstrut}
+% This macro inserts a strut. Depending on the optional parameter it extends
+% above and/or below the standard array/tabular strut.
+%    \begin{macrocode}
+\newcommand\bigstrut[1][x]{%
+  \unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
+  \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
+  \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
+  \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}
+%    \end{macrocode}
+% \end{macro}
+%
+% \iffalse
+%</bigstrut>
+% \fi
+%
+% \subsection{The \Package{bigdelim} package}
+% \label{sec:pack-bigdelim}
+% \iffalse
+%<*bigdelim>
+% \fi
+% \changes{bigdelim v0.0}{1994/10/02}{bigbrace.sty by \O ystein Bache}
+% \changes{bigdelim v1.0}{1999/11/05}{Initial version bigdelim.sty}
+%    \begin{macrocode}
+\RequirePackage{multirow}
+%    \end{macrocode}
+% \begin{macro}{\ldelim}
+% This macro typesets a left delimiter. It calls \cs{multirow} with the proper parameters.
+% The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
+% zero width next to it. The height is the one that \cs{multirow}
+% already has calculated in \cs{multirow@dima}.
+%    \begin{macrocode}
+\newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
+\def\@ldelim#1#2#3[#4]%
+ {\multirow{#2}{#3}{%
+   \ensuremath
+     {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
+     \textrm{#4}\right#1}}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\rdelim}
+% This macro typesets a right delimiter. It calls \cs{multirow} with the
+% proper parameters, similar to \cs{ldelim}.
+%    \begin{macrocode}
+\newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
+\def\@rdelim#1#2#3[#4]%
+ {\multirow{#2}{#3}{%
+   \ensuremath
+     {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
+       \textrm{#4}\right.}}}
+%    \end{macrocode}
+% \end{macro}
+% \iffalse
+%</bigdelim>
+% \fi
+%
+% \appendix
+%
+% \section{Appendix}
+% \label{sec:appendix}
+%
+% \index{vbox=\verb!*+\vbox+|usage}
+%
+% In this section we explain the \cs{vbox} positioning in \cs{multirow}.
+% The positioning depends on the \meta{nrows}, \meta{vpos},
+% \meta{bigstruts} and \meta{vmove} parameters. The box is constructed with \cs{vtop}. The
+% algorithm of \cs{vtop} is described in \emph{The \TeX{}book}, p.~81.
+%
+% Each case is described by a figure. In the figure the lefthand column
+% indicates the context of the tabular in which the multirow appears,
+% i.e \meta{nrows} rows. The righthand column is the multirow box that
+% is to be inserted. The baseline is the natural position where the material will be
+% positioned in the first place. Later it will be shifted up
+% to the desired location.
+%
+% H is the calculated height of the box: $\meta{nrows} \times
+% \textrm{the natural height of a row}  + \meta{bigstruts} \times
+% \mathrm{\cs{bigstrutjot}} $.
+%
+% {topstrut} = \cs{bigstrutjot} if there is  a \cs{bigstrut} on the top of
+% the first row (as indicated by the \texttt{t} prefix in the
+% \meta{bigstruts} parameter), otherwise 0.
+%
+% {botstrut} = \cs{bigstrutjot} if there is  a \cs{bigstrut} on bottom of
+% the last row (as indicated by the \texttt{b} prefix in the
+% \meta{bigstruts} parameter), otherwise 0.
+%
+% h1 = $\textrm{height of a tabular row} + \textrm{topstrut}$
+%
+% h2 = $\textrm{depth of a tabular row} + \textrm{botstrut}$
+%
+% Note: the following descriptions describe the vertical shift of the
+% box without taking the \meta{vmove} into account. In all cases
+% \meta{vmove} has to be added if it is given.
+%
+% \subsection{Case \meta{nrows}${}> 0$}
+%
+% \subsubsection*{\meta{vpos}  = [t]}
+%
+% In this case the \cs{vbox} contains the text followed by a \cs{vfill}.
+% Such a \cs{vbox} has a height that is the height of the top line of
+% the text (h). H = height + depth of the box. This means that the box is
+% already positioned correctly. However, later we will put the box
+% inside another \cs{vbox}, with a \cs{vskip} on to of it, and this will
+% make the top of the box its reference point. Therefore we will
+% have to shift it up again over a distance h
+% (which probably will be different from the height of the tabular row).
+% So the total shift becomes h. See fig.~\ref{fig:top-t}.
+%
+% Alternatively, we could have omitted the \cs{vskip} in this case,
+% thereby leaving the baseline undisturbed, but this would make the code
+% unsymmetrical. Moreover, this would not work when a non-zero
+% \meta{vmove} is present. Therefore we choose to set the shift amount to h here.
+%
+% \begin{figure}[htpb]
+%   \centering
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%
+%   \draw (6.5, 4) rectangle (9.5, -1);
+%   \draw[<->] (9.7, -1) -- (9.7, 4);
+%   \draw (10, 1.5) node {H};
+%   \draw[<->] (10, 3.3) -- (10, 4);
+%   \draw (10.3, 3.7) node {h};
+%   \draw[fill=lightgray] (6.6, 1) rectangle (9.4, 3.9);
+%   \draw (8, 0)  node[align=center] {\cs{vfill}};
+%   \draw (8, 2) node[align=center] {text};
+%   \draw[draw=gray] (6.6, 3) -- (9.4, 3);
+%   \draw[dashed] (6.2, 3.3) -- (9.8, 3.3);
+%   \draw[->, line width=4pt, draw=gray] (8, 3.3) -- (8, 4);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${}> 0$, \meta{vpos} = [t]}
+% \label{fig:top-t}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [c]}
+%
+% In this case  the \cs{vbox} contains a \cs{vfill}, the text, and another \cs{vfill}.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline. Because both boxes have the same size (H), they can be
+% aligned by shifting the \cs{vbox} up over h1.  See fig.~\ref{fig:top-c}.
+%
+% \begin{figure}[htpb]
+%   \centering
+%\begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%
+%   \draw (6.5, 3.3) rectangle (9.5, -1.7);
+%   \draw[<->] (9.7, -1.7) -- (9.7, 3.3);
+%   \draw (10, 0.8) node {H};
+%   \draw[fill=lightgray] (6.6, -0.5) rectangle (9.4, 2.1);
+%   \draw (8, 2.7)  node[align=center] {\cs{vfill}};
+%   \draw (8, 0.8) node[align=center] {text};
+%   \draw (8, -1) node[align=center] {\cs{vfill}};
+%   \draw[->, line width=4pt, draw=gray] (8, 3.3) -- (8, 4.5);
+%   \draw[draw=gray] (6.5, 4.5) -- (9.5, 4.5);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${}> 0$, \meta{vpos} = [c]}
+% \label{fig:top-c}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [b]}
+%
+% Now the  \cs{vbox} contains a \cs{vfill}, followed by the text.
+% Because it ends with the text, it gets an additional depth equal to
+% the depth of the last line of the text.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline, but its depth is H + that depth. In other words the baseline
+% of the last text line is H below the top.
+%
+% Because \meta{vpos}  = \texttt{[b]} we want the baseline of the last
+% textline to shift to the baseline of the last tabular row. The amount
+% of the shift is h1 + h2.  See fig.~\ref{fig:top-b}.
+%
+% \begin{figure}[htpb]
+%   \centering
+%\begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%
+%   \draw (6.5, 3.3) rectangle (9.5, -2.1);
+%   \draw[<->] (9.7, -1.7) -- (9.7, 3.3);
+%   \draw (10, 0.8) node {H};
+%   \draw[fill=lightgray] (6.6, -2) rectangle (9.4, 1);
+%   \draw (8, 2)  node[align=center] {{\cs{vfill}}};
+%   \draw (8, -0.5) node[align=center] {text};
+%   \draw (0, 0.3) node (baseline) {baseline};
+%   \draw[dashed] (6.3, -1.7) -- (10, -1.7);
+%   \draw (3.5, -1.7) node (baseline) {baseline of last text line};
+%   \draw[dashed] (1.7, 0.3) -- (10, 0.3);
+%   \draw[->, line width=4pt, draw=gray] (8.5, -1.7) -- (8.5, 0.3);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${}> 0$, \meta{vpos} = [b]}
+% \label{fig:top-b}
+% \end{figure}
+%
+% \subsection{Case \meta{nrows}${}<0$}
+%
+% \meta{nrows}${}<0$ when the multirow is positioned in the last row of
+% the multirow block.
+%
+% \subsubsection*{\meta{vpos}  = [t]}
+%
+% In this case the \cs{vbox} contains the text followed by a \cs{vfill}.
+% Such a \cs{vbox} has a height that is the height of the top line of
+% the text. The baseline is aligned with the baseline of the last row.
+% Because \meta{vpos}  = [t], we want it to be aligned with the baseline
+% of the first row. Therefore it has to be shifted up $\textrm{H} -
+% \textrm{h1} - \textrm{h2}$. But because later the height of the box
+% will be set to 0, we must also add the current height h. Therefore the
+% total shift becomes $\textrm{H} - \textrm{h1} - \textrm{h2} +
+% \textrm{h}$.  See fig.~\ref{fig:bot-t}.
+%
+% \begin{figure}[htpb]
+%   \centering
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (9, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%   \draw (0, 0.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (5.9, 0.3);
+%
+%   \draw (6.5, 1) rectangle (9.5, -4);
+%   \draw[<->] (9.7, -4) -- (9.7, 1);
+%   \draw (10, -1.5) node {H};
+%   \draw[<->] (10, 0.3) -- (10, 1);
+%   \draw (10.3, 0.7) node {h};
+%   \draw[fill=lightgray] (6.6, -2) rectangle (9.4, 0.9);
+%   \draw (8, -3)  node[align=center] {\cs{vfill}};
+%   \draw (8, -1) node[align=center] {text};
+%   \draw[draw=gray] (6.6, 0) -- (9.4, 0);
+%   \draw[dashed] (6.2, 0.3) -- (10.3, 0.3);
+%   \draw[->, line width=4pt, draw=gray] (8, 0.3) -- (8, 3.3);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${} < 0$, \meta{vpos} = [t]}
+% \label{fig:bot-t}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [c]}
+%
+% In this case  the \cs{vbox} contains a \cs{vfill}, the text, and another \cs{vfill}.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline. Because both boxes have the same size (H), they can be
+% aligned by shifting the \cs{vbox} up over $\textrm{H} - \textrm{h2}$.
+% See fig.~\ref{fig:bot-c}.
+%
+% \begin{figure}[htpb]
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.8, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%   \draw (0, 0.3) node {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (5.9, 0.3);
+%
+%   \draw (6.5, 0.3) rectangle (9.5, -4.7);
+%   \draw[<->] (9.7, -4.7) -- (9.7, 0.3);
+%   \draw (10, -3.2) node {H};
+%   \draw[fill=lightgray] (6.6, -3.5) rectangle (9.4, -0.9);
+%   \draw (8, -0.3)  node[align=center] {\cs{vfill}};
+%   \draw (8, -2.2) node[align=center] {text};
+%   \draw (8, -4) node[align=center] {\cs{vfill}};
+%   \draw[->, line width=4pt, draw=gray] (8, 0.3) -- (8, 4.5);
+%   \draw[draw=gray] (6.5, 4.5) -- (9.5, 4.5);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${} < 0$, \meta{vpos} = [c]}
+% \label{fig:bot-c}
+% \end{figure}
+%
+% \subsubsection*{\meta{vpos}  = [b]}
+%
+% The  \cs{vbox} contains a \cs{vfill}, followed by the text.
+% Because it ends with the text, it gets an additional depth equal to
+% the depth of the last line of the text.
+% Such a \cs{vbox} has a height 0, i.e. the top of the box is on the
+% baseline, but its depth is H + that depth. In other words the baseline
+% of the last text line is H below the top.
+%
+% Because \meta{vpos}  = \texttt{[b]} we want the baseline of the last
+% textline to shift to the baseline of the last tabular row. The amount
+% of the shift is H.  See fig.~\ref{fig:bot-b}.
+%
+% \begin{figure}[htpb]
+% \begin{tikzpicture}
+%   \draw (2, -0.5) rectangle (5,4.5);
+%   \foreach \y in {0,...,4} \draw (2, \y) -- (5, \y);
+%   \draw (0, 4.2) node (topstrut) {topstrut};
+%   \draw[->] (topstrut) -- (2, 4.2);
+%   \draw (0, -0.25) node (botstrut) {botstrut};
+%   \draw[->] (botstrut) -- (2, -0.25);
+%   \draw[<->] (5.3, -0.5) -- (5.3, 4.5);
+%   \draw (5.5, 2) node {H};
+%   \draw (0, 3.3) node {baseline};
+%   \draw[dashed] (1.7, 3.3) -- (5.8, 3.3);
+%   \draw[<->] (5.5, 3.3) -- (5.5, 4.5);
+%   \draw (5.9, 3.9) node {h1};
+%   \draw[<->] (5.5, -0.5) -- (5.5, 0.3);
+%   \draw (5.9, -0.1) node {h2};
+%   \draw (0, 0.3) node {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (5.9, 0.3);
+%
+%   \draw (6.5, 0.3) rectangle (9.5, -5.1);
+%   \draw[<->] (9.7, -4.7) -- (9.7, 0.3);
+%   \draw (10, -3.2) node {H};
+%   \draw[fill=lightgray] (6.6, -5) rectangle (9.4, -2);
+%   \draw (8, -1)  node[align=center] {{vfill}};
+%   \draw (8, -3.5) node[align=center] {text};
+%   \draw (0, 0.3) node (baseline) {baseline};
+%   \draw[dashed] (1.7, 0.3) -- (10, 0.3);
+%   \draw[dashed] (6.3, -4.7) -- (10, -4.7);
+%   \draw (3.5, -4.7) node {baseline of last text line};
+%   \draw[->, line width=4pt, draw=gray] (8.5, -4.7) -- (8.5, 0.3);
+% \end{tikzpicture}
+% \caption{Case \meta{nrows}${} < 0$, \meta{vpos} = [b]}
+% \label{fig:bot-b}
+% \end{figure}
+%
+% \subsection{Overview}
+% \label{sec:overview}
+%
+% \begin{tabular}{| l | l | l |}
+%     \hline
+%   \meta{vpos} & \meta{nrows} > 0  & \meta{nrows} < 0 \\
+%   \hline
+%   \texttt{[t]}  & h            &  $\textrm{H} - \textrm{h1} -\textrm{h2} + \textrm{h}$  \\
+%   \texttt{[c]}  & h1          &  $\textrm{H} - \textrm{h2}$ \\
+%   \texttt{[b]}  & h1 + h2 &   H \\
+%   \hline
+%                    &  x          &   $\textrm{H} - \textrm{h1} -\textrm{h2} + x$ \\
+% \hline
+%   \end{tabular}
+%
+% \Finale
+\endinput
