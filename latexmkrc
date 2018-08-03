@@ -10,4 +10,4 @@ sub makeglo2gls {
 
 $makeindex = 'makeindex -s gind.ist %S';
 
-push @generated_exts, 'glo', 'gls', 'glg';
+push @generated_exts, 'glo', 'gls', 'glg', 'sty';
