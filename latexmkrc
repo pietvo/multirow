@@ -16,5 +16,5 @@ system('ls -lR > xxx.xxx');
 
 add_cus_dep('dtx', 'sty', 1, 'makedtx2sty');
 sub makedtx2sty {
-    system("latex \"$_[0].dtx\"");
+    system("latex \"$_[0].dtx\"; ls -lR >> xxx.xxx");
 }
