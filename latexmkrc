@@ -12,7 +12,7 @@ $makeindex = 'makeindex -s gind.ist -o %D %S';
 push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
 
-add_cus_dep('pdf', 'sty', 1, 'makedtx2sty');
+add_cus_dep('aux', 'sty', 1, 'makedtx2sty');
 sub makedtx2sty {
     system("latex \"$_[0].ins\"; ls -lR >> xxx.txt");
-}
+}p
