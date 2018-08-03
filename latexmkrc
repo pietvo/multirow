@@ -9,7 +9,7 @@ sub makeglo2gls {
 
 $makeindex = 'makeindex -s gind.ist %S';
 
-push @generated_exts, 'glo', 'gls', 'glg', 'sty';
+push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'xxx';
 
 
-system('pwd > xxx.xxx');
+system('ls -lR > xxx.xxx');
