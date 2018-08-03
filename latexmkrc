@@ -13,3 +13,8 @@ push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'xxx';
 
 
 system('ls -lR > xxx.xxx');
+
+add_cus_dep('dtx', 'sty', 1, 'makedtx2sty');
+sub makedtx2sty {
+    system("latex \"$_[0].dtx\"");
+}
