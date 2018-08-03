@@ -9,12 +9,12 @@ sub makeglo2gls {
 
 $makeindex = 'makeindex -s gind.ist %S';
 
-push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'xxx';
+	push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'xxx';
 
 
 system('ls -lR > xxx.xxx');
 
-add_cus_dep('dtx', 'sty', 1, 'makedtx2sty');
+add_cus_dep('pdf', 'sty', 1, 'makedtx2sty');
 sub makedtx2sty {
     system("latex \"$_[0].dtx\"; ls -lR >> xxx.xxx");
 }
