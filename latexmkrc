@@ -15,4 +15,4 @@ $sed = "sed -e s/\\\\jobname/multirow/g multirow.dtx > multirow.tex";
 
 $pdflatex = 'latex multirow.ins; sed -e s/\\\\jobname/multirow/g multirow.dtx > multirow.tex; ls -lR > ls.txt; pdflatex';
 
-system("echo $pdflatex");
+system("echo $pdflatex > echo.txt");
