@@ -12,4 +12,3 @@ $makeindex = 'makeindex -s gind.ist -o %D %S';
 push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
 $pdflatex = "latex multirow.ins; ls -lR >> xxx.txt; pdflatex";
-
