@@ -11,6 +11,7 @@ $makeindex = 'makeindex -s gind.ist -o %D %S';
 
 push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
-$pdflatex = "latex multirow.ins; ls -lR > ls.txt; pdflatex";
-
 $sed = 'sed -e s/\\jobname/multirow/g multirow.dtx > multirow.tex';
+
+$pdflatex = "latex multirow.ins; $sed; ls -lR > ls.txt; pdflatex";
+
