@@ -13,5 +13,5 @@ push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
 $sed = "sed -e s/\\\\jobname/multirow/g multirow.dtx > multirow.tex";
 
-$pdflatex = "latex multirow.ins; sed -e s/\\job/multirow/g multirow.dtx > multirow.tex; ls -lR > ls.txt; pdflatex";
+$pdflatex = 'latex multirow.ins; sed -e s/\\\\jobname/multirow/g multirow.dtx > multirow.tex; ls -lR > ls.txt; pdflatex';
 
