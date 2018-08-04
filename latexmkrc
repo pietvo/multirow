@@ -13,7 +13,3 @@ push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
 $pdflatex = "latex multirow.ins; ls -lR >> xxx.txt; pdflatex";
 
-add_cus_dep('ins', 'sty', 1, 'makedtx2sty');
-sub makedtx2sty {
-    system("latex \"$_[0].ins\"; ls -lR >> xxx.txt");
-}
