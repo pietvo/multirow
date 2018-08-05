@@ -1,5 +1,3 @@
-use File::Basename;
-
 $ENV{'TZ'} = 'America/La Paz';
 
 $base = 'multirow';
@@ -25,11 +23,10 @@ $create_tex = "sed -e s/\\\\\\\\jobname/$src/g $base.dtx > $base.tex";
 
 $pdflatex_cmd = "$create_sty ; $create_tex ; pdflatex";
 
-
 $pdflatex = 'internal mylatex';
 sub mylatex { 
 	my $src = $$Psource;
-	my $base = basename($src);
+	(my $base = $src) =~ s/\.[^.]+$//;
 	system("latex $base.ins");
 	system("sed -e s/\\\\\\\\jobname/$base/g $base.dtx > $base.tex");
 	return system("pdflatex $src"); 
