@@ -23,13 +23,13 @@ $create_tex = "sed -e s/\\\\\\\\jobname/$src/g $base.dtx > $base.tex";
 
 $pdflatex_cmd = "$create_sty ; $create_tex ; pdflatex";
 
-$pdflatex = 'internal mylatex';
+$pdflatex = 'internal mylatex %S';
 sub mylatex { 
-	my $src = $$Psource;
-	(my $base = $src) =~ s/\.[^.]+$//;
+	my @args = @_;
+	(my $base = $$Psource) =~ s/\.[^.]+$//;
 	system("latex $base.ins");
 	system("sed -e s/\\\\\\\\jobname/$base/g $base.dtx > $base.tex");
-	my $status = system("pdflatex $base");
+	my $status = system("pdflatex @args");
 	system("echo $status > command.txt");
 	return $status;
 }
