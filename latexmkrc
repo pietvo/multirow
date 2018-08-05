@@ -11,14 +11,14 @@ push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
 # Shell commands
 
-$create_sty = 'latex multirow.ins';
+$create_sty = 'latex %B.ins';
 
 # backslashes will be interpreted three times:
 # (1) in the per string (2) by the shell (3) by the sed regexp handler
 # therefore we need 8 backslashes to match a single one.
 
-$create_tex = 'sed -e s/\\\\\\\\jobname/multirow/g multirow.dtx > multirow.tex';
+$create_tex = 'sed -e s/\\\\\\\\jobname/%B/g %B.dtx > %B.tex';
 
-$pdflatex = "$create_sty ; $create_tex ; ls -lR > ls.txt ; pdflatex";
+$pdflatex = "$create_sty ; $create_tex ; pdflatex %S";
 
 
