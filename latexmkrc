@@ -21,6 +21,12 @@ $create_sty = "latex $src.ins";
 
 $create_tex = "sed -e s/\\\\\\\\jobname/$src/g $src.dtx > $src.tex";
 
-$pdflatex = "$create_sty ; $create_tex ; pdflatex";
-system("echo \"$$Psource\" > command.txt");
+$pdflatex_cmd = "$create_sty ; $create_tex ; pdflatex";
 
+
+$pdflatex = 'internal mylatex %S';
+sub mylatex { 
+	my @args = @_; 
+	system("echo \"$$Psource\" > command.txt");
+	return system("$pdflatex_cmd @args"); 
+}
