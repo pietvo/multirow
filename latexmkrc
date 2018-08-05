@@ -29,5 +29,5 @@ sub mylatex {
 	(my $base = $src) =~ s/\.[^.]+$//;
 	system("latex $base.ins");
 	system("sed -e s/\\\\\\\\jobname/$base/g $base.dtx > $base.tex");
-	return system("pdflatex $src"); 
+	return system("pdflatex $base"); 
 }
