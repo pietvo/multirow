@@ -1,6 +1,8 @@
+use File::Basename;
+
 $ENV{'TZ'} = 'America/La Paz';
 
-$src = 'multirow';
+$base = 'multirow';
 
 add_cus_dep('glo', 'gls', 0, 'makeglo2gls');
 sub makeglo2gls {
@@ -13,20 +15,22 @@ push @generated_exts, 'glo', 'gls', 'glg', 'sty', 'txt';
 
 # Shell commands
 
-$create_sty = "latex $src.ins";
+$create_sty = "latex $base.ins";
 
 # backslashes will be interpreted three times:
 # (1) in the per string (2) by the shell (3) by the sed regexp handler
 # therefore we need 8 backslashes to match a single one.
 
-$create_tex = "sed -e s/\\\\\\\\jobname/$src/g $src.dtx > $src.tex";
+$create_tex = "sed -e s/\\\\\\\\jobname/$src/g $base.dtx > $base.tex";
 
 $pdflatex_cmd = "$create_sty ; $create_tex ; pdflatex";
 
 
-$pdflatex = 'internal mylatex %S';
+$pdflatex = 'internal mylatex';
 sub mylatex { 
-	my @args = @_; 
-	system("echo \"$$Psource\" > command.txt");
-	return system("$pdflatex_cmd @args"); 
+	my $src = $$Psource;
+	my $base = basename($src);
+	system("latex $base.ins");
+	system("sed -e s/\\\\\\\\jobname/$base/g $base.dtx > $base.tex");
+	return system("pdflatex $src"); 
 }
