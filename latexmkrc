@@ -23,7 +23,7 @@ $create_tex = "sed -e s/\\\\\\\\jobname/$src/g $base.dtx > $base.tex";
 
 $pdflatex_cmd = "$create_sty ; $create_tex ; pdflatex";
 
-$pdflatex = 'internal mylatex %S';
+$pdflatex = 'internal mylatex';
 sub mylatex { 
 	my @args = @_;
 	(my $base = $$Psource) =~ s/\.[^.]+$//;
