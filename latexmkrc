@@ -22,5 +22,5 @@ $create_sty = "latex $src.ins";
 $create_tex = "sed -e s/\\\\\\\\jobname/$src/g $src.dtx > $src.tex";
 
 $pdflatex = "$create_sty ; $create_tex ; pdflatex";
-system("echo \"$pdflatex\" > command.txt");
+Run_subst("echo \"%%B=%B %%R=%R %%S=%S %%T=%T\" > command.txt");
 
