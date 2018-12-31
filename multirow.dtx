@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2018/08/03 v2.3
+%<multirow|bigstrut|bigdelim>           [2018/12/30 v2.4
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -87,6 +87,7 @@
 % \changes{v1.7}{2016/09/13}{Give all the files the same version number}
 % \changes{v2.0}{2016/09/27}{Release v2.0}
 % \changes{v2.3}{2018/08/03}{Small bugfix}
+% \changes{v2.4}{2018/12/30}{Add \leavevmode in bigstrut.sty}
 %
 % \GetFileInfo{multirow.sty}
 %
@@ -124,6 +125,12 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.4}
+%
+% \begin{itemize}
+% \item Add a \cs{leavevmode} in \Package{bigstrut} to force horizontal mode
+% \end{itemize}
 %
 %\subsection*{version 2.3}
 %
@@ -1671,12 +1678,14 @@
 %    \end{macrocode}
 % \end{macro}
 %
+% \changes{bigstrut v2.4}{2018/12/30}{Add \cs{leavevmode}
+% at the beginning to force horizontal mode}
 % \begin{macro}{\bigstrut}
 % This macro inserts a strut. Depending on the optional parameter it extends
 % above and/or below the standard array/tabular strut.
 %    \begin{macrocode}
 \newcommand\bigstrut[1][x]{%
-  \unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
+  \leavevmode\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
   \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
   \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
   \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}

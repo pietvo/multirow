@@ -23,11 +23,11 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{bigstrut}
-           [2018/08/03 v2.3
+           [2018/12/30 v2.4
                   Provide larger struts in tabulars]
 \@ifundefined{bigstrutjot}{\newdimen\bigstrutjot}{}\bigstrutjot=2pt
 \newcommand\bigstrut[1][x]{%
-  \unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
+  \leavevmode\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
   \ifx #1b\relax \else \advance\@tempdima by \bigstrutjot\fi
   \ifx #1t\relax \else \advance\@tempdimb by \bigstrutjot\fi
   \hbox{\vrule \@height\@tempdima \@depth\@tempdimb \@width\z@}\ignorespaces}
