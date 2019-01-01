@@ -1,7 +1,7 @@
 % \iffalse meta-comment
 %
 % Parts of this file, Copyright (C) 1994 by Jerry Leichter
-% Copyright (C) 2016, 2018 by Piet van Oostrum <piet@vanoostrum.org>
+% Copyright (C) 2016, 2018, 2019 by Piet van Oostrum <piet@vanoostrum.org>
 % -------------------------------------------------------
 % 
 % This file may be distributed and/or modified under the
@@ -24,7 +24,7 @@
 % 
 %<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter
 %<bigdelim>%% Copyright (C) 1994 by \O ystein Bache
-%% Copyright (C) 2016 , 2018 by Piet van Oostrum <piet@vanoostrum.org>
+%% Copyright (C) 2016 , 2018, 2019 by Piet van Oostrum <piet@vanoostrum.org>
 %%
 %
 %    \begin{macrocode}
@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2018/12/30 v2.4
+%<multirow|bigstrut|bigdelim>           [2019/01/01 v2.4
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -88,6 +88,8 @@
 % \changes{v2.0}{2016/09/27}{Release v2.0}
 % \changes{v2.3}{2018/08/03}{Small bugfix}
 % \changes{v2.4}{2018/12/30}{Add \leavevmode in bigstrut.sty}
+% \changes{v2.4}{2019/01/01}{Make \meta{width} and \meta{vmove} in \cs{multirow}
+% \Package{calc} compatible}
 %
 % \GetFileInfo{multirow.sty}
 %
@@ -130,6 +132,7 @@
 %
 % \begin{itemize}
 % \item Add a \cs{leavevmode} in \Package{bigstrut} to force horizontal mode
+% \item Make \meta{width} and \meta{vmove} in \cs{multirow} \Package{calc} compatible
 % \end{itemize}
 %
 %\subsection*{version 2.3}
@@ -227,7 +230,14 @@
 % The text will be set in a \cs{parbox} of that width.
 % If you give ``\texttt{=}'' in other situations, you will get strange
 % results (usually a too wide column).
+%
 % \end{description}
+%
+% In \Package{multirow} version 2.4 and later, the \meta{width} and
+% \meta{vmove} arguments can be given as \Package{calc} expressions if
+% the \Package{calc} package is loaded. It is the responsibility of the
+% document writer to include the \Package{calc} package;
+% \Package{multirow} does not do this.
 %
 % N.B. \cs{multirow} can be used in the \environment{tabular} environment and
 % most derivatives of it, for example \environment{tabularx},
@@ -244,7 +254,8 @@
 %
 % If you want to use both \cs{multirow} and \cs{multicolumn}
 % \index{multicolumn=\verb!*+\multicolumn+|usage}
-% on the same entry, you must put the \cs{multirow} inside the \cs{multicolumn}. The other way around will not work.
+% on the same entry, you must put the \cs{multirow} inside the
+% \cs{multicolumn}. The other way around will not work.
 % For example:
 % \begin{verbatim}
 %    \multicolumn{2}{c}{\multirow{3}{*}{Multi-multi}}
@@ -529,7 +540,8 @@
 %   \bottomrule
 % \end{tabular}
 % \end{quote}
-%
+% In \Package{multirow} version 2.4 and later you can also directly use the expression
+% \verb|-\heightof{\Huge\bfseries B}-\heightof{f}| instead of \verb|-\shiftdown| for the \meta{vmove} argument.
 %
 % \subsection{Multirow and colored cells}\label{sec:mult-color-cells}
 %
@@ -1567,13 +1579,15 @@
 % Because \meta{nrows} (\verb+#2+) can be fractional, we cannot use
 % \cs{ifnum} to test for positive or negative. Therefore we use
 % \cs{ifdim} by putting a unit (\texttt{pt}) after the number.
+% \changes{v2.4}{2019/01/01}{Support calc compatible expressions for  \meta{width} and
+% \meta{vmove}.}
 %    \begin{macrocode}
 \def\@xmultirow[#1]#2[#3]#4[#5]#6{%
   \expandafter\multirow@piii#3\relax\end%
-  \multirow@dima=#2\ht\@arstrutbox
-  \advance\multirow@dima#2\dp\@arstrutbox
-  \ifdim#2pt<\z@\multirow@dima=-\multirow@dima\fi
-  \advance\multirow@dima \multirow@cntb\bigstrutjot
+  \setlength\multirow@dima{#2\ht\@arstrutbox}%
+  \addtolength\multirow@dima{#2\dp\@arstrutbox}%
+  \ifdim#2pt<\z@\setlength\multirow@dima{-\multirow@dima}\fi
+  \addtolength\multirow@dima{\multirow@cntb\bigstrutjot}%
 %    \end{macrocode}
 % \changes{v1.9a}{2016/09/23}{Redo the \cs{vbox} calculation and positioning.}
 %  The text is set in a \cs{vbox} by calling \cs{multirow@vbox}. \\
@@ -1586,11 +1600,11 @@
 % \cs{multirow@colwidth} and use that as width of the \cs{parbox}.
 %    \begin{macrocode}
   \else \if=#4\multirow@setcolwidth{#6}%
-    \multirow@vbox{#1}{\hsize\multirow@colwidth\@parboxrestore}{\strut#6\strut\par}%
+    \multirow@vbox{#1}{\setlength\hsize{\multirow@colwidth}\@parboxrestore}{\strut#6\strut\par}%
 %    \end{macrocode}
 % Otherwise the given parameter is used as the width of the \cs{parbox}.
 %    \begin{macrocode}
-  \else \multirow@vbox{#1}{\hsize#4\@parboxrestore}{\strut#6\strut\par}%
+  \else \multirow@vbox{#1}{\setlength\hsize{#4}\@parboxrestore}{\strut#6\strut\par}%
   \fi \fi
 %    \end{macrocode}
 % Now position the \cs{vbox} properly. More details are given in the
@@ -1610,11 +1624,11 @@
 % We calculate the required shift  in \cs{multirow@dima}.
 %    \begin{macrocode}
   \ifdim#2pt>\z@
-    \if#1t\relax\multirow@dima=\ht0\else
-      \multirow@dima=\ht\@arstrutbox
-      \ifmultirow@prefixt \advance\multirow@dima\bigstrutjot\fi
-      \if#1b\relax \advance\multirow@dima\dp\@arstrutbox
-        \ifmultirow@prefixb \advance\multirow@dima\bigstrutjot\fi
+    \if#1t\relax\setlength\multirow@dima{\ht0}\else
+      \setlength\multirow@dima{\ht\@arstrutbox}%
+      \ifmultirow@prefixt \addtolength\multirow@dima{\bigstrutjot}\fi
+      \if#1b\relax \addtolength\multirow@dima{\dp\@arstrutbox}%
+        \ifmultirow@prefixb \addtolength\multirow@dima{\bigstrutjot}\fi
       \fi
     \fi
 %    \end{macrocode}
@@ -1627,11 +1641,11 @@
 %    \begin{macrocode}
   \else
     \if#1b\relax\else
-      \advance\multirow@dima-\dp\@arstrutbox
-      \ifmultirow@prefixb \advance\multirow@dima-\bigstrutjot\fi
-      \if#1t\relax\advance\multirow@dima-\ht\@arstrutbox
-        \ifmultirow@prefixt \advance\multirow@dima-\bigstrutjot\fi
-        \advance\multirow@dima\ht0
+      \addtolength\multirow@dima{-\dp\@arstrutbox}%
+      \ifmultirow@prefixb \addtolength\multirow@dima{-\bigstrutjot}\fi
+      \if#1t\relax\addtolength\multirow@dima{-\ht\@arstrutbox}%
+        \ifmultirow@prefixt \addtolength\multirow@dima{-\bigstrutjot}\fi
+        \addtolength\multirow@dima{\ht0}%
       \fi
     \fi
   \fi
@@ -1645,7 +1659,7 @@
 % to 0, so that it will not influence the depth of the current row.\\
 % If \cs{multirowdebug} is true, we show the box.
 %    \begin{macrocode}
-  \advance\multirow@dima#5\relax
+  \addtolength\multirow@dima{#5}%
   \leavevmode
   \setbox0\vtop{\vskip-\multirow@dima\box0\vss}\dp0=\z@
   \ifmultirowdebug{\showboxdepth=5 \showboxbreadth=10 \showbox0}\fi
