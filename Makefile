@@ -18,4 +18,4 @@ clean:
 dist: multirow.zip
 distfiles = README multirow.dtx multirow.ins multirow.pdf
 multirow.zip: $(distfiles)
-	cd .. ; zip -u multirow/multirow.zip $(addprefix multirow/,$(files))
+	cd .. ; zip -u multirow/multirow.zip $(addprefix multirow/,$(distfiles))
