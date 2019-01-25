@@ -4,7 +4,7 @@ all: multirow.sty bigstrut.sty bigdelim.sty multirow.pdf README
 multirow.sty bigstrut.sty bigdelim.sty : multirow.dtx multirow.ins
 	tex multirow.ins
 
-multirow.pdf: multirow.dtx
+multirow.pdf: multirow.dtx multirow.sty bigstrut.sty bigdelim.sty
 	rm -f multirow.ind
 	latexmk multirow.dtx
 
