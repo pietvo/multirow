@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2018/08/03 v2.2a
+%<multirow|bigstrut|bigdelim>           [2018/08/03 v2.3
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -86,7 +86,7 @@
 %
 % \changes{v1.7}{2016/09/13}{Give all the files the same version number}
 % \changes{v2.0}{2016/09/27}{Release v2.0}
-% \changes{v2.2a}{2018/08/03}{Small bugfix}
+% \changes{v2.3}{2018/08/03}{Small bugfix}
 %
 % \GetFileInfo{multirow.sty}
 %
@@ -125,7 +125,7 @@
 % \section{Changes in version 2}
 % \label{sec:changes-2}
 %
-%\subsection*{version 2.2a}
+%\subsection*{version 2.3}
 %
 % \begin{itemize}
 % \item Replaced \cs{textrm} with \cs{textnormal} in text beside big braces in bigdelim.sty.
@@ -1702,7 +1702,7 @@
 % The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
 % zero width next to it. The height is the one that \cs{multirow}
 % already has calculated in \cs{multirow@dima}.
-% \changes{bigdelim v2.2a}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
+% \changes{bigdelim v2.3}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
 %    \begin{macrocode}
 \newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
@@ -1716,7 +1716,7 @@
 % \begin{macro}{\rdelim}
 % This macro typesets a right delimiter. It calls \cs{multirow} with the
 % proper parameters, similar to \cs{ldelim}.
-% \changes{bigdelim v2.2a}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
+% \changes{bigdelim v2.3}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
 %    \begin{macrocode}
 \newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
 \def\@rdelim#1#2#3[#4]%
