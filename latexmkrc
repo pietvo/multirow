@@ -1,4 +1,4 @@
-$ENV{'TZ'} = 'America/La Paz';
+$ENV{'TZ'} = 'Europe/Amsterdam';
 
 @default_files = ('multirow.dtx');
 
