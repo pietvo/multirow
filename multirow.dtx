@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2019/01/01 v2.4
+%<multirow|bigstrut|bigdelim>           [2019/05/31 v2.5
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -90,6 +90,7 @@
 % \changes{v2.4}{2018/12/30}{Add \leavevmode in bigstrut.sty}
 % \changes{v2.4}{2019/01/01}{Make \meta{width} and \meta{vmove} in \cs{multirow}
 % \Package{calc} compatible}
+% \changes{v2.5}{2019/05/31}{Solve a clash with the \Package{colortbl} package}
 %
 % \GetFileInfo{multirow.sty}
 %
@@ -127,6 +128,14 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.5}
+%
+% \begin{itemize}
+% \item Solve a clash with the \Package{colortbl} package, when multirow
+% uses the \texttt{longtable} option. There was a clash with both
+% packages redefining \cs{@cline}.
+% \end{itemize}
 %
 %\subsection*{version 2.4}
 %
@@ -1354,15 +1363,22 @@
 % \end{macro}
 %
 % \changes{v1.9b}{2016/09/24}{Implement the \texttt{longtable} option.}
+% \changes{v2.5}{2019/05/31}{Make the redefinition of \cs{@cline}
+% compatible with the \Package{colortbl} package.}
 % \begin{macro}{\cline}
 % The package option \texttt{longtable} redefines the \cs{cline} macro to
 % work around a bug in \Package{longtable}. See section \ref{sec:use-with-longtable}\footnote{%
 % Thanks to David Carlisle. See
 % \url{http://tex.stackexchange.com/questions/52100/longtable-multirow-problem-with-cline-and-nopagebreak#answer-52101} }.
+% First we check if the macro \cs{CT@arc} is defined. If so, this
+% indocates that the \Package{colortbl} package is loaded. As
+% \Package{colortbl} also redefines \cs{@cline}, we must take this into
+% account with our own redefinition of \cs{@cline}.
 %    \begin{macrocode}
 \DeclareOption{longtable}{%
 \AtBeginDocument{%
-\def\@cline#1-#2\@nil{%
+\@ifundefined{CT@arc}
+{\def\@cline#1-#2\@nil{%
   \omit
   \@multicnt#1%
   \advance\@multispan\m@ne
@@ -1372,7 +1388,18 @@
   \advance\@multispan\@ne
   \leaders\hrule\@height\arrayrulewidth\hfill
   \cr
-  \noalign{\nobreak\vskip-\arrayrulewidth}}
+  \noalign{\nobreak\vskip-\arrayrulewidth}}}
+{\def\@cline#1-#2\@nil{%
+  \omit
+  \@multicnt#1%
+  \advance\@multispan\m@ne
+  \ifnum\@multicnt=\@ne\@firstofone{&\omit}\fi
+  \@multicnt#2%
+  \advance\@multicnt-#1%
+  \advance\@multispan\@ne
+  {\CT@arc@\leaders\hrule\@height\arrayrulewidth\hfill}%
+  \cr
+  \noalign{\nobreak\vskip-\arrayrulewidth}}}
 }}
 %    \end{macrocode}
 % \end{macro}
