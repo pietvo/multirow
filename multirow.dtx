@@ -1,7 +1,7 @@
 % \iffalse meta-comment
 %
 % Parts of this file, Copyright (C) 1994 by Jerry Leichter
-% Copyright (C) 2016, 2018, 2019 by Piet van Oostrum <piet@vanoostrum.org>
+% Copyright (C) 2016, 2018, 2019 by Pieter van Oostrum <pieter@vanoostrum.org>
 % -------------------------------------------------------
 % 
 % This file may be distributed and/or modified under the
@@ -24,7 +24,7 @@
 % 
 %<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter
 %<bigdelim>%% Copyright (C) 1994 by \O ystein Bache
-%% Copyright (C) 2016 , 2018, 2019 by Piet van Oostrum <piet@vanoostrum.org>
+%% Copyright (C) 2016 , 2018, 2019 by Pieter van Oostrum <pieter@vanoostrum.org>
 %%
 %
 %    \begin{macrocode}
@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2019/05/31 v2.5
+%<multirow|bigstrut|bigdelim>           [2019/11/04 v2.5a
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -102,7 +102,7 @@
 % \title{The \Package{multirow},
 %   \Package{bigstrut} and
 %   \Package{bigdelim} packages}
-% \author{Piet van Oostrum\thanks{catalogued ``active author''}\\
+% \author{Pieter van Oostrum\thanks{catalogued ``active author''}\\
 %   \O ystein Bache\\
 %   Jerry Leichter\thanks{Documentation originally put together by Robin
 %     Fairbairns}}
@@ -128,6 +128,12 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.5a}
+%
+% \begin{itemize}
+% \item Changed contact information
+% \end{itemize}
 %
 %\subsection*{version 2.5}
 %
@@ -1313,7 +1319,14 @@
 %    pdf   & & \\
 % \end{tabular}
 % \end{quote}
-% Note that we used \texttt{@\{\}} to eliminate the intercolumn space to get the text tight to the brace.
+% Note that we used \texttt{@\{\}} to eliminate the intercolumn space to
+% get the text tight to the brace.
+% \section{Contact Information}
+%
+% Pieter van Oostrum\\
+% email: \texttt{pieter@vanoostrum.org}\\
+% www: \url{http://pieter.vanoostrum.org}
+%
 % \StopEventually{%
 % \PrintChanges
 % \PrintIndex}
@@ -1328,22 +1341,22 @@
 % \fi
 %
 % \changes{multirow v1.0}{}{distributed anonymously, based on a Usenet posting}
-% \changes{multirow v1.1}{}{allow it to work without bigstrut.sty (Piet van Oostrum)}
+% \changes{multirow v1.1}{}{allow it to work without bigstrut.sty (Pieter van Oostrum)}
 % \changes{multirow v1.2}{}{modified by Jerry Leichter for the same goal, but using a
 %   different approach which will work properly with bigstrut.sty}
-% \changes{multirow v1.2a}{}{modified by Piet van Oostrum to use \cs{vskip}
+% \changes{multirow v1.2a}{}{modified by Pieter van Oostrum to use \cs{vskip}
 %   instead of \cs{raise} in positioning, avoiding making rows too high
 %   when the adjustment is large}
-% \changes{multirow v1.3}{}{modified by Piet van Oostrum to work properly in a p{} column
+% \changes{multirow v1.3}{}{modified by Pieter van Oostrum to work properly in a p{} column
 %    (\cs{leavevmode} added)}
-% \changes{multirow v1.4}{}{modified by Piet van Oostrum to check for the special case that
+% \changes{multirow v1.4}{}{modified by Pieter van Oostrum to check for the special case that
 %       the width is given as an *. In this case the natural
 %       width of the text argument will be used and the argument
 %       is processed in LR-mode.}
-% \changes{multirow v1.5}{}{modified by Piet van Oostrum: Added a \texttt{\%} after \texttt{\cs{hbox}\{\#5\}\cs{vfill}}.\\
+% \changes{multirow v1.5}{}{modified by Pieter van Oostrum: Added a \texttt{\%} after \texttt{\cs{hbox}\{\#5\}\cs{vfill}}.\\
 %       Added \cs{strut}s around \#5 for better vertical positioning.
 %       Additional coding for negative value of \meta{nrows}.}
-% \changes{multirow v1.6}{2004/05/05}{modified by Piet van Oostrum: Replace a space by \cs{relax} after
+% \changes{multirow v1.6}{2004/05/05}{modified by Pieter van Oostrum: Replace a space by \cs{relax} after
 %       \texttt{\cs{advance}\cs{multirow@dima}\#4}}
 %
 % \changes{v1.9a}{2016/09/23}{Implement the \texttt{debug} option.}

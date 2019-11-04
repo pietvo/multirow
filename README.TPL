@@ -3,7 +3,7 @@ bigstruts.sty  #VERSION
 bigdelim.sty  #VERSION
 
 Original Author: Jerry Leichter
-Current Author:  Piet van Oostrum <piet@vanoostrum.org>
+Current Author:  Pieter van Oostrum <pieter@vanoostrum.org>
 
  This file may be distributed under the terms of the LaTeX Project Public
  License, as described in lppl.txt in the base LaTeX distribution.
