@@ -9,7 +9,7 @@ multirow.pdf: multirow.dtx multirow.sty bigstrut.sty bigdelim.sty
 	latexmk multirow.dtx
 
 README: README.tpl multirow.dtx
-	version=`grep 'multirow|bigstrut|bigdelim> *\[201' multirow.dtx | sed 's/.*\[//' \
+	version=`grep 'multirow|bigstrut|bigdelim> *\[20' multirow.dtx | sed 's/.*\[//' \
 			| awk '{print $$2 " " $$1}'`; \
 	sed "s@#VERSION@$$version@g" README.TPL > README
 
