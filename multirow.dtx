@@ -1437,6 +1437,27 @@
   \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
 %    \end{macrocode}
 % \end{macro}
+% \begin{macro}{\MRST@cr}
+% This is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
+% about the space the \environment{longtable} occupies, but it doesn't
+% do the pagebreaking part.
+%    \begin{macrocode}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\advance\ST@pageleft -\ST@stretchht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@}}
+%    \end{macrocode}
+% \end{macro}
 % \begin{macro}{\MRST@xtabularc}
 % \begin{macro}{\MRST@argtabularc}
 % \begin{macro}{\MRST@xargtabularc}
@@ -1461,32 +1482,11 @@
   \noalign{\global\ST@toadd=#1}\MRST@cr}
 \def\MRST@yargarraycr#1{%
   \cr\noalign{\vskip #1\global\MRST@toadd=#1}\MRST@cr}
-%    \end{macrocode}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \begin{macro}{\MRST@cr}
-% This is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
-% about the space the \environment{longtable} occupies, but it doesn't
-% do the pagebreaking part.
-%    \begin{macrocode}
-\def\MRST@cr{%
-  \noalign{%
-    \ifnum\ST@pboxht<\ST@lineht
-      \global\advance\ST@pageleft -\ST@lineht
-      \global\ST@prevht\ST@lineht
-    \else
-      \global\advance\ST@pageleft -\ST@pboxht
-      \global\advance\ST@pageleft -0.1\ST@pboxht
-      \global\advance\ST@pageleft -\ST@stretchht
-      \global\ST@prevht\ST@pboxht
-      \global\ST@pboxht\z@
-    \fi
-    \global\advance\ST@pageleft -\ST@toadd
-    \global\ST@toadd=\z@}}
 }
 %    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
 % \end{macro}
 % \begin{macro}{\STneed}
 % This macro can be used in a \environment{supertabular} to indicate how

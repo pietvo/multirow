@@ -58,6 +58,20 @@
 \def\ST@tabularcr{%
   {\ifnum0=`}\fi
   \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\advance\ST@pageleft -\ST@stretchht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@}}
 \def\MRST@xtabularcr{%
   \@ifnextchar[%]
     {\MRST@argtabularcr}%
@@ -75,20 +89,6 @@
   \noalign{\global\ST@toadd=#1}\MRST@cr}
 \def\MRST@yargarraycr#1{%
   \cr\noalign{\vskip #1\global\MRST@toadd=#1}\MRST@cr}
-\def\MRST@cr{%
-  \noalign{%
-    \ifnum\ST@pboxht<\ST@lineht
-      \global\advance\ST@pageleft -\ST@lineht
-      \global\ST@prevht\ST@lineht
-    \else
-      \global\advance\ST@pageleft -\ST@pboxht
-      \global\advance\ST@pageleft -0.1\ST@pboxht
-      \global\advance\ST@pageleft -\ST@stretchht
-      \global\ST@prevht\ST@pboxht
-      \global\ST@pboxht\z@
-    \fi
-    \global\advance\ST@pageleft -\ST@toadd
-    \global\ST@toadd=\z@}}
 }
 \def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
 }
