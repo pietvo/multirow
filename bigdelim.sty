@@ -28,13 +28,15 @@
 \RequirePackage{multirow}
 \newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
- {\multirow{#2}{#3}{%
+ {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
+  \multirow{#2}{#3}{%
    \ensuremath
      {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
      \textnormal{#4}\right#1}}}
 \newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
 \def\@rdelim#1#2#3[#4]%
- {\multirow{#2}{#3}{%
+ {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
+  \multirow{#2}{#3}{%
    \ensuremath
      {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
        \textnormal{#4}\right.}}}

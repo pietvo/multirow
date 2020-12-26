@@ -134,6 +134,8 @@
 % \begin{itemize}
 % \item Make the \texttt{supertabular} option compatible with newer
 % versions of the \texttt{supertabular} package
+% \item Initialize \cs{@arstrutbox} when not defined, to enable some
+% uses of the big delims outside of an array or tabular.
 % \end{itemize}
 %
 %\subsection*{version 2.5a}
@@ -1808,12 +1810,17 @@
 % This macro typesets a left delimiter. It calls \cs{multirow} with the proper arguments.
 % The size of the delimiter is determined by putting a \cs{vbox} with the proper height and
 % zero width next to it. The height is the one that \cs{multirow}
-% already has calculated in \cs{multirow@dima}.
+% already has calculated in \cs{multirow@dima}. That calculation uses
+% the size of \cs{@arstrutbox}, which is set by \texttt{tabular} or
+% \texttt{array} environments. In case it is not set, we initialize it
+% to a default value.
 % \changes{bigdelim v2.3}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
+% \changes{bigdelim v2.6}{2020/12/26}{Initialize \cs{@arstrutbox} if not defined}
 %    \begin{macrocode}
 \newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
 \def\@ldelim#1#2#3[#4]%
- {\multirow{#2}{#3}{%
+ {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
+  \multirow{#2}{#3}{%
    \ensuremath
      {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
      \textnormal{#4}\right#1}}}
@@ -1824,10 +1831,12 @@
 % This macro typesets a right delimiter. It calls \cs{multirow} with the
 % proper arguments, similar to \cs{ldelim}.
 % \changes{bigdelim v2.3}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
+% \changes{bigdelim v2.6}{2020/12/26}{Initialize \cs{@arstrutbox} if not defined}
 %    \begin{macrocode}
 \newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
 \def\@rdelim#1#2#3[#4]%
- {\multirow{#2}{#3}{%
+ {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
+  \multirow{#2}{#3}{%
    \ensuremath
      {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
        \textnormal{#4}\right.}}}
