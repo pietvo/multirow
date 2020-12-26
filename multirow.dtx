@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2020/12/24 v2.6
+%<multirow|bigstrut|bigdelim>           [2020/12/26 v2.6
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -128,6 +128,13 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.6}
+%
+% \begin{itemize}
+% \item Make the \texttt{supertabular} option compatible with newer
+% versions of the \texttt{supertabular} package
+% \end{itemize}
 %
 %\subsection*{version 2.5a}
 %
@@ -1422,6 +1429,17 @@
 % The package option \texttt{supertabular} redefines \verb+\\*+ inside a
 % \environment{supertabular}.
 % The redefinition is delayed until the \verb+\begin{document}+.
+%
+% \changes{v2.6}{2020/12/26}{Adapt the definition to be compatible with
+% modern versions of \texttt{supertabular}}
+% \texttt{Supertabular} version 4.1f and later need a call to
+% \cs{ST@save@lineno} to function properly, but earlier versions cannot
+% use this as it doesn't exist in these versions. So the definitions of
+% both \cs{ST@tabularcr} and \cs{MRST@cr} are different depending on whether
+% \cs{ST@save@lineno} is defined. There are also some other differences,
+% so some intermediate versions of \texttt{supertabular} might need more
+% subtle adaptations, but for now we leave it at that.
+% 
 %    \begin{macrocode}
 \DeclareOption{supertabular}{%
 \AtBeginDocument{%
@@ -1430,15 +1448,17 @@
 % This macro is the definition of \verb+\\+ inside a
 % \environment{supertabular}.  We check for a \verb+*+, and if it is
 % present we call our own version, otherwise the
-% \environment{supertabular} version.
+% \environment{supertabular} version. First we get the older version for
+% pre-4.1f \texttt{supertabular}, then the newer version.
 %    \begin{macrocode}
+\ifx\ST@save@lineno\undefined
 \def\ST@tabularcr{%
   {\ifnum0=`}\fi
   \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\MRST@cr}
-% This is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
+% \cs{MRST@cr} is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
 % about the space the \environment{longtable} occupies, but it doesn't
 % do the pagebreaking part.
 %    \begin{macrocode}
@@ -1456,6 +1476,30 @@
     \fi
     \global\advance\ST@pageleft -\ST@toadd
     \global\ST@toadd=\z@}}
+\else
+%    \end{macrocode}
+% These are the newer versions.
+%    \begin{macrocode}
+\def\ST@tabularcr{%
+  {\ifnum0=`}\fi
+  \ST@save@lineno
+  \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@lineht
+      \global\advance\ST@pageleft -\ST@lineht
+      \global\ST@prevht\ST@lineht
+    \else
+     \ST@trace@cr\thr@@{Added par box with height \the\ST@pboxht}%
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@
+    \ST@trace@cr\thr@@{Space left for tabular: \the\ST@pageleft}}}
+\fi
 %    \end{macrocode}
 % \end{macro}
 % \begin{macro}{\MRST@xtabularc}
