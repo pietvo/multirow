@@ -3,7 +3,7 @@
 % Parts of this file, Copyright (C) 1994 by Jerry Leichter
 % Copyright (C) 2016-2020 by Pieter van Oostrum <pieter@vanoostrum.org>
 % -------------------------------------------------------
-% 
+%
 % This file may be distributed and/or modified under the
 % conditions of the LaTeX Project Public License, either version 1.3
 % of this license or (at your option) any later version.
@@ -11,7 +11,7 @@
 %
 %    http://www.latex-project.org/lppl.txt
 %
-% and version 1.3 or later is part of all distributions of LaTeX 
+% and version 1.3 or later is part of all distributions of LaTeX
 % version 2005/12/01 or later.
 %
 % \fi
@@ -21,7 +21,7 @@
 \ProvidesFile{\jobname.dtx}
 %</driver>
 % This is the variable part of the preamble
-% 
+%
 %<multirow|bigstrut>%% Copyright (C) 1994 by Jerry Leichter
 %<bigdelim>%% Copyright (C) 1994 by \O ystein Bache
 %% Copyright (C) 2016-2020 by Pieter van Oostrum <pieter@vanoostrum.org>
@@ -42,6 +42,7 @@
 \documentclass[a4paper]{ltxdoc}
 \usepackage[T1]{fontenc}
 \usepackage{multirow,bigstrut,bigdelim,colortbl}
+\usepackage[table]{xcolor}
 \usepackage{tabulary}
 \usepackage{longtable}
 \usepackage{booktabs}
@@ -49,7 +50,6 @@
 \usepackage{url}
 \usepackage{tikz}
 \usepackage{hhline}
-\usepackage{color}
 \usepackage{etoolbox}
 \AtBeginEnvironment{macrocode}{\color{red}}
 \newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
@@ -115,7 +115,7 @@
 %
 % \section{Introduction}
 % These packages offer a series of extensions to the standard \LaTeX{}
-% \texttt{tabular} environment.  Their respective functions are:
+% \environment{tabular} environment.  Their respective functions are:
 % \begin{description}
 % \item[\Package{multirow}] which provides a construction for table cells
 %   that span more than one row of the table;
@@ -133,9 +133,9 @@
 %
 % \begin{itemize}
 % \item Make the \texttt{supertabular} option compatible with newer
-% versions of the \texttt{supertabular} package
+% versions of the \Package{supertabular} package
 % \item Initialize \cs{@arstrutbox} when not defined, to enable some
-% uses of the big delims outside of an array or tabular.
+% uses of the big delims outside of an \environment{array} or \environment{tabular}.
 % \end{itemize}
 %
 %\subsection*{version 2.5a}
@@ -170,7 +170,7 @@
 % \begin{itemize}
 % \item Support for fractional values of \meta{nrows}.
 % \end{itemize}
-% 
+%
 %\subsection*{version 2.0}
 %
 % \begin{itemize}
@@ -244,7 +244,7 @@
 %
 %   If the width was given as \texttt{*} the text will be set in LR
 %   mode.  If you want a multiline entry in this case you could use a
-%   \texttt{tabular} or \texttt{array} environment in the text
+%   \environment{tabular} or \environment{array} environment in the text
 %   parameter. See for example the \environment{minitab} below.
 %
 % The width can also be given as \texttt{=} when the \cs{multirow} entry is given in a
@@ -541,7 +541,7 @@
 % . . .
 % \begin{tabular}{cll}
 %   \toprule
-%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B} 
+%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B}
 %                     & foo  & Lorem ipsum dolor sit    \\
 %                     & bar  & Maecenas sed purus       \\
 %                     & baz  & Nullam luctus id tellus  \\
@@ -556,7 +556,7 @@
 % \setlength{\shiftdown}{\heightof{\Huge\bfseries B}-\heightof{f}}
 % \begin{tabular}{cll}
 %   \toprule
-%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B} 
+%   \multirow[t]{5}{*}[-\shiftdown]{\Huge\bfseries B}
 %                     & foo  & Lorem ipsum dolor sit    \\
 %                     & bar  & Maecenas sed purus       \\
 %                     & baz  & Nullam luctus id tellus  \\
@@ -569,8 +569,10 @@
 %
 % \subsection{Multirow and colored cells}\label{sec:mult-color-cells}
 %
-% If you use \cs{multirow} with the \Package{colortbl} package you have
+% If you use \cs{multirow} with the \Package{colortbl} package (or the
 % \index{colortbl=\Package{colortbl}|usage}
+% \Package{xcolor} package with the \texttt{[table]} option) you have
+% \index{xcolor=\Package{xcolor}|usage}
 % to take precautions if you want to color the column that has the
 % \cs{multirow} in it.  The \Package{colortbl} package works by coloring each cell
 % separately.  So if you use \cs{multirow} with a positive \meta{nrows}
@@ -661,7 +663,7 @@
 %
 % \cs{multirow} can calculate the height of the required multirow box
 % from \meta{nrows} and \meta{bigstruts}, supposed that all the rows
-% don't have  ``unusual heights. However, there are cases when this is
+% don't have  ``unusual'' heights. However, there are cases when this is
 % not enough to properly position the box, especially when there is a
 % \cs{bigstrut} on top of the first row and/or one on the bottom of the
 % last row. In that case \cs{multirow} should be given additional
@@ -1172,7 +1174,7 @@
 % \DescribeMacro{\bigstrutjot}
 % \cs{bigstrut}\oarg{x} produces a strut (a rule with width 0) which is \cs{bigstrutjot}
 % (\texttt{2pt} by default) higher, lower, or both than the standard
-% array/tabular strut.  Use it in table entries that are adjacent to
+% \environment{array}/\environment{tabular} strut.  Use it in table entries that are adjacent to
 % \cs{hline}s to leave an extra bit of space\,---\,according to the
 % TeXbook (page 246), ``This is a little touch that improves the
 % appearance of boxed tables; look for it as a mark of quality.''
@@ -1300,13 +1302,96 @@
 % Also the commands may be
 % used in the last row of the extension with a negative \meta{n}
 % \index{colortbl=\Package{colortbl}|usage}
-% argument.  This is useful in combination with \Package{colortbl} (see
-% the discussion in section \ref{sec:multirow} on \Package{multirow}).
+% argument.  This is useful in combination with the \Package{colortbl}
+% \index{xcolor=\Package{xcolor}|usage}
+% or \Package{xcolor} packages
+% (see the discussion in section \ref{sec:multirow} on \Package{multirow}).
 % If there are unusually tall rows you may have to enlarge \meta{n}
 % (you can use fractional values).
 % If you have horizontal lines that interact with the braces you are
 % \index{hhline=\Package{hhline}|usage}
 % advised to use the \Package{hhline} package to make the lines.
+%
+% If you decrease or eliminate the intercolumn space with \verb|@{}| and
+% use colored backgrounds with the \Package{colortbl} or
+% \Package{xcolor} packages (commands \verb|\columncolor|,
+% \verb|\rowcolor|, \verb|\rowcolors| or \verb|\cellcolor|),
+% \index{columncolor=\verb!*+\columncolor+|usage}
+% \index{rowcolor=\verb!*+\rowcolor+|usage}
+% \index{rowcolors=\verb!*+\rowcolors+|usage}
+% \index{cellcolor=\verb!*+\cellcolor+|usage}
+% you will notice that part of the brace will be cut off. In reality it
+% will be overwritten with the color of the next cell. See this example:
+%
+% \begin{quote}
+% \begin{minipage}{0.6\linewidth}
+% \begin{verbatim}
+% \rowcolors{2}{green!25}{green!75}
+% \begin{tabular}{ c @{}c c c }
+%                  & 1 & 2 & 3 \\
+%                  & 4 & 5 & 6 \\
+% \ldelim\{{-3}{*} & 7 & 8 & 9 \\
+% \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \begin{minipage}{0.35\linewidth}
+% \rowcolors{2}{green!25}{green!75}
+% \begin{tabular}{ c @{}c c c }
+%                  & 1 & 2 & 3 \\
+%                  & 4 & 5 & 6 \\
+% \ldelim\{{-3}{*} & 7 & 8 & 9 \\
+% \end{tabular}
+%    \\[2ex]
+% \end{minipage}
+% \end{quote}
+%
+% This is not a problem of \Package{multirow} or \Package{bigdelim};
+% it will also happen if there is normal text in the column before the
+% \verb|@{}|. The reason is that these color commands extend the color
+% to cover the intercolumn spaces on both sides to prevent gaps in the
+% color. The size of these so-called \textit{overhangs} is \verb|\tabcolsep| (or
+% \verb|\arraycolsep| when an \environment{array} is used) on each side.
+% However, when \verb|@{}| is used there is no such intercolumn space
+% and the extension covers parts of the previous column.
+% This can be cured by setting the left \textit{overhang} explicitly to
+% 0pt with a \verb|\columncolor| command in the tabular header, like
+% \verb|>{\columncolor{white}[0pt][\tabcolsep]}|. Unfortunately the
+% explicit color \texttt{white}, removes the transparency of the column,
+% so if there are cells in that column that have no explicit color,
+% these cells are affected. If the background of the \environment{tabular} is
+% white, this normally will not be noticed, but if the background color
+% is changed, for example with the \verb|\pagecolor| command, then that color
+% should be used rather than \texttt{white}. Unfortunately, there is no
+% command to specify the \textit{overhangs} without also specifying a
+% color.
+%
+% In the following example we have done this. In order to keep the table
+% header compact, we put the deinition in a \verb|\newcolumn| command
+% (using the \Package{array} package).
+%
+% \begin{quote}
+% \begin{minipage}{0.6\linewidth}
+% \begin{verbatim}
+% \newcolumntype{z}{@{}>{\columncolor{white}[0pt][\tabcolsep]}}
+% \rowcolors{2}{green!25}{green!75}
+% \begin{tabular}{ c zc c c }
+%                  & 1 & 2 & 3 \\
+%                  & 4 & 5 & 6 \\
+% \ldelim\{{-3}{*} & 7 & 8 & 9 \\
+% \end{tabular}
+% \end{verbatim}
+% \end{minipage}
+% \begin{minipage}{0.35\linewidth}
+% \newcolumntype{z}{@{}>{\columncolor{white}[0pt][\tabcolsep]}}
+% \rowcolors{2}{green!25}{green!75}
+% \begin{tabular}{ c zc c c }
+%                  & 1 & 2 & 3 \\
+%                  & 4 & 5 & 6 \\
+% \ldelim\{{-3}{*} & 7 & 8 & 9 \\
+% \end{tabular}
+%    \\[2ex]
+% \end{minipage}
+% \end{quote}
 %
 % In case you want to have a paragraph type text as optional parameter you could put it in a \cs{parbox}.
 % Alternatively you could add an extra column with the text in a \cs{multirow}, like in
@@ -1444,7 +1529,7 @@
 % \cs{ST@save@lineno} is defined. There are also some other differences,
 % so some intermediate versions of \texttt{supertabular} might need more
 % subtle adaptations, but for now we leave it at that.
-% 
+%
 %    \begin{macrocode}
 \DeclareOption{supertabular}{%
 \AtBeginDocument{%
@@ -1785,7 +1870,7 @@
 % at the beginning to force horizontal mode}
 % \begin{macro}{\bigstrut}
 % This macro inserts a strut. Depending on the optional parameter it extends
-% above and/or below the standard array/tabular strut.
+% above and/or below the standard \environment{array}/\environment{tabular} strut.
 %    \begin{macrocode}
 \newcommand\bigstrut[1][x]{%
   \leavevmode\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
