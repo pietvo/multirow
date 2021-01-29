@@ -23,7 +23,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2021/01/02 v2.6
+           [2021/01/29 v2.7
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -118,7 +118,7 @@
 \newlength{\multirow@colwidth}
 \newcount\multirow@cntb
 \newlength\multirow@dima
-\def\multirow@setcolwidth#1{%
+\long\def\multirow@setcolwidth#1{%
     \ifx\TY@final\multirow@undefined \multirow@colwidth=\hsize
     \else
       \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
@@ -147,7 +147,7 @@
     \else \multirow@cntb=#1#2#3%
     \fi
   \fi}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
+\long\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
   \expandafter\multirow@piii#3\relax\end%
   \setlength\multirow@dima{#2\ht\@arstrutbox}%
   \addtolength\multirow@dima{#2\dp\@arstrutbox}%

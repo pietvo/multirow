@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2021/01/02 v2.6
+%<multirow|bigstrut|bigdelim>           [2021/01/29 v2.7
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -129,6 +129,14 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.7}
+%
+%\begin{itemize}
+%\item  Make \cs{@xmultirow} and \cs{multirow@setcolwidth} \cs{long} to allow
+% multi-paragraph text.
+% See \url{https://github.com/pietvo/multirow/issues/1}
+%\end{itemize}
 %
 %\subsection*{version 2.6}
 %
@@ -1670,8 +1678,10 @@
 % On the second pass (characterized by \cs{TY@box} = \cs{TY@box@v}) we use
 % the value that \env{tabulary} has given us in \cs{hsize}.
 % This algorithm is not perfect, but good enough in most cases.
+% \changes{v2.7}{2021/01/29}{Make \cs{multirow@setcolwidth} \cs{long} to allow
+% multi-paragraph text}
 %    \begin{macrocode}
-\def\multirow@setcolwidth#1{%
+\long\def\multirow@setcolwidth#1{%
     \ifx\TY@final\multirow@undefined \multirow@colwidth=\hsize
     \else
       \ifx\TY@box\TY@box@v\multirow@colwidth=\hsize
@@ -1758,8 +1768,10 @@
 % \cs{ifdim} by putting a unit (\texttt{pt}) after the number.
 % \changes{v2.4}{2019/01/01}{Support calc compatible expressions for  \meta{width} and
 % \meta{vmove}.}
+% \changes{v2.7}{2021/01/29}{Make \cs{@xmultirow} \cs{long} to allow
+% multi-paragraph text}
 %    \begin{macrocode}
-\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
+\long\def\@xmultirow[#1]#2[#3]#4[#5]#6{%
   \expandafter\multirow@piii#3\relax\end%
   \setlength\multirow@dima{#2\ht\@arstrutbox}%
   \addtolength\multirow@dima{#2\dp\@arstrutbox}%
