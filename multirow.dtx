@@ -48,6 +48,7 @@
 \usepackage{booktabs}
 \usepackage{calc}
 \usepackage{url}
+\usepackage[colorlinks, urlcolor=blue, linktocpage]{hyperref}
 \usepackage{tikz}
 \usepackage{hhline}
 \usepackage{etoolbox}
@@ -56,8 +57,8 @@
 \DisableCrossrefs
 \CodelineIndex
 \RecordChanges
-\let\Package\textsf
 \newcommand{\env}[1]{\texttt{#1}}
+\newcommand{\Package}[1]{\textsf{#1}}
 \def\bsbs{\cs{\char`\\}}
 \begin{document}
   \DeleteShortVerb{\|}
@@ -1481,7 +1482,7 @@
 % The package option \texttt{longtable} redefines the \cs{cline} macro to
 % work around a bug in \Package{longtable}. See section \ref{sec:use-with-longtable}\footnote{%
 % Thanks to David Carlisle. See
-% \url{http://tex.stackexchange.com/questions/52100/longtable-multirow-problem-with-cline-and-nopagebreak#answer-52101} }.
+% \href{http://tex.stackexchange.com/questions/52100/longtable-multirow-problem-with-cline-and-nopagebreak\#answer-52101}{his answer on stackexchange}.}.
 % First we check if the macro \cs{CT@arc} is defined. If so, this
 % indocates that the \Package{colortbl} package is loaded. As
 % \Package{colortbl} also redefines \cs{@cline}, we must take this into
