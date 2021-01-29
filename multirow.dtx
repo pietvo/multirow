@@ -56,8 +56,8 @@
 \DisableCrossrefs
 \CodelineIndex
 \RecordChanges
-\let\environment\texttt
 \let\Package\textsf
+\newcommand{\env}[1]{\texttt{#1}}
 \def\bsbs{\cs{\char`\\}}
 \begin{document}
   \DeleteShortVerb{\|}
@@ -115,7 +115,7 @@
 %
 % \section{Introduction}
 % These packages offer a series of extensions to the standard \LaTeX{}
-% \environment{tabular} environment.  Their respective functions are:
+% \env{tabular} environment.  Their respective functions are:
 % \begin{description}
 % \item[\Package{multirow}] which provides a construction for table cells
 %   that span more than one row of the table;
@@ -135,7 +135,7 @@
 % \item Make the \texttt{supertabular} option compatible with newer
 % versions of the \Package{supertabular} package
 % \item Initialize \cs{@arstrutbox} when not defined, to enable some
-% uses of the big delims outside of an \environment{array} or \environment{tabular}.
+% uses of the big delims outside of an \env{array} or \env{tabular}.
 % \end{itemize}
 %
 %\subsection*{version 2.5a}
@@ -193,7 +193,7 @@
 % \section{Using \Package{multirow}}\label{sec:multirow}
 %
 % \DescribeMacro{\multirow}
-% \cs{multirow} sets a piece of text in a \environment{tabular} or
+% \cs{multirow} sets a piece of text in a \env{tabular} or
 % similar environment, spanning multiple rows. We will call the block of
 % rows and columns that the text spans the multirow block. Usually this
 % covers one column, but by combining it with \cs{multicolumn} more
@@ -244,13 +244,13 @@
 %
 %   If the width was given as \texttt{*} the text will be set in LR
 %   mode.  If you want a multiline entry in this case you could use a
-%   \environment{tabular} or \environment{array} environment in the text
-%   parameter. See for example the \environment{minitab} below.
+%   \env{tabular} or \env{array} environment in the text
+%   parameter. See for example the \env{minitab} below.
 %
 % The width can also be given as \texttt{=} when the \cs{multirow} entry is given in a
 % column that has a defined width, for example in a \texttt{p\{\}} column, an
-% \texttt{X} column in \environment{tabularx} or a \texttt{L}, \texttt{C},
-% \texttt{R} or \texttt{J} column in a \environment{tabulary} environment.
+% \texttt{X} column in \env{tabularx} or a \texttt{L}, \texttt{C},
+% \texttt{R} or \texttt{J} column in a \env{tabulary} environment.
 % The text will be set in a \cs{parbox} of that width.
 % If you give ``\texttt{=}'' in other situations, you will get strange
 % results (usually a too wide column).
@@ -263,11 +263,11 @@
 % document writer to include the \Package{calc} package;
 % \Package{multirow} does not do this.
 %
-% N.B. \cs{multirow} can be used in the \environment{tabular} environment and
-% most derivatives of it, for example \environment{tabularx},
-% \environment{tabulary}, \environment{supertabular}, \environment{ltablex},
-% \environment{xtab}, \environment{longtable}, \environment{tabu},
-% \environment{booktabs} and \environment{ctable}. For some of these you
+% N.B. \cs{multirow} can be used in the \env{tabular} environment and
+% most derivatives of it, for example \env{tabularx},
+% \env{tabulary}, \env{supertabular}, \env{ltablex},
+% \env{xtab}, \env{longtable}, \env{tabu},
+% \env{booktabs} and \env{ctable}. For some of these you
 % have to pay special attention to certain cases, see below.
 %
 % \DescribeMacro{\multirowsetup}
@@ -386,7 +386,7 @@
 % \end{quote}
 % \vspace{1ex}
 % An example with the ``\texttt{=}'' \meta{width} specifier in a
-% \environment{tabulary} (Note: The braces around the \texttt{=} may be omitted):
+% \env{tabulary} (Note: The braces around the \texttt{=} may be omitted):
 %
 % \begin{quote}
 % \index{extrarowheight=\verb!*+\extrarowheight+|usage}
@@ -521,8 +521,8 @@
 % chance that the \meta{vmove} will still be correct if you change the point
 % size.)
 %
-% \cs{multirow} is mainly designed for use with \environment{tabular}, as
-% opposed to \environment{array}, environments.  It might not work well in an
+% \cs{multirow} is mainly designed for use with \env{tabular}, as
+% opposed to \env{array}, environments.  It might not work well in an
 % array environment if there are big formulas in some rows; in that case you can use the
 % \meta{vmove} parameter to refine the result.
 %
@@ -771,10 +771,10 @@
 % \subsection{Use with \Package{longtable}}
 % \label{sec:use-with-longtable}
 %
-% \index{longtable=\environment{longtable}|usage}
-% \index{longtabu=\environment{longtabu}|usage}
-% It is possible to use \cs{multirow} in a \environment{longtable}
-% environment (as well as in its descendent \environment{longtabu}).
+% \index{longtable=\env{longtable}|usage}
+% \index{longtabu=\env{longtabu}|usage}
+% It is possible to use \cs{multirow} in a \env{longtable}
+% environment (as well as in its descendent \env{longtabu}).
 % However, care must be taken that the longtable doesn't break the
 % multirow entry when it is near the bottom of the page. For example:
 %
@@ -845,8 +845,8 @@
 % \subsection{Use with \Package{supertabular}}
 % \label{sec:use-with-supertabular}
 %
-% \index{supertabular=\environment{supertabular}|usage}
-% \index{xtab=\environment{xtab}|usage}
+% \index{supertabular=\env{supertabular}|usage}
+% \index{xtab=\env{xtab}|usage}
 % With the package \Package{supertabular} (or the augmented version
 % \Package{xtab}) there is the same requirement
 % to keep the rows of a multirow together when a pagebreak occurs.
@@ -855,16 +855,16 @@
 % suppress a pagebreak.
 % Therefore \Package{multirow} provides a package option
 % \texttt{supertabular} that redefines \verb+\\*+ inside a
-% \environment{supertabular} to suppress the pagebreak. You should use
+% \env{supertabular} to suppress the pagebreak. You should use
 % this to end the intermediate rows in a multirow block. However, this
-% does not cause \environment{supertabular} to consider breaking the
-% page before the \cs{multirow}, contrary to \environment{longtable}.
+% does not cause \env{supertabular} to consider breaking the
+% page before the \cs{multirow}, contrary to \env{longtable}.
 % Thus the table may become too long.
 %
 % \DescribeMacro{\STneed}
 % Therefore when the \texttt{supertabular} option is given,
 % \Package{multirow} also provides a command \cs{STneed} to be used
-% in a \environment{supertabular} that specifies how much space we need
+% in a \env{supertabular} that specifies how much space we need
 % on the page. Then if there is not enough space, a pagebreak will occur
 % at that place. For example:
 % \begin{verbatim}
@@ -1091,7 +1091,7 @@
 % \cs{bigstrut} in each row, that is 16pt per row, and as a \cs{bigstrut} is
 % 2\cs{bigstrutjot}s, we set \cs{bigstrutjot} to 8pt. The
 % \Package{booktabs} package adds some extra vertical space around the rules,
-% therefore when using the normal \environment{tabular} environment, it
+% therefore when using the normal \env{tabular} environment, it
 % is probably better to make the struts a little bit bigger, or a bit
 % smaller with \Package{booktabs}. After some experimentation it appeared
 % that a \cs{bigstrutjot} of \texttt{7pt} was enough. Of course we added
@@ -1099,7 +1099,7 @@
 % multirow. Please note that this is not possible with our own struts,
 % unless we cheat.
 %
-% \index{booktabs=\environment{booktabs}|usage}
+% \index{booktabs=\env{booktabs}|usage}
 % Now with \Package{booktabs} the code becomes:
 % \begin{verbatim}
 % \newcommand{\mystrut}{\rule[-8pt]{0pt}{20pt}}
@@ -1174,7 +1174,7 @@
 % \DescribeMacro{\bigstrutjot}
 % \cs{bigstrut}\oarg{x} produces a strut (a rule with width 0) which is \cs{bigstrutjot}
 % (\texttt{2pt} by default) higher, lower, or both than the standard
-% \environment{array}/\environment{tabular} strut.  Use it in table entries that are adjacent to
+% \env{array}/\env{tabular} strut.  Use it in table entries that are adjacent to
 % \cs{hline}s to leave an extra bit of space\,---\,according to the
 % TeXbook (page 246), ``This is a little touch that improves the
 % appearance of boxed tables; look for it as a mark of quality.''
@@ -1203,7 +1203,7 @@
 %
 % \section{Using \Package{bigdelim}}
 %
-% The package is for working in a \environment{tabular} or \environment{array}
+% The package is for working in a \env{tabular} or \env{array}
 % environment, in which the \Package{multirow} package is also used.
 %
 % \DescribeMacro{\ldelim}
@@ -1213,8 +1213,8 @@
 %   \cs{ldelim} ( \marg{n}\marg{width}\oarg{text}\\
 %   \cs{rdelim} ) \marg{n}\marg{width}\oarg{text}
 % \end{quote}
-% The commands are used in a column of a \environment{tabular} or
-% \environment{array}; they create a big parenthesis, brace or whatever
+% The commands are used in a column of a \env{tabular} or
+% \env{array}; they create a big parenthesis, brace or whatever
 % delimiter that extends over the \meta{n} rows starting at the one
 % containing the command.  Corresponding cells in the following rows
 % must be explicitly given as empty cells.
@@ -1350,7 +1350,7 @@
 % \verb|@{}|. The reason is that these color commands extend the color
 % to cover the intercolumn spaces on both sides to prevent gaps in the
 % color. The size of these so-called \textit{overhangs} is \verb|\tabcolsep| (or
-% \verb|\arraycolsep| when an \environment{array} is used) on each side.
+% \verb|\arraycolsep| when an \env{array} is used) on each side.
 % However, when \verb|@{}| is used there is no such intercolumn space
 % and the extension covers parts of the previous column.
 % This can be cured by setting the left \textit{overhang} explicitly to
@@ -1358,7 +1358,7 @@
 % \verb|>{\columncolor{white}[0pt][\tabcolsep]}|. Unfortunately the
 % explicit color \texttt{white}, removes the transparency of the column,
 % so if there are cells in that column that have no explicit color,
-% these cells are affected. If the background of the \environment{tabular} is
+% these cells are affected. If the background of the \env{tabular} is
 % white, this normally will not be noticed, but if the background color
 % is changed, for example with the \verb|\pagecolor| command, then that color
 % should be used rather than \texttt{white}. Unfortunately, there is no
@@ -1519,7 +1519,7 @@
 % \changes{v1.9b}{2016/09/26}{Implement the \texttt{supertabular} option
 % and the \cs{STneed} command.}
 % The package option \texttt{supertabular} redefines \verb+\\*+ inside a
-% \environment{supertabular}.
+% \env{supertabular}.
 % The redefinition is delayed until the \verb+\begin{document}+.
 %
 % \changes{v2.6}{2020/12/26}{Adapt the definition to be compatible with
@@ -1538,9 +1538,9 @@
 %    \end{macrocode}
 % \begin{macro}{\ST@tabularcr}
 % This macro is the definition of \verb+\\+ inside a
-% \environment{supertabular}.  We check for a \verb+*+, and if it is
+% \env{supertabular}.  We check for a \verb+*+, and if it is
 % present we call our own version, otherwise the
-% \environment{supertabular} version. First we get the older version for
+% \env{supertabular} version. First we get the older version for
 % pre-4.1f \texttt{supertabular}, then the newer version.
 %    \begin{macrocode}
 \ifx\ST@save@lineno\undefined
@@ -1551,7 +1551,7 @@
 % \end{macro}
 % \begin{macro}{\MRST@cr}
 % \cs{MRST@cr} is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
-% about the space the \environment{longtable} occupies, but it doesn't
+% about the space the \env{longtable} occupies, but it doesn't
 % do the pagebreaking part.
 %    \begin{macrocode}
 \def\MRST@cr{%
@@ -1625,7 +1625,7 @@
 % \end{macro}
 % \end{macro}
 % \begin{macro}{\STneed}
-% This macro can be used in a \environment{supertabular} to indicate how
+% This macro can be used in a \env{supertabular} to indicate how
 % much space a multirow entry needs. See section~\ref{sec:use-with-supertabular}.
 %    \begin{macrocode}
 \def\STneed#1{\ifdim\ST@pageleft<#1\ST@newpage\ST@next\fi}
@@ -1661,13 +1661,13 @@
 % \begin{macro}{\multirow@setcolwidth}
 % This macro calculates \cs{multirow@colwidth} for an entry that has the
 % \meta{width} given as ``\texttt{=}''. We check if we are inside a
-% \environment{tabulary} environment, by checking if \cs{TY@final} is defined.
-% If not, then \cs{multirow@colwidth} = \cs{hsize}. The \environment{tabulary}
+% \env{tabulary} environment, by checking if \cs{TY@final} is defined.
+% If not, then \cs{multirow@colwidth} = \cs{hsize}. The \env{tabulary}
 % environment will make two passes. On the first pass, we set \cs{multirow@colwidth}
 % to the size that the text would have in LR mode (with newlines replaced
-% by spaces), so that \environment{tabulary} will gives us enough space.
+% by spaces), so that \env{tabulary} will gives us enough space.
 % On the second pass (characterized by \cs{TY@box} = \cs{TY@box@v}) we use
-% the value that \environment{tabulary} has given us in \cs{hsize}.
+% the value that \env{tabulary} has given us in \cs{hsize}.
 % This algorithm is not perfect, but good enough in most cases.
 %    \begin{macrocode}
 \def\multirow@setcolwidth#1{%
@@ -1872,7 +1872,7 @@
 % at the beginning to force horizontal mode}
 % \begin{macro}{\bigstrut}
 % This macro inserts a strut. Depending on the optional parameter it extends
-% above and/or below the standard \environment{array}/\environment{tabular} strut.
+% above and/or below the standard \env{array}/\env{tabular} strut.
 %    \begin{macrocode}
 \newcommand\bigstrut[1][x]{%
   \leavevmode\unskip\@tempdima=\ht\@arstrutbox \@tempdimb=\dp\@arstrutbox
