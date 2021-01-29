@@ -14,7 +14,7 @@ README: README.tpl multirow.dtx
 	sed "s@#VERSION@$$version@g" README.TPL > README
 
 clean:
-	rm -f *.aux *.log *.idx *.ind *.ilg *.fdb_latexmk *.fls *.glo *.gls *~ *.rel *.toc *.synctex.gz
+	rm -f *.aux *.log *.idx *.ind *.ilg *.fdb_latexmk *.fls *.glo *.gls *~ *.rel *.toc *.synctex.gz *.out multirow.pdf
 
 dist: multirow.zip
 distfiles = README multirow.dtx multirow.ins multirow.pdf
