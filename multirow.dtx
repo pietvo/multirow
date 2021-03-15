@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2021/01/29 v2.7
+%<multirow|bigstrut|bigdelim>           [2021/03/15 v2.8
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -129,6 +129,12 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.8}
+%
+%\begin{itemize}
+%\item Optional argument \meta{vmove} for \cs{ldelim} and \cs{rdelim}.
+%\end{itemize}
 %
 %\subsection*{version 2.7}
 %
@@ -1219,8 +1225,8 @@
 % \DescribeMacro{\rdelim}
 % Syntax of use is
 % \begin{quote}
-%   \cs{ldelim} ( \marg{n}\marg{width}\oarg{text}\\
-%   \cs{rdelim} ) \marg{n}\marg{width}\oarg{text}
+%   \cs{ldelim} ( \marg{n}\oarg{vmove}\marg{width}\oarg{text}\\
+%   \cs{rdelim} ) \marg{n}\oarg{vmove}\marg{width}\oarg{text}
 % \end{quote}
 % The commands are used in a column of a \env{tabular} or
 % \env{array}; they create a big parenthesis, brace or whatever
@@ -1258,6 +1264,12 @@
 %   \end{array}
 % \end{equation}
 % \end{quote}
+%
+% The optional parameter \meta{vmove} is a length used for fine-tuning: the
+% delimiter (with the optional \meta{text}) will be raised (or lowered, if
+% \meta{vmove} is negative) by that length above (below) wherever it would
+% otherwise have gone. This is just like with \cs{multirow}, but note that
+% here the \meta{vmove} goes before the \meta{width}.
 %
 % When \cs{ldelim} is used, the optional \meta{text} is set centred to the left of \cs{ldelim}.
 % If \cs{rdelim} is used it is set to the right of \cs{rdelim}.  The
@@ -1919,14 +1931,16 @@
 % to a default value.
 % \changes{bigdelim v2.3}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
 % \changes{bigdelim v2.6}{2020/12/26}{Initialize \cs{@arstrutbox} if not defined}
+% \changes{bigdelim v2.8}{2021/03/15}{Add optional argument \meta{vmove}}
 %    \begin{macrocode}
-\newcommand\ldelim[3]{\@ifnextchar[{\@ldelim{#1}{#2}{#3}}{\@ldelim{#1}{#2}{#3}[\null]}}
-\def\@ldelim#1#2#3[#4]%
+\newcommand\ldelim[2]{\@ifnextchar[{\@ldelim{#1}{#2}}{\@ldelim{#1}{#2}[0pt]}}
+\def\@ldelim#1#2[#3]#4{\@ifnextchar[{\@@ldelim{#1}{#2}{#3}{#4}}{\@@ldelim{#1}{#2}{#3}{#4}[\null]}}
+\def\@@ldelim#1#2#3#4[#5]%
  {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
-  \multirow{#2}{#3}{%
+  \multirow{#2}{#4}[#3]{%
    \ensuremath
      {\left.\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
-     \textnormal{#4}\right#1}}}
+     \textnormal{#5}\right#1}}}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -1935,14 +1949,16 @@
 % proper arguments, similar to \cs{ldelim}.
 % \changes{bigdelim v2.3}{2018/08/03}{Replace \cs{textrm} by \cs{textnormal}}
 % \changes{bigdelim v2.6}{2020/12/26}{Initialize \cs{@arstrutbox} if not defined}
+% \changes{bigdelim v2.8}{2021/03/15}{Add optional argument \meta{vmove}}
 %    \begin{macrocode}
-\newcommand\rdelim[3]{\@ifnextchar[{\@rdelim{#1}{#2}{#3}}{\@rdelim{#1}{#2}{#3}[\null]}}
-\def\@rdelim#1#2#3[#4]%
+\newcommand\rdelim[2]{\@ifnextchar[{\@rdelim{#1}{#2}}{\@rdelim{#1}{#2}[0pt]}}
+\def\@rdelim#1#2[#3]#4{\@ifnextchar[{\@@rdelim{#1}{#2}{#3}{#4}}{\@@rdelim{#1}{#2}{#3}{#4}[\null]}}
+\def\@@rdelim#1#2#3#4[#5]%
  {\ifvoid\@arstrutbox\setbox\@arstrutbox\hbox{\strut}\fi
-  \multirow{#2}{#3}{%
+  \multirow{#2}{#4}[#3]{%
    \ensuremath
      {\left#1\vcenter{\hsize=0pt\vrule height \multirow@dima width 0pt}%
-       \textnormal{#4}\right.}}}
+       \textnormal{#5}\right.}}}
 %    \end{macrocode}
 % \end{macro}
 % \iffalse
