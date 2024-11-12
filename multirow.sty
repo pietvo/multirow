@@ -23,7 +23,7 @@
 %%
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{multirow}%
-           [2021/03/15 v2.8
+           [2024/11/12 v2.9
                   Span multiple rows of a table]%
 \newif\ifmultirowdebug
 \DeclareOption{debug}{\multirowdebugtrue}
@@ -78,6 +78,7 @@
   {\ifnum0=`}\fi
   \ST@save@lineno
   \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\ifx\ST@rowht\undefined
 \def\MRST@cr{%
   \noalign{%
     \ifnum\ST@pboxht<\ST@lineht
@@ -93,6 +94,23 @@
     \global\advance\ST@pageleft -\ST@toadd
     \global\ST@toadd=\z@
     \ST@trace@cr\thr@@{Space left for tabular: \the\ST@pageleft}}}
+\else
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@rowht
+      \global\advance\ST@pageleft -\ST@rowht
+      \global\ST@prevht\ST@rowht
+    \else
+     \ST@trace@cr\thr@@{Added par box with height \the\ST@pboxht}%
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@
+    \ST@trace@cr\thr@@{Space left for tabular: \the\ST@pageleft}}}
+\fi
 \fi
 \def\MRST@xtabularcr{%
   \@ifnextchar[%]

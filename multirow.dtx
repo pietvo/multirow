@@ -32,7 +32,7 @@
 %<multirow>\ProvidesPackage{multirow}%
 %<bigstrut>\ProvidesPackage{bigstrut}
 %<bigdelim>\ProvidesPackage{bigdelim}
-%<multirow|bigstrut|bigdelim>           [2024/11/11 v2.9
+%<multirow|bigstrut|bigdelim>           [2024/11/12 v2.9
 %<multirow>                  Span multiple rows of a table]%
 %<bigstrut>                  Provide larger struts in tabulars]
 %<bigdelim>                  Create big delimiters in tabular or array]
@@ -129,6 +129,15 @@
 %
 % \section{Changes in version 2}
 % \label{sec:changes-2}
+%
+%\subsection*{version 2.9}
+%
+% \begin{itemize}
+% \item Documentation correction: the description of the meaning of a
+% negative value of \meta{nrows} was wrong.
+% \item Make \texttt{multirow.sty} compatible with
+% \texttt{supertabular} version 4.2a or later.
+% \end{itemize}
 %
 %\subsection*{version 2.8}
 %
@@ -1543,8 +1552,6 @@
 % \env{supertabular}.
 % The redefinition is delayed until the \verb+\begin{document}+.
 %
-% \changes{v2.6}{2020/12/26}{Adapt the definition to be compatible with
-% modern versions of \texttt{supertabular}}
 % \texttt{Supertabular} version 4.1f and later need a call to
 % \cs{ST@save@lineno} to function properly, but earlier versions cannot
 % use this as it doesn't exist in these versions. So the definitions of
@@ -1552,12 +1559,13 @@
 % \cs{ST@save@lineno} is defined. There are also some other differences,
 % so some intermediate versions of \texttt{supertabular} might need more
 % subtle adaptations, but for now we leave it at that.
-%
 %    \begin{macrocode}
 \DeclareOption{supertabular}{%
 \AtBeginDocument{%
 %    \end{macrocode}
 % \begin{macro}{\ST@tabularcr}
+% \changes{v2.6}{2020/12/26}{Adapt the definition to be compatible with
+% modern versions of \texttt{supertabular}}
 % This macro is the definition of \verb+\\+ inside a
 % \env{supertabular}.  We check for a \verb+*+, and if it is
 % present we call our own version, otherwise the
@@ -1572,8 +1580,10 @@
 % \end{macro}
 % \begin{macro}{\MRST@cr}
 % \cs{MRST@cr} is a truncated copy of \cs{ST@cr}. It does all the bookkeeping
-% about the space the \env{longtable} occupies, but it doesn't
+% about the space the \env{supertabular} occupies, but it doesn't
 % do the pagebreaking part.
+% \changes{v2.9}{2024/11/1}{Adapt the definition to be compatible with
+% \texttt{supertabular} version 4.2a or later.}
 %    \begin{macrocode}
 \def\MRST@cr{%
   \noalign{%
@@ -1591,12 +1601,14 @@
     \global\ST@toadd=\z@}}
 \else
 %    \end{macrocode}
-% These are the newer versions.
+% These are the newer versions. However, in version 4.2a and later of \texttt{supertabular},
+% \cs{ST@lineht} is renamed \cs{ST@rowht}.
 %    \begin{macrocode}
 \def\ST@tabularcr{%
   {\ifnum0=`}\fi
   \ST@save@lineno
   \@ifstar{\MRST@xtabularcr}{\ST@xtabularcr}}
+\ifx\ST@rowht\undefined
 \def\MRST@cr{%
   \noalign{%
     \ifnum\ST@pboxht<\ST@lineht
@@ -1612,6 +1624,26 @@
     \global\advance\ST@pageleft -\ST@toadd
     \global\ST@toadd=\z@
     \ST@trace@cr\thr@@{Space left for tabular: \the\ST@pageleft}}}
+\else
+%    \end{macrocode}
+% Now the post 4.2a version.
+%    \begin{macrocode}
+\def\MRST@cr{%
+  \noalign{%
+    \ifnum\ST@pboxht<\ST@rowht
+      \global\advance\ST@pageleft -\ST@rowht
+      \global\ST@prevht\ST@rowht
+    \else
+     \ST@trace@cr\thr@@{Added par box with height \the\ST@pboxht}%
+      \global\advance\ST@pageleft -\ST@pboxht
+      \global\advance\ST@pageleft -0.1\ST@pboxht
+      \global\ST@prevht\ST@pboxht
+      \global\ST@pboxht\z@
+    \fi
+    \global\advance\ST@pageleft -\ST@toadd
+    \global\ST@toadd=\z@
+    \ST@trace@cr\thr@@{Space left for tabular: \the\ST@pageleft}}}
+\fi
 \fi
 %    \end{macrocode}
 % \end{macro}
