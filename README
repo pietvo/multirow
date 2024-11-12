@@ -30,7 +30,7 @@ nrows is the number of rows to span.  It's up to you to leave the other
       rows empty, or the stuff created by \multirow will over-write it.
       With a positive value of nrows the spanned colomns are this row and
       (nrows-1) rows below it. With a negative value of nrows they are
-      this row and (1-nrows) above it.
+      this row and (-nrows-1) above it.
 
 bigstruts is mainly used if you've used bigstrut.sty.  In that case it
       is the total number of uses of \bigstrut within the rows being
